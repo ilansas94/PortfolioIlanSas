@@ -82,22 +82,7 @@ const portfolioItems: PortfolioItem[] = [
     deliverables: ["Brochure master file", "Print PDF", "Color palette spec"],
     tools: ["InDesign", "Illustrator"]
   },
-  {
-    id: 4,
-    title: "Company Redesign",
-    category: "Branding",
-    description: "End‑to‑end identity refresh including a refined logo, modern color system, and typographic hierarchy. Deliverables covered stationery, presentation templates, and a concise brand guide for consistent rollout.",
-    image: "/Essets/COMPANY REDESIGN.jpg",
-    detailImage: "/Essets/COMPANY REDESIGN_inside.jpg",
-    tags: ["Branding", "Redesign", "Identity"],
-    highlights: [
-      "Logo refinement and scalable lockups",
-      "Updated palette and accessibility contrast",
-      "Reusable presentation and doc templates"
-    ],
-    deliverables: ["Brand guidelines", "Logo pack", "Stationery suite"],
-    tools: ["Illustrator", "Figma"]
-  },
+  
   {
     id: 5,
     title: "Digital Painting",
