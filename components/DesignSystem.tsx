@@ -87,13 +87,15 @@ export interface GlassCardProps {
   gradient?: boolean;
   hover?: boolean;
   mpid?: string;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
 export const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(({
   children,
   className,
   intensity = "medium",
   gradient = false,
-  hover = true
+  hover = true,
+  onClick
 }, ref) => {
   const intensityClasses = {
     light: "backdrop-blur-md bg-white/20 border-white/20",
@@ -141,7 +143,7 @@ export const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(({
       damping: 30
     }
   } : {};
-  return <motion.div ref={ref} className={baseClasses} {...hoverProps}>
+  return <motion.div ref={ref} className={baseClasses} {...hoverProps} onClick={onClick}>
         {children}
       </motion.div>;
 });

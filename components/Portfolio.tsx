@@ -281,11 +281,17 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
             exit={{ opacity: 0, scale: 0.9, y: 50 }}
             transition={{ duration: 0.3 }}
             className="fixed inset-4 md:inset-8 lg:inset-16 z-50 flex items-center justify-center"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                onClose();
+              }
+            }}
           >
             <GlassCard
               className="w-full max-w-6xl h-full max-h-[90vh] p-6 lg:p-8 overflow-y-auto relative"
               intensity="heavy"
               gradient
+              onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}
               <motion.button
