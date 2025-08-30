@@ -262,31 +262,31 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
   if (!item) return null;
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="sync">
       {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50"
-            onClick={onClose}
-          />
-          
-          {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 50 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 20 }}
-            transition={{ duration: 0.28, ease: [0.4, 0.0, 0.2, 1] }}
-            className="fixed inset-4 md:inset-8 lg:inset-16 z-50 flex items-center justify-center"
-            onClick={(e) => {
-              if (e.target === e.currentTarget) {
-                onClose();
-              }
-            }}
-          >
+        <motion.div
+          key="portfolio-backdrop"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50"
+          onClick={onClose}
+        />
+      )}
+      {isOpen && (
+        <motion.div
+          key="portfolio-modal"
+          initial={{ opacity: 0, scale: 0.9, y: 50 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.96, y: 20 }}
+          transition={{ duration: 0.28, ease: [0.4, 0.0, 0.2, 1] }}
+          className="fixed inset-4 md:inset-8 lg:inset-16 z-50 flex items-center justify-center"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              onClose();
+            }
+          }}
+        >
             <GlassCard
               className="w-full max-w-6xl h-full max-h-[90vh] p-6 lg:p-8 overflow-y-auto relative"
               intensity="heavy"
@@ -410,7 +410,6 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
               </div>
             </GlassCard>
           </motion.div>
-        </>
       )}
     </AnimatePresence>
   );
