@@ -30,25 +30,10 @@ interface PortfolioItem {
 
 // Portfolio Data Structure
 const portfolioItems: PortfolioItem[] = [
-  {
-    id: 1,
-    title: "Company Redesign",
-    category: "Branding",
-    description: "End‑to‑end identity refresh including a refined logo, modern color system, and typographic hierarchy. Deliverables covered stationery, presentation templates, and a concise brand guide for consistent rollout.",
-    image: "/Essets/COMPANY REDESIGN.jpg",
-    detailImage: "/Essets/COMPANY REDESIGN_inside.jpg",
-    tags: ["Branding", "Redesign", "Identity"],
-    highlights: [
-      "Logo refinement and scalable lockups",
-      "Updated palette and accessibility contrast",
-      "Reusable presentation and doc templates"
-    ],
-    deliverables: ["Brand guidelines", "Logo pack", "Stationery suite"],
-    tools: ["Illustrator", "Figma"]
-  },
+  
   {
     id: 2,
-    title: "BIGFUN",
+    title: "Company Redesign",
     category: "Branding",
     description: "Playful identity for a youth initiative featuring a celebratory splash icon and a bilingual wordmark. The system extends to stationery, event shirts, and social posts with a bright, optimistic palette.",
     image: "/Essets/BIGFUN.jpg",
@@ -68,19 +53,19 @@ const portfolioItems: PortfolioItem[] = [
   },
   {
     id: 3,
-    title: "ROAR Brochure", 
+    title: "HAKAMERI Brochure",
     category: "Print Design",
-    description: "High‑impact brochure built around bold typography and strong color blocking. The pacing alternates full‑bleed imagery with concise copy for a confident, energetic brand voice.",
-    image: "/Essets/BROCHURE ROAR.jpg",
-    detailImage: "/Essets/BROCHURE ROAR_inside.jpg",
-    tags: ["Print Design", "Brochure", "Marketing"],
+    description: "Clean multi‑page brochure designed on a strict grid with generous white space, edited copy, and image‑first spreads. Prepared press‑ready with bleeds, CMYK color management, and export specs for offset printing.",
+    image: "/Essets/BROCHURE HAKAMERI.jpg",
+    detailImage: "/Essets/BROCHURE HAKAMERI_inside.jpg",
+    tags: ["Print Design", "Brochure", "Layout"],
     highlights: [
-      "Full‑bleed hero spreads",
-      "Large headline system for short, punchy copy",
-      "Color blocking to guide the eye"
+      "12‑page layout with consistent rhythm",
+      "CMYK and ink‑limit checks for offset",
+      "Grid‑based typography with clear hierarchy"
     ],
-    deliverables: ["Brochure master file", "Print PDF", "Color palette spec"],
-    tools: ["InDesign", "Illustrator"]
+    deliverables: ["Print‑ready PDF", "Source files", "Press proof guidance"],
+    tools: ["InDesign", "Photoshop"]
   },
   
   {
