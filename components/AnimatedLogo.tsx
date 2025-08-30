@@ -1,10 +1,8 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
-import Lottie, { LottieRefCurrentProps } from "lottie-react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import logoAnimationData from "@/Essets/LOGO.json";
 
 interface AnimatedLogoProps {
   className?: string;
@@ -23,40 +21,29 @@ export const AnimatedLogo = React.forwardRef<HTMLDivElement, AnimatedLogoProps>(
   hover = true,
   onClick
 }, ref) => {
-  const lottieRef = useRef<LottieRefCurrentProps>(null);
   const [isHovered, setIsHovered] = useState(false);
 
   const sizes = {
-    sm: "w-16 h-16",
-    md: "w-24 h-24", 
-    lg: "w-32 h-32",
-    xl: "w-48 h-48",
-    "2xl": "w-64 h-64"
+    sm: "w-16 h-16 text-2xl",
+    md: "w-24 h-24 text-3xl", 
+    lg: "w-32 h-32 text-4xl",
+    xl: "w-48 h-48 text-6xl",
+    "2xl": "w-64 h-64 text-8xl"
   };
 
   const handleMouseEnter = () => {
     if (hover) {
       setIsHovered(true);
-      if (lottieRef.current) {
-        lottieRef.current.setSpeed(1.5);
-      }
     }
   };
 
   const handleMouseLeave = () => {
     if (hover) {
       setIsHovered(false);
-      if (lottieRef.current) {
-        lottieRef.current.setSpeed(1);
-      }
     }
   };
 
   const handleClick = () => {
-    if (lottieRef.current) {
-      lottieRef.current.stop();
-      lottieRef.current.play();
-    }
     onClick?.();
   };
 
@@ -64,7 +51,7 @@ export const AnimatedLogo = React.forwardRef<HTMLDivElement, AnimatedLogoProps>(
     <motion.div
       ref={ref}
       className={cn(
-        "inline-block cursor-pointer select-none",
+        "inline-flex items-center justify-center cursor-pointer select-none font-bold text-transparent bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 bg-clip-text",
         sizes[size],
         className
       )}
@@ -72,8 +59,7 @@ export const AnimatedLogo = React.forwardRef<HTMLDivElement, AnimatedLogoProps>(
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
       whileHover={hover ? { 
-        scale: 1.05, 
-        z: 5,
+        scale: 1.05,
         transition: { duration: 0.2, ease: [0.4, 0.0, 0.2, 1] }
       } : undefined}
       whileTap={{ scale: 0.95 }}
@@ -82,25 +68,12 @@ export const AnimatedLogo = React.forwardRef<HTMLDivElement, AnimatedLogoProps>(
         stiffness: 300,
         damping: 30
       }}
+      style={{ 
+        filter: isHovered ? "drop-shadow(0 0 20px rgba(59, 130, 246, 0.5))" : undefined,
+        transition: "filter 0.3s ease"
+      }}
     >
-      <Lottie
-        lottieRef={lottieRef}
-        animationData={logoAnimationData}
-        autoplay={autoplay}
-        loop={loop}
-        style={{ 
-          width: "100%", 
-          height: "100%",
-          filter: isHovered ? "drop-shadow(0 0 20px rgba(59, 130, 246, 0.5))" : undefined,
-          transition: "filter 0.3s ease"
-        }}
-        onComplete={() => {
-          if (!loop && lottieRef.current) {
-            // Reset to a specific frame or restart if needed
-            lottieRef.current.goToAndStop(0);
-          }
-        }}
-      />
+      IS
     </motion.div>
   );
 });

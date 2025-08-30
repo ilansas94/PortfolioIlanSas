@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import emailjs from '@emailjs/browser';
 import { 
   Section, 
   Container, 
@@ -76,12 +77,25 @@ export const Contact = () => {
     setIsSubmitting(true);
     setSubmitStatus("idle");
 
-    // Simulate form submission (replace with actual form submission logic)
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Send email using EmailJS
+      await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+          to_email: 'ilansas94@gmail.com'
+        },
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
+      );
+      
       setSubmitStatus("success");
       setFormData({ name: "", email: "", subject: "", message: "" });
-    } catch {
+    } catch (error) {
+      console.error('Email error:', error);
       setSubmitStatus("error");
     } finally {
       setIsSubmitting(false);
