@@ -32,6 +32,22 @@ interface PortfolioItem {
 const portfolioItems: PortfolioItem[] = [
   {
     id: 1,
+    title: "Company Redesign",
+    category: "Branding",
+    description: "End‑to‑end identity refresh including a refined logo, modern color system, and typographic hierarchy. Deliverables covered stationery, presentation templates, and a concise brand guide for consistent rollout.",
+    image: "/Essets/COMPANY REDESIGN.jpg",
+    detailImage: "/Essets/COMPANY REDESIGN_inside.jpg",
+    tags: ["Branding", "Redesign", "Identity"],
+    highlights: [
+      "Logo refinement and scalable lockups",
+      "Updated palette and accessibility contrast",
+      "Reusable presentation and doc templates"
+    ],
+    deliverables: ["Brand guidelines", "Logo pack", "Stationery suite"],
+    tools: ["Illustrator", "Figma"]
+  },
+  {
+    id: 2,
     title: "BIGFUN",
     category: "Branding",
     description: "Playful identity for a youth initiative featuring a celebratory splash icon and a bilingual wordmark. The system extends to stationery, event shirts, and social posts with a bright, optimistic palette.",
@@ -49,22 +65,6 @@ const portfolioItems: PortfolioItem[] = [
       "T‑shirt/event collateral artwork"
     ],
     tools: ["Illustrator", "Photoshop"]
-  },
-  {
-    id: 2,
-    title: "HAKAMERI Brochure",
-    category: "Print Design",
-    description: "Clean multi‑page brochure designed on a strict grid with generous white space, edited copy, and image‑first spreads. Prepared press‑ready with bleeds, CMYK color management, and export specs for offset printing.",
-    image: "/Essets/BROCHURE HAKAMERI.jpg",
-    detailImage: "/Essets/BROCHURE HAKAMERI_inside.jpg",
-    tags: ["Print Design", "Brochure", "Layout"],
-    highlights: [
-      "12‑page layout with consistent rhythm",
-      "CMYK and ink‑limit checks for offset",
-      "Grid‑based typography with clear hierarchy"
-    ],
-    deliverables: ["Print‑ready PDF", "Source files", "Press proof guidance"],
-    tools: ["InDesign", "Photoshop"]
   },
   {
     id: 3,
@@ -90,7 +90,7 @@ const portfolioItems: PortfolioItem[] = [
     description: "Illustrative concept piece painted in a layered workflow with textured brushes and soft lighting. Focus on mood, color harmony, and painterly details across characters and environment.",
     image: "/Essets/DIGITAL PAINTING.jpg",
     detailImage: "/Essets/DIGITAL PAINTING_inside.jpg",
-    tags: ["Digital Art", "Painting", "Illustration"],
+    tags: ["Digital Art", "Painting", "Illustration", "Portrait"],
     highlights: ["Atmospheric lighting", "Textured brushwork", "Color scripting"],
     deliverables: ["High‑res PNG", "Process timelapse frames"],
     tools: ["Photoshop", "Procreate"]
