@@ -204,18 +204,7 @@ const portfolioItems: PortfolioItem[] = [
     deliverables: ["Logo/mascot files", "Profile/header assets"],
     tools: ["Illustrator", "Photoshop"]
   },
-  {
-    id: 16,
-    title: "WILLIAM",
-    category: "Portrait",
-    description: "Portrait study focused on lighting and form—soft edges against crisp accents for a natural look. Painted with attention to skin tones and subtle textures.",
-    image: "/Essets/WILLIAM.jpg",
-    detailImage: "/Essets/WILLIAM_in.jpg",
-    tags: ["Portrait", "Art", "Digital"],
-    highlights: ["Naturalistic lighting", "Edge control", "Color nuance"],
-    deliverables: ["High‑res print file", "Web scaled image"],
-    tools: ["Photoshop"]
-  },
+  
   
 ];
 
