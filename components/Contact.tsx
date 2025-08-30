@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import emailjs from '@emailjs/browser';
+// We now use our own API route powered by Resend instead of EmailJS
 import { 
   Section, 
   Container, 
@@ -78,19 +78,12 @@ export const Contact = () => {
     setSubmitStatus("idle");
 
     try {
-      // Send email using EmailJS
-      await emailjs.send(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
-        {
-          from_name: formData.name,
-          from_email: formData.email,
-          subject: formData.subject,
-          message: formData.message,
-          to_email: 'ilansas94@gmail.com'
-        },
-        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
-      );
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      if (!res.ok) throw new Error('Failed');
       
       setSubmitStatus("success");
       setFormData({ name: "", email: "", subject: "", message: "" });
