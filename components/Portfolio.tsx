@@ -31,7 +31,7 @@ const portfolioItems: PortfolioItem[] = [
     id: 1,
     title: "BIGFUN",
     category: "Branding",
-    description: "Creative branding and visual identity design with modern approach.",
+    description: "Playful identity for a youth initiative featuring a celebratory splash icon and a bilingual wordmark. The system extends to stationery, event shirts, and social posts with a bright, optimistic palette.",
     image: "/Essets/BIGFUN.jpg",
     detailImage: "/Essets/BIGFUN_in.jpg",
     tags: ["Branding", "Logo Design", "Identity"]
@@ -40,7 +40,7 @@ const portfolioItems: PortfolioItem[] = [
     id: 2,
     title: "HAKAMERI Brochure",
     category: "Print Design",
-    description: "Professional brochure design with elegant layout and typography.",
+    description: "Clean multi‑page brochure designed on a strict grid with generous white space, edited copy, and image‑first spreads. Prepared press‑ready with bleeds, CMYK color management, and export specs for offset printing.",
     image: "/Essets/BROCHURE HAKAMERI.jpg",
     detailImage: "/Essets/BROCHURE HAKAMERI_inside.jpg",
     tags: ["Print Design", "Brochure", "Layout"]
@@ -49,7 +49,7 @@ const portfolioItems: PortfolioItem[] = [
     id: 3,
     title: "ROAR Brochure", 
     category: "Print Design",
-    description: "Dynamic brochure design with bold visual elements.",
+    description: "High‑impact brochure built around bold typography and strong color blocking. The pacing alternates full‑bleed imagery with concise copy for a confident, energetic brand voice.",
     image: "/Essets/BROCHURE ROAR.jpg",
     detailImage: "/Essets/BROCHURE ROAR_inside.jpg",
     tags: ["Print Design", "Brochure", "Marketing"]
@@ -58,7 +58,7 @@ const portfolioItems: PortfolioItem[] = [
     id: 4,
     title: "Company Redesign",
     category: "Brand Identity",
-    description: "Complete visual identity redesign and brand transformation.",
+    description: "End‑to‑end identity refresh including a refined logo, modern color system, and typographic hierarchy. Deliverables covered stationery, presentation templates, and a concise brand guide for consistent rollout.",
     image: "/Essets/COMPANY REDESIGN.jpg",
     detailImage: "/Essets/COMPANY REDESIGN_inside.jpg",
     tags: ["Branding", "Redesign", "Identity"]
@@ -67,7 +67,7 @@ const portfolioItems: PortfolioItem[] = [
     id: 5,
     title: "Digital Painting",
     category: "Digital Art",
-    description: "Artistic digital painting showcasing creative expression.",
+    description: "Illustrative concept piece painted in a layered workflow with textured brushes and soft lighting. Focus on mood, color harmony, and painterly details across characters and environment.",
     image: "/Essets/DIGITAL PAINTING.jpg",
     detailImage: "/Essets/DIGITAL PAINTING_inside.jpg",
     tags: ["Digital Art", "Painting", "Illustration"]
@@ -76,7 +76,7 @@ const portfolioItems: PortfolioItem[] = [
     id: 6,
     title: "Gesture Poster",
     category: "Poster Design",
-    description: "Expressive poster design with dynamic composition.",
+    description: "Exploration of motion through expressive line work and layered textures. Designed for large‑format printing with attention to contrast, viewing distance, and visual rhythm.",
     image: "/Essets/GESTURE POSTER.jpg",
     detailImage: "/Essets/GESTURE POSTER_inside.jpg",
     tags: ["Poster", "Design", "Art"]
@@ -85,7 +85,7 @@ const portfolioItems: PortfolioItem[] = [
     id: 7,
     title: "THE GRIND",
     category: "Branding",
-    description: "Powerful branding concept with bold identity design.",
+    description: "Brand concept for a craft coffee venture: custom wordmark, badge system, and packaging direction. Emphasis on bold typography and tactile applications suitable for cups, stickers, and signage.",
     image: "/Essets/GRIND.jpg",
     detailImage: "/Essets/GRIND_in.jpg",
     tags: ["Branding", "Logo", "Identity"]
@@ -94,7 +94,7 @@ const portfolioItems: PortfolioItem[] = [
     id: 8,
     title: "KAMERI",
     category: "Branding",
-    description: "Sophisticated branding design with modern aesthetics.",
+    description: "Minimal, fashion‑leaning identity with a restrained palette and lots of breathing room. Built to feel premium across packaging, stationery, and social templates.",
     image: "/Essets/KAMERI.jpg",
     detailImage: "/Essets/KAMERI_in.jpg",
     tags: ["Branding", "Logo Design", "Modern"]
@@ -103,7 +103,7 @@ const portfolioItems: PortfolioItem[] = [
     id: 9,
     title: "Keren Nails Logo",
     category: "Logo Design",
-    description: "Elegant logo design for beauty and wellness industry.",
+    description: "Clean, feminine mark for a beauty studio—balanced letterforms, subtle curves, and a neutral palette. Optimized for signage, appointment cards, and Instagram profile usage.",
     image: "/Essets/KEREN NAILS LOGO.jpg",
     detailImage: "/Essets/KEREN NAILS LOGO_inside.jpg",
     tags: ["Logo Design", "Beauty", "Branding"]
@@ -112,7 +112,7 @@ const portfolioItems: PortfolioItem[] = [
     id: 10,
     title: "Landing Page Prototype",
     category: "UI/UX Design",
-    description: "Modern landing page design with user-centered approach.",
+    description: "Responsive landing page for a mini‑course: clear hero value prop, course syllabus highlights, pricing section, and testimonial carousel. Built in Figma with clickable flows for key CTAs.",
     image: "/Essets/LANDING PAGE PROTOTYPE.png",
     detailImage: "/Essets/LANDING.png",
     figmaUrl: "https://www.figma.com/proto/ymSXBm9a0tVh8VRAI62r3R/Landing-Page-%E2%80%93-Mini-Graphic-Course?content-scaling=fixed&embed-host=share&kind=proto&node-id=1-3&page-id=0%3A1&scaling=scale-down&theme=light&version=2",
@@ -123,25 +123,16 @@ const portfolioItems: PortfolioItem[] = [
     id: 11,
     title: "PASSPORTOGO",
     category: "Logo Design",
-    description: "Travel-focused logo design with creative concept.",
+    description: "Friendly travel mark that combines motion and direction cues—ideal for tickets, app icons, and social avatars. Designed to stay legible at small sizes.",
     image: "/Essets/PASSPORTOGO.png",
     detailImage: "/Essets/PASSPORTOGO LOGO DESIGN_inside.jpg",
     tags: ["Logo Design", "Travel", "Branding"]
   },
   {
-    id: 12,
-    title: "Sketch Work",
-    category: "Illustration",
-    description: "Hand-drawn illustrations showcasing artistic skills.",
-    image: "/Essets/sketch.jpg",
-    detailImage: "/Essets/SKETCH_IN.jpg",
-    tags: ["Illustration", "Sketch", "Art"]
-  },
-  {
     id: 13,
     title: "Sketchbook",
     category: "Illustration",
-    description: "Collection of creative sketches and artistic exploration.",
+    description: "Selected pages from ongoing studies—anatomy, objects, and quick thumbnails. Focused on process, line economy, and ideation rather than polished finishes.",
     image: "/Essets/SKETCHBOOK.jpg",
     detailImage: "/Essets/SKETCHBOOK_inside.jpg",
     tags: ["Illustration", "Sketch", "Concept"]
@@ -150,7 +141,7 @@ const portfolioItems: PortfolioItem[] = [
     id: 14,
     title: "SPACE Logo",
     category: "Logo Design",
-    description: "Futuristic logo design with space-themed concept.",
+    description: "Modern tech‑leaning mark inspired by orbits and negative space. Designed to work on dark backgrounds and to scale cleanly from favicon to signage.",
     image: "/Essets/SPACE LOGO.jpg",
     detailImage: "/Essets/SPACE LOGO_inside.jpg",
     tags: ["Logo Design", "Space", "Modern"]
@@ -159,7 +150,7 @@ const portfolioItems: PortfolioItem[] = [
     id: 15,
     title: "THE GRIND Logo",
     category: "Logo Design",
-    description: "Bold logo design with strong visual impact.",
+    description: "Primary badge for the coffee brand—robust letterforms and simple geometry for easy reproduction on cups, stickers, and merchandise.",
     image: "/Essets/THE GRIND LOGO.jpg",
     detailImage: "/Essets/THE GRIND LOGO_inside.jpg",
     tags: ["Logo Design", "Bold", "Branding"]
@@ -168,7 +159,7 @@ const portfolioItems: PortfolioItem[] = [
     id: 16,
     title: "Twitchy Rabbit Logo",
     category: "Logo Design",
-    description: "Playful logo design with character-based concept.",
+    description: "Energetic mascot character tailored for gaming/streaming contexts. Strong silhouette and expressive features make it instantly recognizable as an avatar.",
     image: "/Essets/TWITCHY RABBIT LOGO.jpg",
     detailImage: "/Essets/TWITCHY RABBIT LOGO_inside.jpg",
     tags: ["Logo Design", "Character", "Playful"]
@@ -177,7 +168,7 @@ const portfolioItems: PortfolioItem[] = [
     id: 17,
     title: "WILLIAM",
     category: "Portrait",
-    description: "Portrait artwork showcasing artistic technique.",
+    description: "Portrait study focused on lighting and form—soft edges against crisp accents for a natural look. Painted with attention to skin tones and subtle textures.",
     image: "/Essets/WILLIAM.jpg",
     detailImage: "/Essets/WILLIAM_in.jpg",
     tags: ["Portrait", "Art", "Digital"]
