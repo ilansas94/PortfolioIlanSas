@@ -31,6 +31,26 @@ interface PortfolioItem {
 // Portfolio Data Structure
 const portfolioItems: PortfolioItem[] = [
   {
+    id: 1,
+    title: "BIGFUN",
+    category: "Branding",
+    description: "Playful identity for a youth initiative featuring a celebratory splash icon and a bilingual wordmark. The system extends to stationery, event shirts, and social posts with a bright, optimistic palette.",
+    image: "/Essets/BIGFUN.jpg",
+    detailImage: "/Essets/BIGFUN_in.jpg",
+    tags: ["Branding", "Logo Design", "Identity"],
+    highlights: [
+      "Energetic color system suitable for youth audiences",
+      "Bilingual wordmark for Hebrew and English contexts",
+      "Flexible confetti motif used across applications"
+    ],
+    deliverables: [
+      "Primary/secondary logos and lockups",
+      "Stationery kit and social templates",
+      "T‑shirt/event collateral artwork"
+    ],
+    tools: ["Illustrator", "Photoshop"]
+  },
+  {
     id: 2,
     title: "HAKAMERI Brochure",
     category: "Print Design",
@@ -65,7 +85,7 @@ const portfolioItems: PortfolioItem[] = [
   {
     id: 4,
     title: "Company Redesign",
-    category: "Brand Identity",
+    category: "Branding",
     description: "End‑to‑end identity refresh including a refined logo, modern color system, and typographic hierarchy. Deliverables covered stationery, presentation templates, and a concise brand guide for consistent rollout.",
     image: "/Essets/COMPANY REDESIGN.jpg",
     detailImage: "/Essets/COMPANY REDESIGN_inside.jpg",
