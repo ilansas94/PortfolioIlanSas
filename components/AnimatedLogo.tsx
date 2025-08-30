@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import Lottie, { LottieRefCurrentProps } from "lottie-react";
+import logoAnimation from "@/logo/LOGO.json";
 
 interface AnimatedLogoProps {
   className?: string;
@@ -22,6 +24,7 @@ export const AnimatedLogo = React.forwardRef<HTMLDivElement, AnimatedLogoProps>(
   onClick
 }, ref) => {
   const [isHovered, setIsHovered] = useState(false);
+  const lottieRef = useRef<LottieRefCurrentProps>(null);
 
   const sizes = {
     sm: "w-16 h-16 text-2xl",
@@ -51,7 +54,7 @@ export const AnimatedLogo = React.forwardRef<HTMLDivElement, AnimatedLogoProps>(
     <motion.div
       ref={ref}
       className={cn(
-        "inline-flex items-center justify-center cursor-pointer select-none font-bold text-transparent bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 bg-clip-text",
+        "inline-flex items-center justify-center cursor-pointer select-none",
         sizes[size],
         className
       )}
@@ -73,7 +76,18 @@ export const AnimatedLogo = React.forwardRef<HTMLDivElement, AnimatedLogoProps>(
         transition: "filter 0.3s ease"
       }}
     >
-      IS
+      <Lottie
+        lottieRef={lottieRef}
+        animationData={logoAnimation as unknown as object}
+        autoplay={autoplay}
+        loop={loop}
+        style={{ width: "100%", height: "100%" }}
+        onComplete={() => {
+          if (!loop && lottieRef.current) {
+            lottieRef.current.goToAndStop(0);
+          }
+        }}
+      />
     </motion.div>
   );
 });
