@@ -31,26 +31,6 @@ interface PortfolioItem {
 // Portfolio Data Structure
 const portfolioItems: PortfolioItem[] = [
   {
-    id: 1,
-    title: "BIGFUN",
-    category: "Branding",
-    description: "Playful identity for a youth initiative featuring a celebratory splash icon and a bilingual wordmark. The system extends to stationery, event shirts, and social posts with a bright, optimistic palette.",
-    image: "/Essets/BIGFUN.jpg",
-    detailImage: "/Essets/BIGFUN_in.jpg",
-    tags: ["Branding", "Logo Design", "Identity"],
-    highlights: [
-      "Energetic color system suitable for youth audiences",
-      "Bilingual wordmark for Hebrew and English contexts",
-      "Flexible confetti motif used across applications"
-    ],
-    deliverables: [
-      "Primary/secondary logos and lockups",
-      "Stationery kit and social templates",
-      "T‑shirt/event collateral artwork"
-    ],
-    tools: ["Illustrator", "Photoshop"]
-  },
-  {
     id: 2,
     title: "HAKAMERI Brochure",
     category: "Print Design",
@@ -417,7 +397,7 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
 
 export const Portfolio = () => {
   const [activeCategory, setActiveCategory] = useState("All");
-  const [selectedItem, setSelectedItem] = useState<typeof portfolioItems[0] | null>(null);
+  const [selectedItem, setSelectedItem] = useState<typeof portfolioItems[number] | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const filteredItems = activeCategory === "All" 
@@ -430,8 +410,9 @@ export const Portfolio = () => {
   };
 
   const closeModal = () => {
+    // Allow exit animation to play before unmounting content
     setIsModalOpen(false);
-    setSelectedItem(null);
+    setTimeout(() => setSelectedItem(null), 300);
   };
 
   return (
