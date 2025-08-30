@@ -120,18 +120,6 @@ const portfolioItems: PortfolioItem[] = [
   },
   {
     id: 8,
-    title: "KAMERI",
-    category: "Branding",
-    description: "Minimal, fashion‑leaning identity with a restrained palette and lots of breathing room. Built to feel premium across packaging, stationery, and social templates.",
-    image: "/Essets/KAMERI.jpg",
-    detailImage: "/Essets/KAMERI_in.jpg",
-    tags: ["Branding", "Logo Design", "Modern"],
-    highlights: ["Monochrome core with accent color", "Typographic wordmark", "Editorial spacing"],
-    deliverables: ["Logo pack", "Packaging marks", "Social kit"],
-    tools: ["Illustrator", "Figma"]
-  },
-  {
-    id: 9,
     title: "Keren Nails Logo",
     category: "Logo Design",
     description: "Clean, feminine mark for a beauty studio—balanced letterforms, subtle curves, and a neutral palette. Optimized for signage, appointment cards, and Instagram profile usage.",
@@ -143,7 +131,7 @@ const portfolioItems: PortfolioItem[] = [
     tools: ["Illustrator"]
   },
   {
-    id: 10,
+    id: 9,
     title: "Landing Page Prototype",
     category: "UI/UX Design",
     description: "Responsive landing page for a mini‑course: clear hero value prop, course syllabus highlights, pricing section, and testimonial carousel. Built in Figma with clickable flows for key CTAs.",
@@ -157,7 +145,7 @@ const portfolioItems: PortfolioItem[] = [
     tools: ["Figma"]
   },
   {
-    id: 11,
+    id: 10,
     title: "PASSPORTOGO",
     category: "Logo Design",
     description: "Friendly travel mark that combines motion and direction cues—ideal for tickets, app icons, and social avatars. Designed to stay legible at small sizes.",
@@ -169,7 +157,7 @@ const portfolioItems: PortfolioItem[] = [
     tools: ["Illustrator"]
   },
   {
-    id: 13,
+    id: 11,
     title: "Sketchbook",
     category: "Illustration",
     description: "Selected pages from ongoing studies—anatomy, objects, and quick thumbnails. Focused on process, line economy, and ideation rather than polished finishes.",
@@ -181,7 +169,7 @@ const portfolioItems: PortfolioItem[] = [
     tools: ["Pencil", "Ink", "Procreate"]
   },
   {
-    id: 14,
+    id: 13,
     title: "SPACE Logo",
     category: "Logo Design",
     description: "Modern tech‑leaning mark inspired by orbits and negative space. Designed to work on dark backgrounds and to scale cleanly from favicon to signage.",
@@ -193,7 +181,7 @@ const portfolioItems: PortfolioItem[] = [
     tools: ["Illustrator"]
   },
   {
-    id: 15,
+    id: 14,
     title: "THE GRIND Logo",
     category: "Logo Design",
     description: "Primary badge for the coffee brand—robust letterforms and simple geometry for easy reproduction on cups, stickers, and merchandise.",
@@ -205,7 +193,7 @@ const portfolioItems: PortfolioItem[] = [
     tools: ["Illustrator"]
   },
   {
-    id: 16,
+    id: 15,
     title: "Twitchy Rabbit Logo",
     category: "Logo Design",
     description: "Energetic mascot character tailored for gaming/streaming contexts. Strong silhouette and expressive features make it instantly recognizable as an avatar.",
@@ -217,10 +205,22 @@ const portfolioItems: PortfolioItem[] = [
     tools: ["Illustrator", "Photoshop"]
   },
   {
-    id: 17,
+    id: 16,
     title: "WILLIAM",
     category: "Portrait",
     description: "Portrait study focused on lighting and form—soft edges against crisp accents for a natural look. Painted with attention to skin tones and subtle textures.",
+    image: "/Essets/WILLIAM.jpg",
+    detailImage: "/Essets/WILLIAM_in.jpg",
+    tags: ["Portrait", "Art", "Digital"],
+    highlights: ["Naturalistic lighting", "Edge control", "Color nuance"],
+    deliverables: ["High‑res print file", "Web scaled image"],
+    tools: ["Photoshop"]
+  },
+  {
+    id: 17,
+    title: "",
+    category: "",
+    description: "",
     image: "/Essets/WILLIAM.jpg",
     detailImage: "/Essets/WILLIAM_in.jpg",
     tags: ["Portrait", "Art", "Digital"],
