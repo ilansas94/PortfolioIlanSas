@@ -278,8 +278,8 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 50 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 50 }}
-            transition={{ duration: 0.3 }}
+            exit={{ opacity: 0, scale: 0.96, y: 20 }}
+            transition={{ duration: 0.28, ease: [0.4, 0.0, 0.2, 1] }}
             className="fixed inset-4 md:inset-8 lg:inset-16 z-50 flex items-center justify-center"
             onClick={(e) => {
               if (e.target === e.currentTarget) {

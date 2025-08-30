@@ -106,7 +106,7 @@ export const Hero = () => {
             {...animations.fadeInUp}
             transition={{ ...animations.fadeInUp.transition, delay: 0.5 }}
           >
-            <Heading level={1} gradient className="mb-6 font-display">
+            <Heading level={1} gradient className="mb-6 font-display leading-tight md:leading-[1.12] lg:leading-[1.12] pb-2">
               Creative Designer
               <br />
               Digital Artist
