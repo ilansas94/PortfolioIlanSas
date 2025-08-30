@@ -216,18 +216,7 @@ const portfolioItems: PortfolioItem[] = [
     deliverables: ["High‑res print file", "Web scaled image"],
     tools: ["Photoshop"]
   },
-  {
-    id: 17,
-    title: "",
-    category: "",
-    description: "",
-    image: "/Essets/WILLIAM.jpg",
-    detailImage: "/Essets/WILLIAM_in.jpg",
-    tags: ["Portrait", "Art", "Digital"],
-    highlights: ["Naturalistic lighting", "Edge control", "Color nuance"],
-    deliverables: ["High‑res print file", "Web scaled image"],
-    tools: ["Photoshop"]
-  }
+  
 ];
 
 const categories = ["All", "Branding", "Logo Design", "Print Design", "Digital Art", "UI/UX Design", "Illustration", "Portrait"];
