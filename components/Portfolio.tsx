@@ -23,6 +23,9 @@ interface PortfolioItem {
   tags: string[];
   figmaUrl?: string;
   isPrototype?: boolean;
+  highlights?: string[];
+  deliverables?: string[];
+  tools?: string[];
 }
 
 // Portfolio Data Structure
@@ -34,7 +37,18 @@ const portfolioItems: PortfolioItem[] = [
     description: "Playful identity for a youth initiative featuring a celebratory splash icon and a bilingual wordmark. The system extends to stationery, event shirts, and social posts with a bright, optimistic palette.",
     image: "/Essets/BIGFUN.jpg",
     detailImage: "/Essets/BIGFUN_in.jpg",
-    tags: ["Branding", "Logo Design", "Identity"]
+    tags: ["Branding", "Logo Design", "Identity"],
+    highlights: [
+      "Energetic color system suitable for youth audiences",
+      "Bilingual wordmark for Hebrew and English contexts",
+      "Flexible confetti motif used across applications"
+    ],
+    deliverables: [
+      "Primary/secondary logos and lockups",
+      "Stationery kit and social templates",
+      "T‑shirt/event collateral artwork"
+    ],
+    tools: ["Illustrator", "Photoshop"]
   },
   {
     id: 2,
@@ -43,7 +57,14 @@ const portfolioItems: PortfolioItem[] = [
     description: "Clean multi‑page brochure designed on a strict grid with generous white space, edited copy, and image‑first spreads. Prepared press‑ready with bleeds, CMYK color management, and export specs for offset printing.",
     image: "/Essets/BROCHURE HAKAMERI.jpg",
     detailImage: "/Essets/BROCHURE HAKAMERI_inside.jpg",
-    tags: ["Print Design", "Brochure", "Layout"]
+    tags: ["Print Design", "Brochure", "Layout"],
+    highlights: [
+      "12‑page layout with consistent rhythm",
+      "CMYK and ink‑limit checks for offset",
+      "Grid‑based typography with clear hierarchy"
+    ],
+    deliverables: ["Print‑ready PDF", "Source files", "Press proof guidance"],
+    tools: ["InDesign", "Photoshop"]
   },
   {
     id: 3,
@@ -52,7 +73,14 @@ const portfolioItems: PortfolioItem[] = [
     description: "High‑impact brochure built around bold typography and strong color blocking. The pacing alternates full‑bleed imagery with concise copy for a confident, energetic brand voice.",
     image: "/Essets/BROCHURE ROAR.jpg",
     detailImage: "/Essets/BROCHURE ROAR_inside.jpg",
-    tags: ["Print Design", "Brochure", "Marketing"]
+    tags: ["Print Design", "Brochure", "Marketing"],
+    highlights: [
+      "Full‑bleed hero spreads",
+      "Large headline system for short, punchy copy",
+      "Color blocking to guide the eye"
+    ],
+    deliverables: ["Brochure master file", "Print PDF", "Color palette spec"],
+    tools: ["InDesign", "Illustrator"]
   },
   {
     id: 4,
@@ -61,7 +89,14 @@ const portfolioItems: PortfolioItem[] = [
     description: "End‑to‑end identity refresh including a refined logo, modern color system, and typographic hierarchy. Deliverables covered stationery, presentation templates, and a concise brand guide for consistent rollout.",
     image: "/Essets/COMPANY REDESIGN.jpg",
     detailImage: "/Essets/COMPANY REDESIGN_inside.jpg",
-    tags: ["Branding", "Redesign", "Identity"]
+    tags: ["Branding", "Redesign", "Identity"],
+    highlights: [
+      "Logo refinement and scalable lockups",
+      "Updated palette and accessibility contrast",
+      "Reusable presentation and doc templates"
+    ],
+    deliverables: ["Brand guidelines", "Logo pack", "Stationery suite"],
+    tools: ["Illustrator", "Figma"]
   },
   {
     id: 5,
@@ -70,7 +105,10 @@ const portfolioItems: PortfolioItem[] = [
     description: "Illustrative concept piece painted in a layered workflow with textured brushes and soft lighting. Focus on mood, color harmony, and painterly details across characters and environment.",
     image: "/Essets/DIGITAL PAINTING.jpg",
     detailImage: "/Essets/DIGITAL PAINTING_inside.jpg",
-    tags: ["Digital Art", "Painting", "Illustration"]
+    tags: ["Digital Art", "Painting", "Illustration"],
+    highlights: ["Atmospheric lighting", "Textured brushwork", "Color scripting"],
+    deliverables: ["High‑res PNG", "Process timelapse frames"],
+    tools: ["Photoshop", "Procreate"]
   },
   {
     id: 6,
@@ -79,7 +117,14 @@ const portfolioItems: PortfolioItem[] = [
     description: "Exploration of motion through expressive line work and layered textures. Designed for large‑format printing with attention to contrast, viewing distance, and visual rhythm.",
     image: "/Essets/GESTURE POSTER.jpg",
     detailImage: "/Essets/GESTURE POSTER_inside.jpg",
-    tags: ["Poster", "Design", "Art"]
+    tags: ["Poster", "Design", "Art"],
+    highlights: [
+      "Dynamic composition",
+      "Texture overlays for depth",
+      "Optimized for A1/A2 formats"
+    ],
+    deliverables: ["Print PDF", "Large‑format PNG"],
+    tools: ["Illustrator", "Photoshop"]
   },
   {
     id: 7,
@@ -88,7 +133,10 @@ const portfolioItems: PortfolioItem[] = [
     description: "Brand concept for a craft coffee venture: custom wordmark, badge system, and packaging direction. Emphasis on bold typography and tactile applications suitable for cups, stickers, and signage.",
     image: "/Essets/GRIND.jpg",
     detailImage: "/Essets/GRIND_in.jpg",
-    tags: ["Branding", "Logo", "Identity"]
+    tags: ["Branding", "Logo", "Identity"],
+    highlights: ["Custom lettering", "Badge/secondary marks", "Packaging mockups"],
+    deliverables: ["Logo suite", "Cup/sticker artwork", "Color/typography spec"],
+    tools: ["Illustrator", "Photoshop"]
   },
   {
     id: 8,
@@ -97,7 +145,10 @@ const portfolioItems: PortfolioItem[] = [
     description: "Minimal, fashion‑leaning identity with a restrained palette and lots of breathing room. Built to feel premium across packaging, stationery, and social templates.",
     image: "/Essets/KAMERI.jpg",
     detailImage: "/Essets/KAMERI_in.jpg",
-    tags: ["Branding", "Logo Design", "Modern"]
+    tags: ["Branding", "Logo Design", "Modern"],
+    highlights: ["Monochrome core with accent color", "Typographic wordmark", "Editorial spacing"],
+    deliverables: ["Logo pack", "Packaging marks", "Social kit"],
+    tools: ["Illustrator", "Figma"]
   },
   {
     id: 9,
@@ -106,7 +157,10 @@ const portfolioItems: PortfolioItem[] = [
     description: "Clean, feminine mark for a beauty studio—balanced letterforms, subtle curves, and a neutral palette. Optimized for signage, appointment cards, and Instagram profile usage.",
     image: "/Essets/KEREN NAILS LOGO.jpg",
     detailImage: "/Essets/KEREN NAILS LOGO_inside.jpg",
-    tags: ["Logo Design", "Beauty", "Branding"]
+    tags: ["Logo Design", "Beauty", "Branding"],
+    highlights: ["Soft curves and legibility", "Small‑size clarity for avatars", "Simple color system"],
+    deliverables: ["Logo files", "Card and sign layouts"],
+    tools: ["Illustrator"]
   },
   {
     id: 10,
@@ -117,7 +171,10 @@ const portfolioItems: PortfolioItem[] = [
     detailImage: "/Essets/LANDING.png",
     figmaUrl: "https://www.figma.com/proto/ymSXBm9a0tVh8VRAI62r3R/Landing-Page-%E2%80%93-Mini-Graphic-Course?content-scaling=fixed&embed-host=share&kind=proto&node-id=1-3&page-id=0%3A1&scaling=scale-down&theme=light&version=2",
     isPrototype: true,
-    tags: ["UI/UX", "Web Design", "Prototype"]
+    tags: ["UI/UX", "Web Design", "Prototype"],
+    highlights: ["Above‑the‑fold clarity", "Trust indicators", "Responsive constraints"],
+    deliverables: ["Figma prototype", "Style tokens", "Asset exports"],
+    tools: ["Figma"]
   },
   {
     id: 11,
@@ -126,7 +183,10 @@ const portfolioItems: PortfolioItem[] = [
     description: "Friendly travel mark that combines motion and direction cues—ideal for tickets, app icons, and social avatars. Designed to stay legible at small sizes.",
     image: "/Essets/PASSPORTOGO.png",
     detailImage: "/Essets/PASSPORTOGO LOGO DESIGN_inside.jpg",
-    tags: ["Logo Design", "Travel", "Branding"]
+    tags: ["Logo Design", "Travel", "Branding"],
+    highlights: ["Motion/speed cues", "Arrow/compass symbolism", "Icon‑first system"],
+    deliverables: ["Logo pack", "Icon set"],
+    tools: ["Illustrator"]
   },
   {
     id: 13,
@@ -135,7 +195,10 @@ const portfolioItems: PortfolioItem[] = [
     description: "Selected pages from ongoing studies—anatomy, objects, and quick thumbnails. Focused on process, line economy, and ideation rather than polished finishes.",
     image: "/Essets/SKETCHBOOK.jpg",
     detailImage: "/Essets/SKETCHBOOK_inside.jpg",
-    tags: ["Illustration", "Sketch", "Concept"]
+    tags: ["Illustration", "Sketch", "Concept"],
+    highlights: ["Gesture and figure studies", "Object analyses", "Thumbnails for composition"],
+    deliverables: ["Curated page selections", "Process snapshots"],
+    tools: ["Pencil", "Ink", "Procreate"]
   },
   {
     id: 14,
@@ -144,7 +207,10 @@ const portfolioItems: PortfolioItem[] = [
     description: "Modern tech‑leaning mark inspired by orbits and negative space. Designed to work on dark backgrounds and to scale cleanly from favicon to signage.",
     image: "/Essets/SPACE LOGO.jpg",
     detailImage: "/Essets/SPACE LOGO_inside.jpg",
-    tags: ["Logo Design", "Space", "Modern"]
+    tags: ["Logo Design", "Space", "Modern"],
+    highlights: ["Negative‑space motif", "Dark‑mode friendly", "Scales from favicon to signage"],
+    deliverables: ["Logo files", "Usage guidance"],
+    tools: ["Illustrator"]
   },
   {
     id: 15,
@@ -153,7 +219,10 @@ const portfolioItems: PortfolioItem[] = [
     description: "Primary badge for the coffee brand—robust letterforms and simple geometry for easy reproduction on cups, stickers, and merchandise.",
     image: "/Essets/THE GRIND LOGO.jpg",
     detailImage: "/Essets/THE GRIND LOGO_inside.jpg",
-    tags: ["Logo Design", "Bold", "Branding"]
+    tags: ["Logo Design", "Bold", "Branding"],
+    highlights: ["Bold, condensed forms", "One‑color production‑ready", "Sticker‑friendly silhouette"],
+    deliverables: ["Logo pack", "Sticker/merch layouts"],
+    tools: ["Illustrator"]
   },
   {
     id: 16,
@@ -162,7 +231,10 @@ const portfolioItems: PortfolioItem[] = [
     description: "Energetic mascot character tailored for gaming/streaming contexts. Strong silhouette and expressive features make it instantly recognizable as an avatar.",
     image: "/Essets/TWITCHY RABBIT LOGO.jpg",
     detailImage: "/Essets/TWITCHY RABBIT LOGO_inside.jpg",
-    tags: ["Logo Design", "Character", "Playful"]
+    tags: ["Logo Design", "Character", "Playful"],
+    highlights: ["Mascot with strong silhouette", "Expressive facial features", "Avatar‑ready"],
+    deliverables: ["Logo/mascot files", "Profile/header assets"],
+    tools: ["Illustrator", "Photoshop"]
   },
   {
     id: 17,
@@ -171,7 +243,10 @@ const portfolioItems: PortfolioItem[] = [
     description: "Portrait study focused on lighting and form—soft edges against crisp accents for a natural look. Painted with attention to skin tones and subtle textures.",
     image: "/Essets/WILLIAM.jpg",
     detailImage: "/Essets/WILLIAM_in.jpg",
-    tags: ["Portrait", "Art", "Digital"]
+    tags: ["Portrait", "Art", "Digital"],
+    highlights: ["Naturalistic lighting", "Edge control", "Color nuance"],
+    deliverables: ["High‑res print file", "Web scaled image"],
+    tools: ["Photoshop"]
   }
 ];
 
@@ -276,6 +351,36 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
                         <p className="text-green-600 text-sm">
                           Click and interact with the prototype on the left to explore the full user experience.
                         </p>
+                      </div>
+                    )}
+                    {item.highlights && item.highlights.length > 0 && (
+                      <div className="mb-6">
+                        <h4 className="text-sm font-semibold text-slate-800 mb-2">Highlights</h4>
+                        <ul className="list-disc pl-5 space-y-1 text-slate-700">
+                          {item.highlights.map((h, i) => (
+                            <li key={i} className="text-sm">{h}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {item.deliverables && item.deliverables.length > 0 && (
+                      <div className="mb-6">
+                        <h4 className="text-sm font-semibold text-slate-800 mb-2">Deliverables</h4>
+                        <ul className="list-disc pl-5 space-y-1 text-slate-700">
+                          {item.deliverables.map((d, i) => (
+                            <li key={i} className="text-sm">{d}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {item.tools && item.tools.length > 0 && (
+                      <div className="mb-6">
+                        <h4 className="text-sm font-semibold text-slate-800 mb-2">Tools</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {item.tools.map((tool, i) => (
+                            <span key={i} className="px-2.5 py-1 bg-white/70 border border-white/50 rounded-full text-xs text-slate-700">{tool}</span>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
