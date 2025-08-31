@@ -370,7 +370,10 @@ export const Portfolio = () => {
 
   const filteredItems = activeCategory === "All" 
     ? portfolioItems 
-    : portfolioItems.filter(item => item.category === activeCategory);
+    : portfolioItems.filter(item => 
+        item.category === activeCategory ||
+        (["Portrait", "Illustration"].includes(activeCategory) && item.tags.includes(activeCategory))
+      );
 
   const openModal = (item: typeof portfolioItems[0]) => {
     setSelectedItem(item);
