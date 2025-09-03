@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { 
@@ -94,18 +94,6 @@ const portfolioItems: PortfolioItem[] = [
       "Optimized for A1/A2 formats"
     ],
     deliverables: ["Print PDF", "Large‑format PNG"],
-    tools: ["Illustrator", "Photoshop"]
-  },
-  {
-    id: 7,
-    title: "THE GRIND",
-    category: "Branding",
-    description: "Brand concept for a craft coffee venture: custom wordmark, badge system, and packaging direction. Emphasis on bold typography and tactile applications suitable for cups, stickers, and signage.",
-    image: "/Essets/GRIND.jpg",
-    detailImage: "/Essets/GRIND_in.jpg",
-    tags: ["Branding", "Logo", "Identity"],
-    highlights: ["Custom lettering", "Badge/secondary marks", "Packaging mockups"],
-    deliverables: ["Logo suite", "Cup/sticker artwork", "Color/typography spec"],
     tools: ["Illustrator", "Photoshop"]
   },
   {
@@ -368,9 +356,34 @@ export const Portfolio = () => {
   const [selectedItem, setSelectedItem] = useState<typeof portfolioItems[number] | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Defensive: ensure no duplicate titles appear (case-insensitive)
+  const baseItems = useMemo(() => {
+    const seenTitles = new Set<string>();
+    const seenImages = new Set<string>();
+    const seenDetailImages = new Set<string>();
+
+    return portfolioItems.filter((item) => {
+      const titleKey = item.title.trim().toLowerCase();
+      const imageKey = (item.image || "").trim().toLowerCase();
+      const detailKey = (item.detailImage || "").trim().toLowerCase();
+
+      const isDup =
+        seenTitles.has(titleKey) ||
+        (imageKey && seenImages.has(imageKey)) ||
+        (detailKey && seenDetailImages.has(detailKey));
+
+      if (isDup) return false;
+
+      seenTitles.add(titleKey);
+      if (imageKey) seenImages.add(imageKey);
+      if (detailKey) seenDetailImages.add(detailKey);
+      return true;
+    });
+  }, []);
+
   const filteredItems = activeCategory === "All" 
-    ? portfolioItems 
-    : portfolioItems.filter(item => 
+    ? baseItems 
+    : baseItems.filter(item => 
         item.category === activeCategory ||
         (["Portrait", "Illustration"].includes(activeCategory) && item.tags.includes(activeCategory))
       );
