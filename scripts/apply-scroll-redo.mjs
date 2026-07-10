@@ -9,9 +9,9 @@ const globalsPath = path.join(root, "app", "globals.css");
 await copyFile(source, destination);
 
 let globals = await readFile(globalsPath, "utf8");
-for (const importLine of ['@import "./cinematic-v3.css";', '@import "./cinematic-v3-exact.css";']) {
+for (const importLine of ['@import "./cinematic-v3.css";', '@import "./cinematic-v3-exact.css";', '@import "./cinematic-v3-continuous.css";']) {
   if (!globals.includes(importLine)) globals = `${globals.trim()}\n${importLine}\n`;
 }
 await writeFile(globalsPath, globals, "utf8");
 
-console.log("Applied single-layer cinematic portfolio V3 with exact end-frame geometry");
+console.log("Applied continuous single-stage cinematic portfolio V3 with exact end-frame geometry");
