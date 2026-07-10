@@ -1,0 +1,67 @@
+name: Prepare Cinematic V3 Assets
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cinematic-portfolio-v3
+    paths:
+      - ".github/workflows/prepare-cinematic-v3-assets.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  prepare-assets:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out V3 branch
+        uses: actions/checkout@v4
+        with:
+          ref: cinematic-portfolio-v3
+          path: target
+          fetch-depth: 1
+
+      - name: Check out prior Runway asset branch
+        uses: actions/checkout@v4
+        with:
+          ref: cinematic-portfolio-v2
+          path: source
+          fetch-depth: 1
+
+      - name: Copy exact logo and Runway films into V3
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p target/public/cinematic-v3
+
+          test -f source/public/cinematic/symbol-padded.svg
+          test -f source/public/cinematic/full-logo.svg
+          test -f source/public/cinematic/intro-formation.mp4
+          test -f source/public/cinematic/transition-print.mp4
+          test -f source/public/cinematic/transition-ui.mp4
+
+          cp source/public/cinematic/symbol-padded.svg target/public/cinematic-v3/symbol.svg
+          cp source/public/cinematic/full-logo.svg target/public/cinematic-v3/full-logo.svg
+          cp source/public/cinematic/intro-formation.mp4 target/public/cinematic-v3/intro.mp4
+          cp source/public/cinematic/transition-print.mp4 target/public/cinematic-v3/transition-print.mp4
+          cp source/public/cinematic/transition-ui.mp4 target/public/cinematic-v3/transition-ui.mp4
+          cp source/public/cinematic/intro-formation.mp4 target/public/cinematic-v3/transition-ink.mp4
+
+          ls -lh target/public/cinematic-v3
+
+      - name: Commit prepared assets to V3 only
+        shell: bash
+        working-directory: target
+        run: |
+          set -euo pipefail
+          git config user.name "cinematic-render-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add public/cinematic-v3
+          if git diff --cached --quiet; then
+            echo "Assets already prepared."
+            exit 0
+          fi
+          git commit -m "Add Runway films and exact logo assets for V3"
+          git push origin HEAD:cinematic-portfolio-v3
