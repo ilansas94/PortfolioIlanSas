@@ -9,7 +9,9 @@
 
 @media (max-width: 820px) {
   .opening-film, .hub-stage { width: 100vw; height: 100vh; }
-  .opening-film video { object-fit: cover; }
+  .opening-film { background: url('/cinematic/mobile-intro.svg') center / 100% 100% no-repeat; transition: opacity .72s ease; }
+  .opening-film video { opacity: 0 !important; pointer-events: none; }
+  .opening-film.is-handoff { opacity: .015; }
   .hub-symbol { width: 25vw; top: 35%; }
   .liquid-fallback { width: 42vw; height: 14vh; }
   .liquid-fallback--work { left: 31%; top: 57%; }
