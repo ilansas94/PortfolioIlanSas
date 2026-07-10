@@ -1,0 +1,17 @@
+/* CSS multiplication inside calc() is not consistently supported.
+   The component supplies concrete lengths for each viewport family. */
+.work-scroll-story {
+  height: var(--story-height) !important;
+}
+
+@media (max-width: 800px) {
+  .work-scroll-story {
+    height: var(--story-height-mobile) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work-scroll-story {
+    height: var(--story-height-reduced) !important;
+  }
+}
