@@ -1,6 +1,7 @@
-import CinematicPortfolioV3 from "@/components/cinematic-v3/CinematicPortfolio";
+import CinematicRecut from "@/components/cinematic-recut/CinematicRecut";
 
-// V3 is intentionally isolated on the cinematic-portfolio-v3 preview branch.
+// This alternate cut is isolated on cinematic-portfolio-recut.
+// The original V3 branch remains available for a future rebuild with new films.
 export default function HomePage() {
-  return <CinematicPortfolioV3 />;
+  return <CinematicRecut />;
 }
