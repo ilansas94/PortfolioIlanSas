@@ -1,0 +1,43 @@
+name: Validate Cinematic V3
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "app/**"
+      - "components/cinematic-v3/**"
+      - "public/cinematic-v3/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/validate-cinematic-v3.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: github.head_ref == 'cinematic-portfolio-v3' || github.ref == 'refs/heads/cinematic-portfolio-v3'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out isolated V3 branch
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build preview application
+        run: pnpm build

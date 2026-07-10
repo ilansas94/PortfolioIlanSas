@@ -1,0 +1,80 @@
+name: Audit Existing Cinematic Videos
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cinematic-portfolio-v3
+    paths:
+      - '.github/workflows/audit-existing-cinematic-videos.yml'
+  pull_request:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/audit-existing-cinematic-videos.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout V3
+        uses: actions/checkout@v4
+
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg jq
+
+      - name: Build contact sheets and manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/video-audit/sheets
+          echo '[]' > artifacts/video-audit/manifest.json
+
+          mapfile -d '' videos < <(find public -type f \( -iname '*.mp4' -o -iname '*.webm' -o -iname '*.mov' \) -print0 | sort -z)
+          echo "Found ${#videos[@]} videos"
+
+          index=0
+          for video in "${videos[@]}"; do
+            index=$((index + 1))
+            base=$(basename "$video")
+            stem=$(printf '%02d-%s' "$index" "${base%.*}" | tr ' /' '__' | tr -cd '[:alnum:]_.-')
+            duration=$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$video" || echo 0)
+            width=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of default=nw=1:nk=1 "$video" || echo 0)
+            height=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of default=nw=1:nk=1 "$video" || echo 0)
+            fps=$(ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of default=nw=1:nk=1 "$video" || echo unknown)
+            size=$(stat -c%s "$video")
+
+            ffmpeg -hide_banner -loglevel error -y -i "$video" \
+              -vf "fps=12/${duration},scale=480:-2:force_original_aspect_ratio=decrease,pad=480:270:(ow-iw)/2:(oh-ih)/2:black,tile=4x3" \
+              -frames:v 1 "artifacts/video-audit/sheets/${stem}.jpg" || \
+            ffmpeg -hide_banner -loglevel error -y -i "$video" \
+              -vf "fps=1,scale=480:-2:force_original_aspect_ratio=decrease,pad=480:270:(ow-iw)/2:(oh-ih)/2:black,tile=4x3" \
+              -frames:v 1 "artifacts/video-audit/sheets/${stem}.jpg"
+
+            jq --arg path "$video" \
+               --arg sheet "sheets/${stem}.jpg" \
+               --arg duration "$duration" \
+               --arg width "$width" \
+               --arg height "$height" \
+               --arg fps "$fps" \
+               --arg size "$size" \
+               '. += [{path:$path,sheet:$sheet,durationSeconds:($duration|tonumber? // 0),width:($width|tonumber? // 0),height:($height|tonumber? // 0),fps:$fps,sizeBytes:($size|tonumber? // 0)}]' \
+               artifacts/video-audit/manifest.json > artifacts/video-audit/manifest.tmp
+            mv artifacts/video-audit/manifest.tmp artifacts/video-audit/manifest.json
+          done
+
+          cat artifacts/video-audit/manifest.json
+
+      - name: Upload video audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: cinematic-existing-video-audit
+          path: artifacts/video-audit
+          retention-days: 7
+          if-no-files-found: error
