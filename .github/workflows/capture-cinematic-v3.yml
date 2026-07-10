@@ -76,9 +76,7 @@ jobs:
           exit 1
 
       - name: Capture desktop and mobile transition frames
-        env:
-          NODE_PATH: /usr/local/lib/node_modules
-        run: node scripts/capture-cinematic-v3.cjs
+        run: NODE_PATH="$(npm root --global)" node scripts/capture-cinematic-v3.cjs
 
       - name: Upload frame library
         if: always()
