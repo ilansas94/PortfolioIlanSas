@@ -16,9 +16,10 @@ const projects = [
   { id: 15, title: "Twitchy Rabbit", category: "Character identity", transition: "ink" },
 ];
 
+// These exact ratios map to Runway's uncropped desktop and mobile outputs.
 const viewports = [
-  { name: "desktop", width: 1440, height: 900 },
-  { name: "mobile", width: 390, height: 844 },
+  { name: "desktop", width: 1600, height: 900 },
+  { name: "mobile", width: 450, height: 800 },
 ];
 
 const root = path.resolve("artifacts/cinematic-v3");
@@ -127,13 +128,19 @@ async function captureViewport(browser, viewport) {
   await scrollTo(page, "#work");
 
   for (const project of projects) {
-    await page.getByRole("button", { name: `Show ${project.title}` }).click();
+    // Change the carousel state without Playwright auto-scrolling the rail button.
+    await page.getByRole("button", { name: `Show ${project.title}` }).evaluate((element) => element.click());
     await settle(page, 1000);
+
+    const activeCard = page.getByRole("button", { name: `${project.title}, ${project.category}` });
+    await activeCard.scrollIntoViewIfNeeded();
+    await settle(page, 500);
 
     const slug = `${String(project.id).padStart(2, "0")}-${safeName(project.title)}`;
     const before = await capture(page, viewport.name, `project-${slug}-before-open.png`);
 
-    await page.getByRole("button", { name: `${project.title}, ${project.category}` }).click();
+    // Trigger the real React click without changing scroll position before the transition starts.
+    await activeCard.evaluate((element) => element.click());
     const caseStudy = page.locator(`article[aria-label="${project.title} case study"]`);
     await caseStudy.waitFor({ state: "visible", timeout: 8000 });
     await settle(page, 2300);
@@ -148,9 +155,14 @@ async function captureViewport(browser, viewport) {
       to: after,
     });
 
-    await page.getByRole("button", { name: "Back to the film" }).click();
+    await page.getByRole("button", { name: "Back to the film" }).evaluate((element) => element.click());
     await page.locator("#work").waitFor({ state: "visible", timeout: 8000 });
     await settle(page, 2000);
+
+    // The app restores Work; make sure the same active card is visible before capturing the exact return target.
+    const restoredCard = page.getByRole("button", { name: `${project.title}, ${project.category}` });
+    await restoredCard.scrollIntoViewIfNeeded();
+    await settle(page, 350);
     const returned = await capture(page, viewport.name, `project-${slug}-after-return.png`);
 
     manifest.push({
@@ -163,7 +175,7 @@ async function captureViewport(browser, viewport) {
     });
   }
 
-  diagnostics.push({ viewport: viewport.name, pageErrors });
+  diagnostics.push({ viewport: viewport.name, width: viewport.width, height: viewport.height, pageErrors });
   await context.close();
 }
 
