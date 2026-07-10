@@ -1,0 +1,55 @@
+name: Prepare Cinematic Recut Posters
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cinematic-portfolio-recut
+    paths:
+      - '.github/workflows/prepare-cinematic-recut-posters.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  posters:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout recut branch
+        uses: actions/checkout@v4
+        with:
+          ref: cinematic-portfolio-recut
+          fetch-depth: 1
+
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Extract exact ending frames
+        run: |
+          set -euo pipefail
+          mkdir -p public/cinematic-recut/posters
+
+          ffmpeg -hide_banner -loglevel error -y -sseof -0.12 -i public/cinematic-recut/intro-master.mp4 -frames:v 1 -q:v 2 public/cinematic-recut/posters/intro-end.jpg
+          ffmpeg -hide_banner -loglevel error -y -sseof -0.12 -i public/cinematic-recut/home-to-work.mp4 -frames:v 1 -q:v 2 public/cinematic-recut/posters/home-to-work-end.jpg
+
+          for id in 2 3 5 6 8 9 10 11 13 14 15; do
+            ffmpeg -hide_banner -loglevel error -y -sseof -0.12 -i "public/cinematic-recut/project-${id}.mp4" -frames:v 1 -q:v 2 "public/cinematic-recut/posters/project-${id}-end.jpg"
+          done
+
+          find public/cinematic-recut/posters -type f -maxdepth 1 -print | sort
+
+      - name: Commit poster frames only to recut branch
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/cinematic-recut/posters
+          if git diff --cached --quiet; then
+            echo 'Poster frames already prepared'
+            exit 0
+          fi
+          git commit -m 'assets: add exact film ending posters'
+          git push origin HEAD:cinematic-portfolio-recut
