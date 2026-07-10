@@ -1,0 +1,59 @@
+name: Render cinematic V3 films
+
+on:
+  push:
+    branches:
+      - cinematic-portfolio-v2
+    paths:
+      - scripts/render-cinematic-v3.py
+      - .github/workflows/render-cinematic-v3.yml
+      - public/cinematic/hub/**
+      - public/cinematic/symbol.svg
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: render-cinematic-v3-films
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out latest cinematic branch
+        uses: actions/checkout@v4
+        with:
+          ref: cinematic-portfolio-v2
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install renderer dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg libcairo2 libpango-1.0-0
+          python -m pip install --upgrade pip
+          python -m pip install pillow numpy cairosvg
+          ffmpeg -version
+
+      - name: Render intro and eleven unique scroll films
+        run: python scripts/render-cinematic-v3.py
+
+      - name: Commit generated 1080p films
+        run: |
+          git config user.name "cinematic-v3-render-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add public/cinematic/intro-master.mp4 public/cinematic/transitions/*.mp4
+          if git diff --cached --quiet; then
+            echo "No cinematic film changes"
+            exit 0
+          fi
+          git commit -m "Add sharp 1080p cinematic V3 films"
+          git pull --rebase origin cinematic-portfolio-v2
+          git push origin HEAD:cinematic-portfolio-v2
