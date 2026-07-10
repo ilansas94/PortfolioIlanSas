@@ -8,11 +8,17 @@ const globalsPath = path.join(root, "app", "globals.css");
 
 await copyFile(source, destination);
 
-let globals = await readFile(globalsPath, "utf8");
-const importLine = '@import "./cinematic-scroll-redo.css";';
-if (!globals.includes(importLine)) {
-  globals = `${globals.trim()}\n${importLine}\n`;
-  await writeFile(globalsPath, globals, "utf8");
-}
+let component = await readFile(destination, "utf8");
+component = component.replace(
+  'style={{ "--story-units": units } as React.CSSProperties}',
+  'style={{ "--story-units": units, "--story-height": `${units * 165}vh`, "--story-height-mobile": `${units * 145}svh`, "--story-height-reduced": `${units * 115}vh` } as React.CSSProperties}',
+);
+await writeFile(destination, component, "utf8");
 
-console.log("Applied scroll-scrubbed cinematic portfolio redo");
+let globals = await readFile(globalsPath, "utf8");
+for (const importLine of ['@import "./cinematic-scroll-redo.css";', '@import "./cinematic-scroll-fix.css";']) {
+  if (!globals.includes(importLine)) globals = `${globals.trim()}\n${importLine}\n`;
+}
+await writeFile(globalsPath, globals, "utf8");
+
+console.log("Applied scroll-scrubbed cinematic portfolio redo with concrete story heights");
