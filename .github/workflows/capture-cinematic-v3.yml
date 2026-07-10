@@ -12,12 +12,22 @@ on:
       - "public/Essets/**"
       - "scripts/capture-cinematic-v3.spec.ts"
       - ".github/workflows/capture-cinematic-v3.yml"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "app/**"
+      - "components/cinematic-v3/**"
+      - "public/cinematic-v3/**"
+      - "public/Essets/**"
+      - "scripts/capture-cinematic-v3.spec.ts"
+      - ".github/workflows/capture-cinematic-v3.yml"
 
 permissions:
   contents: read
 
 concurrency:
-  group: cinematic-v3-frame-capture
+  group: cinematic-v3-frame-capture-${{ github.event_name }}
   cancel-in-progress: true
 
 jobs:
@@ -66,13 +76,13 @@ jobs:
           exit 1
 
       - name: Capture desktop and mobile transition frames
-        run: pnpm exec playwright test scripts/capture-cinematic-v3.spec.ts --project=chromium --workers=1 --timeout=240000
+        run: pnpm exec playwright test scripts/capture-cinematic-v3.spec.ts --workers=1 --timeout=240000
 
       - name: Upload frame library
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cinematic-v3-transition-frames
+          name: cinematic-v3-transition-frames-${{ github.event_name }}
           path: |
             artifacts/cinematic-v3
             playwright-report
@@ -84,7 +94,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: cinematic-v3-server-log
+          name: cinematic-v3-server-log-${{ github.event_name }}
           path: /tmp/cinematic-v3-server.log
           if-no-files-found: ignore
           retention-days: 7
