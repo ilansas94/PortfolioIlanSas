@@ -25,14 +25,15 @@ const insertion = `  useEffect(() => {
     const index = projects.findIndex((item) => item.id === projectId);
     if (index < 0) return;
     setMode("journey");
-    window.setTimeout(() => {
+    const moveToCheckpoint = () => {
       const section = document.getElementById("work-story");
       if (!section) return;
       const units = projects.length + 1;
-      const progress = (1 + index + 0.88) / units;
+      const progress = (1 + index + 0.96) / units;
       const target = section.offsetTop + (section.offsetHeight - window.innerHeight) * progress;
       window.scrollTo({ top: target, behavior: "auto" });
-    }, 80);
+    };
+    [100, 420, 1100].forEach((delay) => window.setTimeout(moveToCheckpoint, delay));
   }, []);
 
 ${marker}`;
