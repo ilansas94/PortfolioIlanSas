@@ -10,6 +10,12 @@ const replaceRequired = (search, replacement, label) => {
 };
 
 replaceRequired(
+  'const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));\nconst pad = (value: number) => String(value).padStart(2, "0");',
+  'const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));\nconst smooth = (start: number, end: number, value: number) => { const t = clamp((value - start) / Math.max(0.0001, end - start)); return t * t * (3 - 2 * t); };\nconst pad = (value: number) => String(value).padStart(2, "0");',
+  "smooth easing helper",
+);
+
+replaceRequired(
   'function WorkScrollStory({ onOpen }: { onOpen: (project: Project) => void }) {',
   'function WorkScrollStory({ onOpen, onNavigate, hubVisible, hubInteractive }: { onOpen: (project: Project) => void; onNavigate: (target: "work" | "about" | "contact") => void; hubVisible: boolean; hubInteractive: boolean }) {',
   "WorkScrollStory signature",
