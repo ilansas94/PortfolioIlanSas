@@ -1,0 +1,240 @@
+name: Patch Cinematic Recut Fallbacks
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cinematic-portfolio-recut
+    paths:
+      - '.github/workflows/patch-cinematic-recut-fallbacks.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout recut branch
+        uses: actions/checkout@v4
+        with:
+          ref: cinematic-portfolio-recut
+          fetch-depth: 1
+
+      - name: Patch exact film endpoint fallbacks
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          component_path = Path('components/cinematic-recut/CinematicRecut.tsx')
+          text = component_path.read_text()
+
+          text = text.replace(
+              'const projectFilm = (projectId: number) => `${filmRoot}/project-${projectId}.mp4`;\nconst betweenFilm',
+              'const projectFilm = (projectId: number) => `${filmRoot}/project-${projectId}.mp4`;\nconst projectPoster = (projectId: number) => `${filmRoot}/posters/project-${projectId}-end.jpg`;\nconst betweenFilm',
+          )
+
+          old_frozen = '''function FrozenProjectFilm({ project }: { project: Project }) {
+            const ref = useRef<HTMLVideoElement>(null);
+
+            const seekToLastFrame = useCallback(() => {
+              const video = ref.current;
+              if (!video || !Number.isFinite(video.duration)) return;
+              video.pause();
+              video.currentTime = Math.max(0, video.duration - 0.08);
+            }, []);
+
+            return (
+              <div className={styles.projectFilmFrame}>
+                <img src={project.image} alt="" aria-hidden="true" />
+                <video
+                  key={project.id}
+                  ref={ref}
+                  src={projectFilm(project.id)}
+                  muted
+                  playsInline
+                  preload="auto"
+                  onLoadedMetadata={seekToLastFrame}
+                  onSeeked={(event) => event.currentTarget.pause()}
+                  aria-hidden="true"
+                />
+              </div>
+            );
+          }'''
+          old_frozen = '\n'.join(line[10:] if line.startswith('          ') else line for line in old_frozen.splitlines())
+          new_frozen = '''function FrozenProjectFilm({ project }: { project: Project }) {
+            return (
+              <div className={styles.projectFilmFrame}>
+                <img
+                  key={project.id}
+                  src={projectPoster(project.id)}
+                  alt=""
+                  aria-hidden="true"
+                  onError={(event) => {
+                    event.currentTarget.src = project.image;
+                  }}
+                />
+              </div>
+            );
+          }'''
+          new_frozen = '\n'.join(line[10:] if line.startswith('          ') else line for line in new_frozen.splitlines())
+          if old_frozen not in text:
+              raise SystemExit('FrozenProjectFilm block not found')
+          text = text.replace(old_frozen, new_frozen)
+
+          finish_block = '''    const finish = () => {
+              if (finished.current) return;
+              finished.current = true;
+              swap();
+              job.onDone?.();
+              onFinish();
+            };
+
+            const begin = async () => {'''
+          finish_block = '\n'.join(line[4:] if line.startswith('    ') else line for line in finish_block.splitlines())
+          finish_replacement = '''    const finish = () => {
+              if (finished.current) return;
+              finished.current = true;
+              swap();
+              job.onDone?.();
+              onFinish();
+            };
+
+            const fallbackSeconds =
+              job.endAt !== undefined
+                ? Math.max(0.7, job.endAt - (job.startAt ?? 0) + 0.65)
+                : job.src.includes("/transitions/")
+                  ? 4.55
+                  : 5.65;
+            const fallbackTimer = window.setTimeout(finish, fallbackSeconds * 1000);
+            const handleVideoError = () => finish();
+            video.addEventListener("error", handleVideoError, { once: true });
+
+            const begin = async () => {'''
+          finish_replacement = '\n'.join(line[4:] if line.startswith('    ') else line for line in finish_replacement.splitlines())
+          if finish_block not in text:
+              raise SystemExit('Film finish block not found')
+          text = text.replace(finish_block, finish_replacement)
+
+          cleanup_old = '''    return () => {
+              cleanup?.();
+              video.removeEventListener("loadedmetadata", ready);
+              window.cancelAnimationFrame(animationFrame);
+            };'''
+          cleanup_old = '\n'.join(line[4:] if line.startswith('    ') else line for line in cleanup_old.splitlines())
+          cleanup_new = '''    return () => {
+              cleanup?.();
+              window.clearTimeout(fallbackTimer);
+              video.removeEventListener("loadedmetadata", ready);
+              video.removeEventListener("error", handleVideoError);
+              window.cancelAnimationFrame(animationFrame);
+            };'''
+          cleanup_new = '\n'.join(line[4:] if line.startswith('    ') else line for line in cleanup_new.splitlines())
+          if cleanup_old not in text:
+              raise SystemExit('Film cleanup block not found')
+          text = text.replace(cleanup_old, cleanup_new)
+
+          intro_video_end = '''        onEnded={onReady}
+                onError={onReady}
+              />
+              <div className={styles.introVignette} />'''
+          intro_video_end = '\n'.join(line[8:] if line.startswith('        ') else line for line in intro_video_end.splitlines())
+          intro_replacement = '''        onEnded={onReady}
+                onError={onReady}
+              />
+              <img
+                src={`${filmRoot}/posters/intro-end.jpg`}
+                alt=""
+                aria-hidden="true"
+                className={`${styles.introPoster} ${ready ? styles.introPosterVisible : ""}`}
+              />
+              <div className={styles.introVignette} />'''
+          intro_replacement = '\n'.join(line[8:] if line.startswith('        ') else line for line in intro_replacement.splitlines())
+          if intro_video_end not in text:
+              raise SystemExit('Intro video block not found')
+          text = text.replace(intro_video_end, intro_replacement)
+
+          component_path.write_text(text)
+
+          css_path = Path('components/cinematic-recut/CinematicRecut.module.css')
+          css = css_path.read_text()
+          marker = '''.introVignette {
+            position: absolute;'''
+          marker = '\n'.join(line[10:] if line.startswith('          ') else line for line in marker.splitlines())
+          addition = '''.introPoster {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .45s ease;
+          }
+
+          .introPosterVisible {
+            opacity: 1;
+          }
+
+          .introVignette {
+            position: absolute;'''
+          addition = '\n'.join(line[10:] if line.startswith('          ') else line for line in addition.splitlines())
+          if marker not in css:
+              raise SystemExit('Intro vignette marker not found')
+          css = css.replace(marker, addition)
+          css = css.replace('''.introVignette {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;'''.replace('          ', ''), '''.introVignette {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;'''.replace('          ', ''))
+          css = css.replace('''.heroHotspots {
+            position: absolute;
+            inset: 0;'''.replace('          ', ''), '''.heroHotspots {
+            position: absolute;
+            inset: 0;
+            z-index: 4;'''.replace('          ', ''))
+          css = css.replace('''.mobileHeroNav {
+            display: none;'''.replace('          ', ''), '''.mobileHeroNav {
+            position: relative;
+            z-index: 4;
+            display: none;'''.replace('          ', ''))
+          css = css.replace('''.skipIntro {
+            position: absolute;'''.replace('          ', ''), '''.skipIntro {
+            position: absolute;
+            z-index: 5;'''.replace('          ', ''))
+          css = css.replace('''.projectFilmFrame img,
+          .projectFilmFrame video {'''.replace('          ', ''), '''.projectFilmFrame img {'''.replace('          ', ''))
+          css = css.replace('''.projectFilmFrame video {
+            z-index: 2;
+          }
+
+          .workShade'''.replace('          ', ''), '''.workShade'''.replace('          ', ''))
+          css += '''
+
+          @media (max-width: 820px) {
+            .introPoster {
+              object-fit: contain;
+              background: #020306;
+            }
+          }
+          '''
+          css_path.write_text(css)
+          PY
+
+      - name: Commit fallback patch only to recut branch
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add components/cinematic-recut
+          if git diff --cached --quiet; then
+            echo 'Fallback patch already applied'
+            exit 0
+          fi
+          git commit -m 'fix: prevent unsupported video playback from blocking recut'
+          git push origin HEAD:cinematic-portfolio-recut
