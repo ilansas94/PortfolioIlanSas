@@ -35,6 +35,33 @@ tuned = tuned.replace(
 );
 
 tuned = tuned.replace(
+  `      float influence(vec2 uv, int index){
+        vec2 d = uv - uCenters[index];
+        d.x *= uResolution.x / uResolution.y;
+        float angle = atan(d.y, d.x);
+        float wobble = 1.0 + 0.045 * sin(angle * 3.0 + uTime * 0.72 + float(index) * 1.7)
+                           + 0.025 * sin(angle * 5.0 - uTime * 0.44 + float(index));
+        float radius = uRadii[index] * wobble;
+        return radius * radius / max(dot(d, d), 0.00008);
+      }`,
+  `      float influence(vec2 uv, int index){
+        vec2 center = uCenters[0];
+        float baseRadius = uRadii[0];
+        if(index == 1){ center = uCenters[1]; baseRadius = uRadii[1]; }
+        if(index == 2){ center = uCenters[2]; baseRadius = uRadii[2]; }
+        if(index == 3){ center = uCenters[3]; baseRadius = uRadii[3]; }
+        vec2 d = uv - center;
+        float shapeScale = index == 3 ? 1.0 : uBlobAspect;
+        d.x *= (uResolution.x / uResolution.y) * shapeScale;
+        float angle = atan(d.y, d.x);
+        float wobble = 1.0 + 0.045 * sin(angle * 3.0 + uTime * 0.72 + float(index) * 1.7)
+                           + 0.025 * sin(angle * 5.0 - uTime * 0.44 + float(index));
+        float radius = baseRadius * wobble;
+        return radius * radius / max(dot(d, d), 0.00008);
+      }`,
+);
+
+tuned = tuned.replace(
   `        d.x *= uResolution.x / uResolution.y;`,
   `        float shapeScale = index == 3 ? 1.0 : uBlobAspect;
         d.x *= (uResolution.x / uResolution.y) * shapeScale;`,
@@ -162,6 +189,7 @@ tuned = tuned.replace(
 const required = [
   "MOBILE_BASE",
   "uBlobAspect",
+  "vec2 center = uCenters[0]",
   "bridgeInfluence",
   "primaryBridgeStrength",
   "secondaryBridgeStrength",
