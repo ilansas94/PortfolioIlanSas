@@ -9,7 +9,8 @@ const insertion = `  useEffect(() => {
     const query = new URLSearchParams(window.location.search);
     const projectId = Number(query.get("qaProject"));
     const caseId = Number(query.get("qaCase"));
-    if (!projectId && !caseId) return;
+    const rawValue = Number(query.get("qaRaw"));
+    if (!projectId && !caseId && !rawValue) return;
 
     setHandoff(true);
     setIntroDone(true);
@@ -23,14 +24,16 @@ const insertion = `  useEffect(() => {
     }
 
     const index = projects.findIndex((item) => item.id === projectId);
-    if (index < 0) return;
+    if (!rawValue && index < 0) return;
     setMode("journey");
     const moveToCheckpoint = () => {
       const section = document.getElementById("work-story");
       if (!section) return;
       const units = projects.length + 1;
-      const progress = (1 + index + 0.96) / units;
-      const target = section.offsetTop + (section.offsetHeight - window.innerHeight) * progress;
+      const raw = rawValue || 1 + index + 0.96;
+      const progress = raw / units;
+      const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+      const target = sectionTop + (section.offsetHeight - window.innerHeight) * progress;
       window.scrollTo({ top: target, behavior: "auto" });
     };
     [100, 420, 1100].forEach((delay) => window.setTimeout(moveToCheckpoint, delay));
