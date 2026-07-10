@@ -18,6 +18,15 @@ type Project = {
   tools: string[];
 };
 
+const INTRO_VIDEO =
+  "https://dnznrvs05pmza.cloudfront.net/seedance_2/cgt-20260710211009-96nbv/Animate_a_premium_dark_homepage_opening_sequence_between_these_two_frames__The_glossy_cyan__magenta_.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNGY5ZTEyNjc3MThlNWViMCIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4MzgyOTg2M30.6mDoOP1-Al4ar0P-d-LT6ZoTVxFVlxUXaN3uEKbczCE";
+
+const START_FRAME =
+  "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3-pro-image/images/313e066a-8fb2-467e-a237-abb77c565caa/Create_one_single_full_screen_cinematic_image_inspired_by_th.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiZmUxNzY4NzYzMWEwYWQ4YyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4Mzc4NTMzNH0.X7nzxbCjjyveAuhGvqKIIQfQn-ellNC52QUNPH3uuG0";
+
+const END_FRAME =
+  "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3-pro-image/images/8dfee68c-329b-4792-a8e3-552a9a7431e1/Create_one_single_full_screen_cinematic_image_inspired_by_th.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMjI5ZGY0OTNkYWVmYzlkNiIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4MzgxMDcwN30.7PIJ6w12raxzI9gjCj5aKpmPNKhZQlzhTfOZtZRW5_E";
+
 const projects: Project[] = [
   {
     title: "Company Redesign",
@@ -48,16 +57,6 @@ const projects: Project[] = [
     description:
       "An atmosphere-led painting process focused on mood, lighting, painterly texture, and emotional color relationships.",
     tools: ["Photoshop", "Procreate"],
-  },
-  {
-    title: "Gesture Poster",
-    category: "Poster Design",
-    group: "Print",
-    image: "/Essets/GESTURE POSTER.jpg",
-    detailImage: "/Essets/GESTURE POSTER_inside.jpg",
-    description:
-      "Expressive movement translated into poster form with energetic line, compositional rhythm, and high-contrast visual impact.",
-    tools: ["Illustrator", "Photoshop"],
   },
   {
     title: "Landing Page Prototype",
@@ -100,16 +99,6 @@ const projects: Project[] = [
     tools: ["Illustrator"],
   },
   {
-    title: "SPACE",
-    category: "Logo Design",
-    group: "Identity",
-    image: "/Essets/SPACE LOGO.jpg",
-    detailImage: "/Essets/SPACE LOGO_inside.jpg",
-    description:
-      "A modern logo concept built around orbital motion, negative space, and a dark-friendly technological feel.",
-    tools: ["Illustrator"],
-  },
-  {
     title: "Twitchy Rabbit",
     category: "Mascot Identity",
     group: "Identity",
@@ -134,30 +123,27 @@ const expertise = [
   "Campaign design",
 ];
 
-const blobLinks = [
+const blobs = [
   {
     label: "Work",
-    sub: "Selected projects",
-    href: "work",
-    tint: "from-cyan-300/85 to-cyan-500/75",
-    border: "border-cyan-100/35",
-    glow: "shadow-[0_0_80px_rgba(32,222,255,0.25)]",
+    id: "work",
+    note: "selected projects",
+    tint: "from-fuchsia-500 via-fuchsia-400 to-pink-300",
+    glow: "shadow-[0_0_90px_rgba(255,0,170,.32)]",
   },
   {
     label: "About",
-    sub: "Process & practice",
-    href: "about",
-    tint: "from-fuchsia-300/85 to-fuchsia-600/75",
-    border: "border-fuchsia-100/35",
-    glow: "shadow-[0_0_80px_rgba(255,20,173,0.24)]",
+    id: "about",
+    note: "process & profile",
+    tint: "from-cyan-400 via-cyan-300 to-sky-200",
+    glow: "shadow-[0_0_90px_rgba(0,220,255,.32)]",
   },
   {
     label: "Contact",
-    sub: "Start a project",
-    href: "contact",
-    tint: "from-yellow-200/90 to-yellow-400/75",
-    border: "border-yellow-100/40",
-    glow: "shadow-[0_0_80px_rgba(255,210,40,0.22)]",
+    id: "contact",
+    note: "start a project",
+    tint: "from-yellow-400 via-yellow-300 to-amber-200",
+    glow: "shadow-[0_0_90px_rgba(255,215,40,.3)]",
   },
 ] as const;
 
@@ -169,16 +155,16 @@ function scrollToId(id: string) {
 }
 
 export default function OverhaulExperiencePage() {
-  const [pointer, setPointer] = useState({ x: 52, y: 28 });
-  const [introVisible, setIntroVisible] = useState(true);
+  const [pointer, setPointer] = useState({ x: 50, y: 30 });
+  const [introDismissed, setIntroDismissed] = useState(false);
   const [activeBlob, setActiveBlob] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>("All");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [formStatus, setFormStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
 
   useEffect(() => {
-    const hideTimer = window.setTimeout(() => setIntroVisible(false), 3600);
-    return () => window.clearTimeout(hideTimer);
+    const fallbackTimer = window.setTimeout(() => setIntroDismissed(true), 11500);
+    return () => window.clearTimeout(fallbackTimer);
   }, []);
 
   const filteredProjects = useMemo(
@@ -188,7 +174,7 @@ export default function OverhaulExperiencePage() {
 
   const pageBackground = useMemo(
     () => ({
-      background: `radial-gradient(circle at ${pointer.x}% ${pointer.y}%, rgba(255,255,255,.09), transparent 20%), linear-gradient(180deg, #040507 0%, #090b11 44%, #06070a 100%)`,
+      background: `radial-gradient(circle at ${pointer.x}% ${pointer.y}%, rgba(255,255,255,0.08), transparent 20%), linear-gradient(180deg, #050608 0%, #090b10 45%, #040507 100%)`,
     }),
     [pointer]
   );
@@ -231,62 +217,55 @@ export default function OverhaulExperiencePage() {
         });
       }}
     >
-      <div className="fixed inset-0 pointer-events-none opacity-[0.045] mix-blend-screen bg-[url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22180%22 viewBox=%220 0 180 180%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.7%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22180%22 height=%22180%22 filter=%22url(%23n)%22 opacity=%221%22/%3E%3C/svg%3E')]"></div>
+      <div className="fixed inset-0 pointer-events-none opacity-[0.04] mix-blend-screen bg-[url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22180%22 viewBox=%220 0 180 180%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.7%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22180%22 height=%22180%22 filter=%22url(%23n)%22 opacity=%221%22/%3E%3C/svg%3E')]" />
 
       <AnimatePresence>
-        {introVisible && (
+        {!introDismissed && (
           <motion.div
             initial={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.75, ease: "easeInOut" } }}
-            className="fixed inset-0 z-[80] overflow-hidden bg-[#050609]"
+            exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}
+            className="fixed inset-0 z-[90] overflow-hidden bg-black"
           >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),transparent_28%)]" />
-            <motion.div
-              className="absolute left-[15%] top-[22%] h-[34vw] w-[34vw] max-h-[480px] max-w-[480px] rounded-full bg-cyan-400/80 blur-[70px] mix-blend-screen"
-              initial={{ x: -220, y: 110, scale: 0.6, opacity: 0 }}
-              animate={{ x: 40, y: 10, scale: 1.05, opacity: 0.88 }}
-              transition={{ duration: 1.35, ease: [0.22, 1, 0.36, 1] }}
-            />
-            <motion.div
-              className="absolute right-[16%] top-[22%] h-[32vw] w-[32vw] max-h-[450px] max-w-[450px] rounded-full bg-fuchsia-500/80 blur-[74px] mix-blend-screen"
-              initial={{ x: 240, y: 90, scale: 0.58, opacity: 0 }}
-              animate={{ x: -30, y: 14, scale: 1.04, opacity: 0.88 }}
-              transition={{ duration: 1.35, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            />
-            <motion.div
-              className="absolute bottom-[11%] left-1/2 h-[28vw] w-[28vw] max-h-[380px] max-w-[380px] -translate-x-1/2 rounded-full bg-yellow-300/80 blur-[76px] mix-blend-screen"
-              initial={{ y: 180, scale: 0.62, opacity: 0 }}
-              animate={{ y: -10, scale: 1.08, opacity: 0.84 }}
-              transition={{ duration: 1.3, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            />
+            <video
+              autoPlay
+              muted
+              playsInline
+              preload="auto"
+              poster={START_FRAME}
+              onEnded={() => setIntroDismissed(true)}
+              onError={() => setIntroDismissed(true)}
+              className="absolute inset-0 h-full w-full object-cover"
+            >
+              <source src={INTRO_VIDEO} type="video/mp4" />
+            </video>
 
-            <div className="relative flex h-full items-center justify-center px-6">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.86, y: 18 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.85, delay: 1.05, ease: [0.22, 1, 0.36, 1] }}
-                className="text-center"
-              >
-                <div className="mx-auto flex h-44 w-44 items-center justify-center rounded-[2.5rem] border border-white/12 bg-black/20 p-4 shadow-2xl shadow-black/35 backdrop-blur-2xl md:h-56 md:w-56">
-                  <AnimatedLogo size="lg" hover={false} loop />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,.18)_35%,rgba(0,0,0,.82)_100%)]" />
+            <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/60 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/80 to-transparent" />
+
+            <div className="relative flex h-full flex-col justify-between p-5 md:p-8">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 rounded-full border border-white/12 bg-black/30 px-4 py-2 backdrop-blur-md">
+                  <AnimatedLogo size="sm" hover={false} loop />
+                  <span className="text-[10px] uppercase tracking-[0.32em] text-white/55">liquid identity preview</span>
                 </div>
-                <motion.p
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 1.5 }}
-                  className="mt-8 text-[11px] uppercase tracking-[0.42em] text-white/52 md:text-xs"
+
+                <button
+                  onClick={() => setIntroDismissed(true)}
+                  className="rounded-full border border-white/14 bg-black/30 px-4 py-2 text-xs uppercase tracking-[0.24em] text-white/72 backdrop-blur-md transition hover:bg-white/10"
                 >
-                  Cyan · Magenta · Yellow · Identity in motion
-                </motion.p>
-                <motion.h1
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 1.7 }}
-                  className="mx-auto mt-4 max-w-3xl text-4xl font-semibold tracking-[-0.05em] md:text-6xl"
-                >
-                  Color becomes form. Form becomes identity.
-                </motion.h1>
-              </motion.div>
+                  Skip intro
+                </button>
+              </div>
+
+              <div className="max-w-4xl pb-6 md:pb-10">
+                <p className="text-[10px] uppercase tracking-[0.42em] text-white/48 md:text-xs">
+                  Cyan · Magenta · Yellow · motion-led portfolio
+                </p>
+                <h1 className="mt-4 max-w-4xl text-3xl font-semibold leading-[0.94] tracking-[-0.05em] sm:text-5xl md:text-7xl">
+                  The interface is born from the fluid.
+                </h1>
+              </div>
             </div>
           </motion.div>
         )}
@@ -297,8 +276,8 @@ export default function OverhaulExperiencePage() {
           <button onClick={() => scrollToId("home")} className="flex items-center gap-3 text-left" aria-label="Go to top">
             <AnimatedLogo size="sm" hover={false} loop />
             <div className="hidden sm:block leading-tight">
-              <p className="text-sm font-medium">Ilan Sastiel</p>
-              <p className="text-[10px] uppercase tracking-[0.28em] text-white/42">Designer / Artist</p>
+              <p className="text-sm font-medium text-white/84">Ilan Sastiel</p>
+              <p className="text-[10px] uppercase tracking-[0.28em] text-white/36">designer / artist</p>
             </div>
           </button>
 
@@ -311,7 +290,7 @@ export default function OverhaulExperiencePage() {
               <button
                 key={id}
                 onClick={() => scrollToId(id)}
-                className="rounded-full px-3 py-2 text-white/62 transition hover:bg-white/10 hover:text-white md:px-4"
+                className="rounded-full px-3 py-2 text-white/60 transition hover:bg-white/10 hover:text-white md:px-4"
               >
                 {label}
               </button>
@@ -321,114 +300,72 @@ export default function OverhaulExperiencePage() {
       </header>
 
       <main>
-        <section id="home" className="relative overflow-hidden px-5 pb-16 pt-32 md:px-10 md:pb-24 md:pt-40 lg:px-16 lg:pt-44">
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute left-[6%] top-[10%] h-[44vw] max-h-[620px] w-[44vw] max-w-[620px] rounded-full bg-cyan-400/30 blur-[82px] mix-blend-screen" />
-            <div className="absolute right-[4%] top-[12%] h-[40vw] max-h-[580px] w-[40vw] max-w-[580px] rounded-full bg-fuchsia-500/28 blur-[82px] mix-blend-screen" />
-            <div className="absolute bottom-[10%] left-[32%] h-[32vw] max-h-[430px] w-[32vw] max-w-[430px] rounded-full bg-yellow-300/25 blur-[84px] mix-blend-screen" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(5,6,9,.22)_42%,rgba(5,6,9,.94)_100%)]" />
-          </div>
+        <section id="home" className="relative px-4 pb-16 pt-28 md:px-8 md:pb-24 md:pt-32 lg:px-14 lg:pt-36">
+          <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] border border-white/10 bg-black/30 shadow-2xl shadow-black/40 backdrop-blur-xl md:rounded-[3rem]">
+            <div className="relative min-h-[760px] overflow-hidden md:min-h-[860px]">
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: `url(${END_FRAME})` }}
+              />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,.02),rgba(0,0,0,.38)_44%,rgba(0,0,0,.82)_100%)]" />
+              <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-black via-black/60 to-transparent" />
+              <div className="absolute left-[8%] top-[8%] h-56 w-56 rounded-full bg-cyan-400/15 blur-[90px]" />
+              <div className="absolute right-[8%] top-[10%] h-56 w-56 rounded-full bg-fuchsia-500/15 blur-[90px]" />
+              <div className="absolute bottom-[18%] left-1/2 h-56 w-56 -translate-x-1/2 rounded-full bg-yellow-400/12 blur-[90px]" />
 
-          <div className="relative mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.08fr_.92fr] lg:items-center">
-            <div>
-              <p className="mb-5 text-xs uppercase tracking-[0.34em] text-cyan-100/74 md:text-sm">
-                Brand identity · digital art · visual storytelling
-              </p>
-              <h1 className="max-w-5xl text-5xl font-semibold leading-[0.9] tracking-[-0.055em] sm:text-6xl md:text-8xl xl:text-[7.2rem]">
-                A portfolio built like
-                <span className="block bg-gradient-to-r from-cyan-200 via-fuchsia-200 to-yellow-100 bg-clip-text text-transparent">
-                  liquid identity.
-                </span>
-              </h1>
-              <p className="mt-7 max-w-2xl text-base leading-relaxed text-white/64 md:text-xl">
-                Branding, logo design, digital painting, print, and interactive concepts—reframed through color, motion, depth, and a more cinematic visual world.
-              </p>
+              <div className="relative flex min-h-[760px] flex-col justify-between p-6 md:min-h-[860px] md:p-10 lg:p-14">
+                <div className="max-w-2xl">
+                  <p className="text-[10px] uppercase tracking-[0.38em] text-white/46 md:text-xs">
+                    experimental overhaul · desktop-first immersion
+                  </p>
+                  <h1 className="mt-5 text-5xl font-semibold leading-[0.9] tracking-[-0.06em] text-white sm:text-6xl md:text-8xl lg:text-[6.6rem]">
+                    Color.
+                    <span className="block">Motion.</span>
+                    <span className="block bg-gradient-to-r from-cyan-200 via-fuchsia-200 to-yellow-100 bg-clip-text text-transparent">
+                      Identity.
+                    </span>
+                  </h1>
+                </div>
 
-              <div className="mt-10 flex flex-wrap gap-3">
-                <button
-                  onClick={() => scrollToId("work")}
-                  className="rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:scale-[1.02]"
-                >
-                  Explore selected work
-                </button>
-                <button
-                  onClick={() => scrollToId("contact")}
-                  className="rounded-full border border-white/14 bg-white/5 px-6 py-3 text-sm text-white/80 backdrop-blur transition hover:bg-white/10"
-                >
-                  Start a conversation
-                </button>
-              </div>
-            </div>
+                <div className="grid gap-10 lg:grid-cols-[1fr_auto] lg:items-end">
+                  <div className="max-w-xl">
+                    <p className="text-sm uppercase tracking-[0.28em] text-white/40 md:text-xs">
+                      the symbol leads. the name stays subtle.
+                    </p>
+                    <p className="mt-5 max-w-xl text-base leading-relaxed text-white/68 md:text-lg">
+                      A more cinematic portfolio built from liquid CMY motion, evolving from the emblem into the main navigation and then into the rest of the experience.
+                    </p>
+                  </div>
 
-            <div className="relative">
-              <div className="relative rounded-[2.8rem] border border-white/12 bg-white/[0.045] p-5 shadow-2xl shadow-black/35 backdrop-blur-2xl md:p-7">
-                <div className="relative overflow-hidden rounded-[2.2rem] border border-white/10 bg-black/25 px-5 py-7 md:px-8 md:py-9">
-                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(33,225,255,0.32),transparent_24%),radial-gradient(circle_at_78%_24%,rgba(255,10,170,0.28),transparent_22%),radial-gradient(circle_at_50%_82%,rgba(255,215,48,0.26),transparent_20%)]"></div>
-
-                  <div className="relative mx-auto flex min-h-[390px] max-w-[520px] flex-col justify-between md:min-h-[520px]">
-                    <div className="flex items-start justify-between text-[10px] uppercase tracking-[0.3em] text-white/42">
-                      <span>Interactive liquid navigation</span>
-                      <span>Preview</span>
-                    </div>
-
-                    <div className="relative mx-auto mt-8 flex w-full max-w-[430px] items-center justify-center py-10">
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ repeat: Infinity, duration: 28, ease: "linear" }}
-                        className="absolute h-[82%] w-[82%] rounded-full border border-white/10"
-                      />
-                      <motion.div
-                        animate={{ rotate: -360 }}
-                        transition={{ repeat: Infinity, duration: 22, ease: "linear" }}
-                        className="absolute h-[62%] w-[62%] rounded-full border border-dashed border-white/12"
-                      />
-
-                      <div className="relative z-10 flex items-center justify-center">
-                        <div className="absolute left-1/2 top-1/2 h-10 w-[54%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-cyan-300/20 via-fuchsia-300/20 to-yellow-200/20 blur-xl" />
-
-                        {[0, 1].map((index) => (
-                          <motion.div
-                            key={index}
-                            className="pointer-events-none absolute top-1/2 h-7 rounded-full bg-white/12 blur-md"
-                            animate={{ opacity: activeBlob ? 0.95 : 0.35, scaleX: activeBlob ? 1.06 : 0.86 }}
-                            style={{
-                              width: 74,
-                              left: index === 0 ? "35%" : "50%",
-                              transform: "translate(-50%, -50%)",
-                            }}
-                          />
-                        ))}
-
-                        <div className="relative flex items-center">
-                          {blobLinks.map((blob, index) => (
-                            <motion.button
-                              key={blob.label}
-                              onMouseEnter={() => setActiveBlob(blob.label)}
-                              onMouseLeave={() => setActiveBlob(null)}
-                              onFocus={() => setActiveBlob(blob.label)}
-                              onBlur={() => setActiveBlob(null)}
-                              onClick={() => scrollToId(blob.href)}
-                              whileHover={{ y: -8, scale: 1.06 }}
-                              whileTap={{ scale: 0.98 }}
-                              className={`relative z-10 h-28 w-28 overflow-hidden rounded-full border ${blob.border} bg-gradient-to-br ${blob.tint} ${blob.glow} backdrop-blur-xl md:h-32 md:w-32 ${index !== 0 ? "-ml-5 md:-ml-6" : ""}`}
-                            >
-                              <div className="absolute inset-0 bg-[radial-gradient(circle_at_32%_28%,rgba(255,255,255,.62),transparent_24%)]" />
-                              <div className="absolute inset-[10%] rounded-full border border-white/18" />
-                              <div className="relative flex h-full flex-col items-center justify-center px-3 text-center text-black">
-                                <span className="text-base font-semibold tracking-[-0.03em] md:text-lg">{blob.label}</span>
-                                <span className="mt-1 text-[10px] uppercase tracking-[0.18em] text-black/65">{blob.sub}</span>
-                              </div>
-                            </motion.button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="rounded-[1.8rem] border border-white/10 bg-black/25 p-5 backdrop-blur-lg">
-                      <p className="text-xs uppercase tracking-[0.26em] text-white/40">Direction</p>
-                      <p className="mt-3 text-sm leading-relaxed text-white/70 md:text-base">
-                        The main actions behave like liquid nodes—hovered forms swell, visually bridge, and feel as if they are being pulled together before relaxing back apart.
-                      </p>
+                  <div className="relative mx-auto w-full max-w-[920px] lg:mx-0 lg:w-[920px]">
+                    <motion.div
+                      animate={{ opacity: activeBlob ? 0.92 : 0.55, scaleX: activeBlob ? 1.04 : 0.94 }}
+                      className="pointer-events-none absolute left-1/2 top-1/2 hidden h-8 w-[62%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-fuchsia-400/25 via-cyan-300/20 to-yellow-300/25 blur-xl md:block"
+                    />
+                    <div className="relative flex flex-col items-center gap-4 md:flex-row md:justify-center md:gap-0">
+                      {blobs.map((blob, index) => (
+                        <motion.button
+                          key={blob.label}
+                          onMouseEnter={() => setActiveBlob(blob.label)}
+                          onMouseLeave={() => setActiveBlob(null)}
+                          onFocus={() => setActiveBlob(blob.label)}
+                          onBlur={() => setActiveBlob(null)}
+                          onClick={() => scrollToId(blob.id)}
+                          whileHover={{ y: -8, scale: 1.05 }}
+                          whileTap={{ scale: 0.98 }}
+                          className={`group relative h-32 w-32 overflow-hidden rounded-full border border-white/15 bg-gradient-to-br ${blob.tint} ${blob.glow} text-black md:h-40 md:w-40 ${index !== 0 ? "md:-ml-8" : ""}`}
+                        >
+                          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_26%,rgba(255,255,255,.82),transparent_24%)]" />
+                          <div className="absolute inset-[10%] rounded-full border border-white/18" />
+                          <div className="relative flex h-full flex-col items-center justify-center px-4 text-center">
+                            <span className="text-xl font-semibold tracking-[-0.04em] md:text-2xl">{blob.label}</span>
+                            <span className="mt-1 text-[9px] uppercase tracking-[0.22em] text-black/65 md:text-[10px]">
+                              {blob.note}
+                            </span>
+                          </div>
+                          <div className="absolute inset-0 opacity-0 transition duration-300 group-hover:opacity-100 bg-[radial-gradient(circle_at_center,rgba(255,255,255,.2),transparent_55%)]" />
+                        </motion.button>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -437,63 +374,42 @@ export default function OverhaulExperiencePage() {
           </div>
         </section>
 
-        <section className="px-5 pb-12 md:px-10 md:pb-20 lg:px-16">
+        <section className="px-4 pb-14 md:px-8 lg:px-14">
           <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[1.05fr_.95fr]">
-            <div className="relative overflow-hidden rounded-[2.4rem] border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl md:p-8">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_20%,rgba(0,216,255,0.28),transparent_24%),radial-gradient(circle_at_82%_18%,rgba(255,0,168,0.22),transparent_22%),radial-gradient(circle_at_56%_86%,rgba(255,225,72,0.18),transparent_18%)]" />
-              <div className="relative flex min-h-[260px] flex-col justify-between">
-                <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.28em] text-white/42">
-                  <span>Cinematic opening</span>
-                  <span>Auto-play feeling</span>
-                </div>
-                <div>
-                  <h2 className="max-w-xl text-3xl font-semibold tracking-[-0.045em] md:text-5xl">
-                    The entrance should happen immediately, not wait for the user to be told what to do.
-                  </h2>
-                  <p className="mt-4 max-w-2xl text-white/62 md:text-lg">
-                    This version shifts the opening toward an automatic reveal: color masses converge, the brand resolves, and only then the interface settles into something usable.
-                  </p>
-                </div>
-              </div>
+            <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl md:p-8">
+              <p className="text-[10px] uppercase tracking-[0.32em] text-white/40">direction</p>
+              <h2 className="mt-5 max-w-3xl text-3xl font-semibold tracking-[-0.04em] md:text-5xl">
+                The opening sequence is not decoration. It becomes the interface language.
+              </h2>
             </div>
 
             <div className="grid gap-5 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
               {[
-                {
-                  n: "01",
-                  title: "Reveal",
-                  text: "The site opens with color and identity before any interaction is required.",
-                },
-                {
-                  n: "02",
-                  title: "Merge",
-                  text: "Primary actions feel like droplets that nearly fuse on hover.",
-                },
-                {
-                  n: "03",
-                  title: "Explore",
-                  text: "Projects are discovered inside a darker, more editorial interface.",
-                },
-              ].map((item) => (
-                <article key={item.n} className="rounded-[2rem] border border-white/10 bg-white/[0.035] p-6 backdrop-blur-xl">
-                  <p className="text-[10px] uppercase tracking-[0.28em] text-white/38">{item.n}</p>
-                  <h3 className="mt-5 text-2xl font-medium tracking-[-0.03em]">{item.title}</h3>
-                  <p className="mt-3 leading-relaxed text-white/58">{item.text}</p>
+                ["01", "Reveal", "CMY fluid introduces the world before any scrolling is needed."],
+                ["02", "Morph", "The emblem and the buttons feel like the same living material."],
+                ["03", "Navigate", "Projects and content sit inside a darker, more cinematic system."],
+              ].map(([n, title, text]) => (
+                <article key={n} className="rounded-[2rem] border border-white/10 bg-white/[0.035] p-6 backdrop-blur-xl">
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-white/34">{n}</p>
+                  <h3 className="mt-5 text-2xl font-medium tracking-[-0.03em]">{title}</h3>
+                  <p className="mt-3 leading-relaxed text-white/56">{text}</p>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        <section id="work" className="px-5 py-16 md:px-10 md:py-24 lg:px-16">
+        <section id="work" className="px-4 py-16 md:px-8 md:py-24 lg:px-14">
           <div className="mx-auto max-w-7xl">
-            <div className="grid gap-8 lg:grid-cols-[.75fr_1.25fr] lg:items-end">
+            <div className="grid gap-8 lg:grid-cols-[.76fr_1.24fr] lg:items-end">
               <div>
-                <p className="text-xs uppercase tracking-[0.34em] text-fuchsia-100/66">Selected portfolio</p>
-                <h2 className="mt-4 text-4xl font-semibold tracking-[-0.045em] md:text-6xl">Work with a strong visual point of view.</h2>
+                <p className="text-xs uppercase tracking-[0.34em] text-fuchsia-100/62">Selected work</p>
+                <h2 className="mt-4 text-4xl font-semibold tracking-[-0.045em] md:text-6xl">
+                  Projects inside a richer visual world.
+                </h2>
               </div>
               <p className="max-w-2xl text-lg leading-relaxed text-white/58 lg:justify-self-end">
-                The content is the same portfolio substance—but surfaced through a more dramatic world, deeper spacing, stronger contrast, and more intentional pacing.
+                The portfolio content stays grounded in your real work, but the presentation moves toward atmosphere, contrast, pacing, and stronger visual memory.
               </p>
             </div>
 
@@ -520,7 +436,7 @@ export default function OverhaulExperiencePage() {
                   type="button"
                   initial={{ opacity: 0, y: 24 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.25 }}
+                  viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.45, delay: index * 0.05 }}
                   onClick={() => setSelectedProject(project)}
                   className="group overflow-hidden rounded-[1.9rem] border border-white/10 bg-white/[0.035] text-left backdrop-blur-sm transition hover:-translate-y-1 hover:border-white/25"
@@ -533,7 +449,7 @@ export default function OverhaulExperiencePage() {
                       className="object-cover transition duration-700 group-hover:scale-[1.055]"
                       sizes="(max-width: 1280px) 50vw, 33vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/5 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
                     <div className="absolute inset-x-0 bottom-0 p-6">
                       <p className="text-[10px] uppercase tracking-[0.28em] text-white/50">{project.category}</p>
                       <h3 className="mt-2 text-2xl font-medium tracking-[-0.025em]">{project.title}</h3>
@@ -549,8 +465,7 @@ export default function OverhaulExperiencePage() {
           </div>
         </section>
 
-        <section id="about" className="relative px-5 py-16 md:px-10 md:py-24 lg:px-16">
-          <div className="absolute left-0 top-1/3 h-80 w-80 rounded-full bg-cyan-500/10 blur-[100px]" />
+        <section id="about" className="px-4 py-16 md:px-8 md:py-24 lg:px-14">
           <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.85fr_1.15fr] lg:items-center">
             <div className="relative mx-auto w-full max-w-xl">
               <div className="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-br from-cyan-400/20 via-fuchsia-500/15 to-yellow-300/15 blur-2xl" />
@@ -569,17 +484,17 @@ export default function OverhaulExperiencePage() {
             <div>
               <p className="text-xs uppercase tracking-[0.34em] text-yellow-100/65">About the practice</p>
               <h2 className="mt-4 text-4xl font-semibold leading-[1.02] tracking-[-0.045em] md:text-6xl">
-                Instinct, structure, and story—working together.
+                Instinct, structure, and storytelling working together.
               </h2>
               <div className="mt-7 space-y-5 text-base leading-relaxed text-white/62 md:text-lg">
                 <p>
                   I’m a multidisciplinary designer and digital artist working across identity, illustration, print, and interface concepts.
                 </p>
                 <p>
-                  My process moves between intuitive image-making and systems thinking. I care about atmosphere and emotion, but also clarity, hierarchy, and how work behaves in the real world.
+                  My process moves between intuitive image-making and systems thinking. I care about atmosphere and emotion, but also clarity, hierarchy, and how the work behaves in the real world.
                 </p>
                 <p>
-                  This direction tries to merge those qualities: expressive color and material on one side, precision and design logic on the other.
+                  This overhaul aims to fuse those qualities: expressive fluid color on one side, stronger interaction design and a more memorable user experience on the other.
                 </p>
               </div>
 
@@ -590,36 +505,25 @@ export default function OverhaulExperiencePage() {
                   </span>
                 ))}
               </div>
-
-              <div className="mt-10 grid grid-cols-3 gap-3">
-                {[
-                  ["17+", "Projects"],
-                  ["5+", "Years"],
-                  ["100%", "Curiosity"],
-                ].map(([value, label]) => (
-                  <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
-                    <p className="text-2xl font-semibold md:text-3xl">{value}</p>
-                    <p className="mt-1 text-xs uppercase tracking-[0.18em] text-white/38">{label}</p>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </section>
 
-        <section className="px-5 py-16 md:px-10 md:py-24 lg:px-16">
+        <section className="px-4 py-16 md:px-8 md:py-24 lg:px-14">
           <div className="mx-auto max-w-7xl rounded-[2.5rem] border border-white/10 bg-white/[0.035] p-7 backdrop-blur-xl md:p-12">
             <div className="grid gap-8 lg:grid-cols-[1fr_1.35fr]">
               <div>
                 <p className="text-xs uppercase tracking-[0.34em] text-cyan-100/65">How I think</p>
-                <h2 className="mt-4 text-4xl font-semibold tracking-[-0.04em] md:text-5xl">A visual system, not isolated decoration.</h2>
+                <h2 className="mt-4 text-4xl font-semibold tracking-[-0.04em] md:text-5xl">
+                  A visual system, not isolated decoration.
+                </h2>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 {[
                   ["01", "Discover", "Understand the context, audience, and emotional target before styling anything."],
-                  ["02", "Shape", "Build the language through form, type, color, image, and rhythm."],
-                  ["03", "Systemize", "Make the work flexible enough to live across real touchpoints."],
-                  ["04", "Refine", "Remove noise, strengthen hierarchy, and polish each interaction."],
+                  ["02", "Shape", "Build the language through form, type, color, image, motion, and rhythm."],
+                  ["03", "Systemize", "Make the work flexible enough to live across real touchpoints and interfaces."],
+                  ["04", "Refine", "Remove noise, strengthen hierarchy, and polish every interaction."],
                 ].map(([n, title, text]) => (
                   <div key={n} className="rounded-3xl border border-white/10 bg-black/20 p-6">
                     <p className="text-xs tracking-[0.25em] text-white/32">{n}</p>
@@ -632,7 +536,7 @@ export default function OverhaulExperiencePage() {
           </div>
         </section>
 
-        <section id="contact" className="px-5 py-16 md:px-10 md:py-24 lg:px-16">
+        <section id="contact" className="px-4 py-16 md:px-8 md:py-24 lg:px-14">
           <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.9fr_1.1fr]">
             <div>
               <p className="text-xs uppercase tracking-[0.34em] text-fuchsia-100/65">Start a conversation</p>
@@ -718,7 +622,7 @@ export default function OverhaulExperiencePage() {
         </section>
       </main>
 
-      <footer className="border-t border-white/10 px-5 py-8 md:px-10 lg:px-16">
+      <footer className="border-t border-white/10 px-4 py-8 md:px-8 lg:px-14">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 text-sm text-white/38 sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 Ilan Sastiel. All rights reserved.</p>
           <p className="uppercase tracking-[0.24em]">Cyan · Magenta · Yellow · Ideas</p>
