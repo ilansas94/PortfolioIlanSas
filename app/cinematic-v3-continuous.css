@@ -1,0 +1,22 @@
+/* The homepage is frame zero of the same pinned film stage as the projects. */
+.cinematic-portfolio--v3 > .v3-opening__film {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  pointer-events: none;
+}
+.v3-journey { min-height: 100vh; }
+.v3-story { margin: 0; }
+.v3-film-stage .v3-hub { z-index: 10; }
+.v3-film-stage .v3-opening__cue { z-index: 40; transition: opacity .12s linear; }
+.v3-film-stage__movie { transition: opacity .06s linear; }
+.v3-film-stage.is-before { opacity: 0; }
+.v3-film-stage.is-active,
+.v3-film-stage.is-after { opacity: 1; }
+
+@media (max-width: 800px) {
+  .cinematic-portfolio--v3 > .v3-opening__film { height: 100svh; }
+}
