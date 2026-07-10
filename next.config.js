@@ -1,9 +1,16 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  images: {
-    domains: ['localhost'],
-    unoptimized: true
-  },
-}
+const isGitHubPages = process.env.GITHUB_PAGES === "true";
+const repositoryBase = "/PortfolioIlanSas";
 
-module.exports = nextConfig
+const nextConfig = {
+  output: isGitHubPages ? "export" : undefined,
+  trailingSlash: isGitHubPages,
+  basePath: isGitHubPages ? repositoryBase : "",
+  assetPrefix: isGitHubPages ? `${repositoryBase}/` : "",
+  images: {
+    domains: ["localhost"],
+    unoptimized: true,
+  },
+};
+
+module.exports = nextConfig;
