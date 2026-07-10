@@ -1,10 +1,10 @@
 {
   "name": "ilan-portfolio",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/prepare-cinematic.mjs && node scripts/apply-scroll-redo.mjs && node scripts/fix-scroll-stage.mjs && node scripts/tune-mobile-liquid.mjs && node scripts/fetch-cinematic-assets.mjs && next build",
+    "build": "node scripts/prepare-cinematic.mjs && node scripts/apply-scroll-redo.mjs && node scripts/fetch-cinematic-assets.mjs && next build",
     "start": "next start",
     "lint": "next lint"
   },
