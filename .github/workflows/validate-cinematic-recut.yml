@@ -1,0 +1,53 @@
+name: Validate Cinematic Recut
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cinematic-portfolio-recut
+    paths:
+      - 'app/**'
+      - 'components/cinematic-recut/**'
+      - 'public/cinematic-recut/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/validate-cinematic-recut.yml'
+  pull_request:
+    branches:
+      - cinematic-portfolio-v3
+    paths:
+      - 'app/**'
+      - 'components/cinematic-recut/**'
+      - 'public/cinematic-recut/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/validate-cinematic-recut.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: github.head_ref == 'cinematic-portfolio-recut' || github.ref == 'refs/heads/cinematic-portfolio-recut'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out isolated recut branch
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build recut application
+        run: pnpm build
