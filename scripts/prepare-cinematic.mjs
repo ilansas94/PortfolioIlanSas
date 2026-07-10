@@ -50,13 +50,42 @@ liquidPrepared = liquidPrepared.replace(
   `      const centers = new Float32Array(8);
       for (let i = 0; i < 3; i += 1) {
         const bx = BASE[i][0];
-        const by = BASE[i][1];`,
+        const by = BASE[i][1];
+        const dx = smoothPointer.x - bx;
+        const dy = smoothPointer.y - by;
+        const dist = Math.hypot(dx * 1.78, dy);
+        const pull = Math.max(0, 1 - dist / 0.34) * 0.105 * smoothPointer.active;
+        centers[i * 2] = bx + dx * pull;
+        centers[i * 2 + 1] = by + dy * pull;
+      }`,
   `      const centers = new Float32Array(8);
       const mobile = host.getBoundingClientRect().width <= 820;
       const base = mobile ? MOBILE_BASE : BASE;
+      let nearest = 10;
+      let pointerRed = 0;
+      let pointerGreen = 0;
+      let pointerBlue = 0;
+      let pointerColorWeight = 0;
       for (let i = 0; i < 3; i += 1) {
         const bx = base[i][0];
-        const by = base[i][1];`,
+        const by = base[i][1];
+        const dx = smoothPointer.x - bx;
+        const dy = smoothPointer.y - by;
+        const dist = Math.hypot(dx * (mobile ? 1.35 : 1.78), dy);
+        const pull = Math.max(0, 1 - dist / 0.34) * 0.105 * smoothPointer.active;
+        const colorWeight = 1 / Math.max(0.012, dist * dist);
+        nearest = Math.min(nearest, dist);
+        pointerRed += colors[i * 3] * colorWeight;
+        pointerGreen += colors[i * 3 + 1] * colorWeight;
+        pointerBlue += colors[i * 3 + 2] * colorWeight;
+        pointerColorWeight += colorWeight;
+        centers[i * 2] = bx + dx * pull;
+        centers[i * 2 + 1] = by + dy * pull;
+      }
+      colors[9] = pointerRed / pointerColorWeight;
+      colors[10] = pointerGreen / pointerColorWeight;
+      colors[11] = pointerBlue / pointerColorWeight;
+      const pointerStrength = Math.max(0, 1 - nearest / 0.36) * smoothPointer.active;`,
 );
 liquidPrepared = liquidPrepared.replace(
   `      const radii = new Float32Array([
@@ -70,12 +99,12 @@ liquidPrepared = liquidPrepared.replace(
         mainRadius,
         mainRadius,
         mainRadius,
-        (mainRadius * 0.68) * smoothPointer.active,
+        (mainRadius * 0.68) * pointerStrength,
       ]);`,
 );
 liquidPrepared = liquidPrepared.replace(
   `      gl.uniform1f(pointerActiveLoc, smoothPointer.active);`,
-  `      gl.uniform1f(pointerActiveLoc, smoothPointer.active);
+  `      gl.uniform1f(pointerActiveLoc, pointerStrength);
       gl.uniform1f(blobAspectLoc, mobile ? 0.72 : 0.52);`,
 );
 if (liquidPrepared === liquidSource) {
