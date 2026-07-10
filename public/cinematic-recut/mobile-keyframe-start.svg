@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844">
+<defs>
+  <radialGradient id="bg" cx="50%" cy="43%" r="78%"><stop offset="0" stop-color="#1b2028"/><stop offset=".48" stop-color="#0b0f15"/><stop offset="1" stop-color="#05070a"/></radialGradient>
+  <filter id="soft"><feGaussianBlur stdDeviation="1.1"/></filter>
+  <filter id="shadow" x="-100%" y="-100%" width="300%" height="300%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000" flood-opacity=".75"/></filter>
+  <linearGradient id="dropM" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff4d9b"/><stop offset=".45" stop-color="#d10a64"/><stop offset="1" stop-color="#710538"/></linearGradient>
+  <linearGradient id="dropY" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff59a"/><stop offset=".38" stop-color="#ffd900"/><stop offset="1" stop-color="#ba7900"/></linearGradient>
+  <linearGradient id="dropC" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#91eeff"/><stop offset=".4" stop-color="#00a9c8"/><stop offset="1" stop-color="#00546f"/></linearGradient>
+</defs>
+<rect width="390" height="844" fill="url(#bg)"/>
+<ellipse cx="8" cy="320" rx="145" ry="210" fill="#00a9c8" opacity=".025" filter="url(#soft)"/>
+<ellipse cx="385" cy="240" rx="145" ry="210" fill="#d10a64" opacity=".025" filter="url(#soft)"/>
+<image href="symbol.svg" x="146.25" y="246.65" width="97.5" height="97.5" filter="url(#shadow)"/>
+<g filter="url(#shadow)">
+ <circle cx="148" cy="310" r="13" fill="url(#dropM)"/><ellipse cx="143" cy="305" rx="4" ry="3" fill="#fff" opacity=".62"/>
+ <circle cx="237" cy="274" r="12" fill="url(#dropY)"/><ellipse cx="233" cy="270" rx="4" ry="3" fill="#fff" opacity=".65"/>
+ <circle cx="226" cy="340" r="11" fill="url(#dropC)"/><ellipse cx="222" cy="336" rx="3.5" ry="2.5" fill="#fff" opacity=".62"/>
+</g>
+</svg>
