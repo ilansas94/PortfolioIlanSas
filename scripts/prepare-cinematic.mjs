@@ -82,3 +82,19 @@ if (liquidPrepared === liquidSource) {
   throw new Error("Expected liquid navigation source patches were not found");
 }
 await writeFile(liquidFile, liquidPrepared, "utf8");
+
+const coreFile = "app/cinematic-core.css";
+const coreSource = await readFile(coreFile, "utf8");
+const corePrepared = coreSource
+  .replace(
+    ".intro-complete .liquid-nav.has-webgl .liquid-nav__canvas { opacity: 1; }",
+    ".intro-complete .liquid-nav.has-webgl .liquid-nav__canvas { opacity: .78; }",
+  )
+  .replace(
+    ".intro-complete .liquid-nav.has-webgl .liquid-fallback { opacity: .08; }",
+    ".intro-complete .liquid-nav.has-webgl .liquid-fallback { opacity: .48; }",
+  );
+if (corePrepared === coreSource) {
+  throw new Error("Expected cinematic blend source patches were not found");
+}
+await writeFile(coreFile, corePrepared, "utf8");
