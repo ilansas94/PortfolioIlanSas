@@ -71,4 +71,5 @@ jobs:
             exit 0
           fi
           git commit -m "Add deterministic scroll-scrub project films"
+          git pull --rebase origin cinematic-portfolio-v2
           git push origin HEAD:cinematic-portfolio-v2
