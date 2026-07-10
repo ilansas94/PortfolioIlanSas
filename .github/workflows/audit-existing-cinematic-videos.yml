@@ -7,6 +7,11 @@ on:
       - cinematic-portfolio-v3
     paths:
       - '.github/workflows/audit-existing-cinematic-videos.yml'
+  pull_request:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/audit-existing-cinematic-videos.yml'
 
 permissions:
   contents: read
