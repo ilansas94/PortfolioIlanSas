@@ -1,0 +1,47 @@
+name: Validate V3 and ping Vercel
+
+on:
+  push:
+    branches:
+      - cinematic-portfolio-v2
+    paths:
+      - .vercel-trigger-v3
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate-and-ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out cinematic branch
+        uses: actions/checkout@v4
+        with:
+          ref: cinematic-portfolio-v2
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install pinned pnpm
+        run: npm install --global pnpm@10.28.0
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Validate production build
+        run: pnpm build
+
+      - name: Push a normal git ping for Vercel
+        run: |
+          git config user.name "cinematic-preview-bot"
+          git config user.email "actions@users.noreply.github.com"
+          date -u +%Y-%m-%dT%H:%M:%SZ > .vercel-deploy-ping
+          git add .vercel-deploy-ping pnpm-lock.yaml
+          git commit -m "Ping Vercel after validated V3 build [skip actions]"
+          git pull --rebase origin cinematic-portfolio-v2
+          git push origin HEAD:cinematic-portfolio-v2

@@ -1,0 +1,30 @@
+/* Exact desktop geometry shared with the rendered cinematic end frames. */
+@media (min-width: 801px) {
+  .v3-hub__symbol {
+    width: clamp(205px, 11.5vw, 240px);
+    top: 48.6%;
+  }
+  .v3-hub__button {
+    width: clamp(310px, 17.7vw, 370px);
+  }
+  .v3-hub__button--work {
+    left: 26.05%;
+    top: 61.1%;
+  }
+  .v3-hub__button--about {
+    left: 77.6%;
+    top: 33.8%;
+  }
+  .v3-hub__button--contact {
+    left: 77.6%;
+    top: 69%;
+  }
+  .v3-project-frame__media {
+    width: min(75vw, 1440px);
+    height: min(70.37vh, 760px);
+    top: 48.6%;
+  }
+  .v3-project-frame__index { left: 4.27vw; top: 16.67vh; }
+  .v3-project-frame__copy { left: 7.81vw; right: 7.81vw; bottom: 6.95vh; }
+  .v3-project-frame__enter { right: 5.03vw; top: 13.7vh; }
+}

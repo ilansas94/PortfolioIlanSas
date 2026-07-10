@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844">
+<defs>
+  <radialGradient id="bg" cx="50%" cy="43%" r="78%"><stop offset="0" stop-color="#1b2028"/><stop offset=".48" stop-color="#0b0f15"/><stop offset="1" stop-color="#05070a"/></radialGradient>
+  <linearGradient id="work" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d10a64"/><stop offset=".46" stop-color="#6b1f66"/><stop offset="1" stop-color="#00a9c8"/></linearGradient>
+  <linearGradient id="about" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffd900"/><stop offset=".52" stop-color="#ed6b25"/><stop offset="1" stop-color="#d10a64"/></linearGradient>
+  <linearGradient id="contact" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#00a9c8"/><stop offset=".52" stop-color="#22858d"/><stop offset="1" stop-color="#ffd900"/></linearGradient>
+  <radialGradient id="shine" cx="28%" cy="18%" r="48%"><stop stop-color="#fff" stop-opacity=".75"/><stop offset=".24" stop-color="#fff" stop-opacity=".16"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <filter id="shadow" x="-100%" y="-100%" width="300%" height="300%"><feDropShadow dx="0" dy="14" stdDeviation="13" flood-color="#000" flood-opacity=".72"/></filter>
+  <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="2"/></filter>
+</defs>
+<rect width="390" height="844" fill="url(#bg)"/>
+<ellipse cx="8" cy="320" rx="145" ry="210" fill="#00a9c8" opacity=".025"/>
+<ellipse cx="385" cy="240" rx="145" ry="210" fill="#d10a64" opacity=".025"/>
+<g fill="none" stroke-linecap="round" opacity=".26" filter="url(#glow)">
+ <path d="M187 306 C173 359 146 416 121 481" stroke="#00a9c8" stroke-width="2"/>
+ <path d="M203 284 C225 315 249 352 269 397" stroke="#d10a64" stroke-width="2"/>
+ <path d="M205 309 C215 396 219 501 218 608" stroke="#ffd900" stroke-width="2"/>
+</g>
+<image href="symbol.svg" x="146.25" y="246.65" width="97.5" height="97.5" filter="url(#shadow)"/>
+<g filter="url(#shadow)">
+ <path d="M42 461 C50 437 75 424 112 423 C150 420 178 433 195 461 C204 486 198 518 173 542 C147 560 103 558 70 545 C42 530 31 493 42 461 Z" fill="url(#work)"/>
+ <path d="M193 365 C204 342 230 332 265 334 C302 331 329 347 346 376 C353 402 343 431 318 448 C286 462 243 459 215 443 C190 427 182 393 193 365 Z" fill="url(#about)"/>
+ <path d="M137 579 C149 552 177 541 215 543 C253 542 282 556 298 584 C310 612 300 646 273 666 C245 684 202 684 169 669 C139 652 126 612 137 579 Z" fill="url(#contact)"/>
+</g>
+<g opacity=".63">
+ <ellipse cx="84" cy="449" rx="31" ry="18" fill="url(#shine)"/>
+ <ellipse cx="235" cy="354" rx="31" ry="18" fill="url(#shine)"/>
+ <ellipse cx="180" cy="564" rx="31" ry="18" fill="url(#shine)"/>
+</g>
+<g fill="#fafafc" text-anchor="middle" font-family="Arial,Helvetica,sans-serif">
+ <text x="121" y="486" font-size="13" font-weight="500" letter-spacing="4.4">WORK</text>
+ <text x="121" y="505" font-size="5.3" opacity=".58" letter-spacing="2.1">SELECTED WORLDS</text>
+ <text x="269" y="402" font-size="13" font-weight="500" letter-spacing="4.4">ABOUT</text>
+ <text x="269" y="421" font-size="5.3" opacity=".58" letter-spacing="2.1">PROFILE</text>
+ <text x="218" y="613" font-size="13" font-weight="500" letter-spacing="4.4">CONTACT</text>
+ <text x="218" y="632" font-size="5.3" opacity=".58" letter-spacing="2.1">BEGIN A PROJECT</text>
+</g>
+</svg>
