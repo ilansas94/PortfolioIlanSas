@@ -1,3 +1,3 @@
-// Exact mark traced from the original price-list PDF; the full lockup is used once in About.
-export const SYMBOL_DATA_URI = "/cinematic/symbol.svg";
+// Exact mark traced from the original price-list PDF; padded to preserve the yellow edge.
+export const SYMBOL_DATA_URI = "/cinematic/symbol-padded.svg";
 export const FULL_LOGO_DATA_URI = "/cinematic/full-logo.svg";
