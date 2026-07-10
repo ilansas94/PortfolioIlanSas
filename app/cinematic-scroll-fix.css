@@ -4,9 +4,36 @@
   height: var(--story-height) !important;
 }
 
+/* Explicit stage positioning is more reliable than browser sticky positioning
+   when media currentTime is updated continuously during deep scrolling. */
+.work-scroll-sticky {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100vh;
+}
+.work-scroll-sticky.is-before {
+  top: 0;
+  bottom: auto;
+}
+.work-scroll-sticky.is-fixed {
+  position: fixed !important;
+  inset: 0;
+  z-index: 70;
+}
+.work-scroll-sticky.is-after {
+  top: auto;
+  bottom: 0;
+}
+
 @media (max-width: 800px) {
   .work-scroll-story {
     height: var(--story-height-mobile) !important;
+  }
+  .work-scroll-sticky {
+    height: 100svh;
   }
 }
 
