@@ -12,6 +12,11 @@ if (source.includes(marker)) {
 const css = `
 
 ${marker}
+.transition-curtain:not(.is-leaving) .transition-curtain__portal {
+  animation-delay: .08s;
+  animation-duration: 1s;
+}
+
 .print-transition__plate {
   --register-x: 0vw;
   --register-y: 0vh;
@@ -76,34 +81,49 @@ ${marker}
   100% { opacity: 0; transform: translate(-50%,-50%) scale(.22) rotate(8deg); }
 }
 
+.ui-transition__sheet {
+  filter: saturate(1.34) brightness(1.22);
+}
 @keyframes sheet-plane {
   0% {
-    opacity: .15;
-    transform: translate(-50%,-50%) rotateX(72deg) rotateZ(-8deg) scale(.22);
+    opacity: .52;
+    transform: translate(-50%,-50%) rotateX(68deg) rotateZ(-8deg) scale(.38);
     border-radius: 68% 32% 61% 39% / 38% 66% 34% 62%;
   }
   35% {
-    opacity: .9;
-    transform: translate(-50%,-50%) rotateX(48deg) rotateZ(3deg) scale(.72);
+    opacity: 1;
+    transform: translate(-50%,-50%) rotateX(44deg) rotateZ(3deg) scale(.84);
     border-radius: 57% 43% 48% 52% / 46% 58% 42% 54%;
   }
   72% {
     opacity: 1;
-    transform: translate(-50%,-50%) rotateX(12deg) rotateZ(0deg) scale(1.02);
+    transform: translate(-50%,-50%) rotateX(10deg) rotateZ(0deg) scale(1.04);
     border-radius: 22% 16% 19% 14% / 18% 23% 15% 21%;
   }
   100% {
-    opacity: .08;
-    transform: translate(-50%,-50%) rotateX(0deg) rotateZ(0deg) scale(1.38);
+    opacity: .1;
+    transform: translate(-50%,-50%) rotateX(0deg) rotateZ(0deg) scale(1.4);
     border-radius: 7% 9% 6% 8% / 8% 6% 9% 7%;
   }
 }
 
+.ink-transition__pool {
+  filter: blur(10px) saturate(1.42) brightness(1.32);
+}
+.ink-transition__pool--magenta {
+  background: radial-gradient(circle at 44% 46%, #ff1682 0 18%, #d10a64 36%, #68164c 62%, transparent 78%);
+}
+.ink-transition__pool--cyan {
+  background: radial-gradient(circle at 44% 44%, #16d7f4 0 16%, #00a9c8 36%, #075f78 62%, transparent 78%);
+}
+.ink-transition__pool--yellow {
+  background: radial-gradient(circle at 50% 50%, #ffe43a 0 14%, rgba(255,217,0,.92) 34%, rgba(178,114,0,.42) 62%, transparent 79%);
+}
 @keyframes ink-bloom {
-  0% { opacity: 0; transform: scale(.025) rotate(-12deg); border-radius: 62% 38% 54% 46% / 41% 65% 35% 59%; }
-  38% { opacity: .88; transform: scale(.74) rotate(5deg); border-radius: 48% 52% 36% 64% / 57% 39% 61% 43%; }
-  76% { opacity: .78; transform: scale(1.2) rotate(-3deg); border-radius: 58% 42% 63% 37% / 39% 59% 41% 61%; }
-  100% { opacity: .12; transform: scale(1.72) rotate(8deg); border-radius: 44% 56% 47% 53% / 62% 41% 59% 38%; }
+  0% { opacity: .42; transform: scale(.12) rotate(-12deg); border-radius: 62% 38% 54% 46% / 41% 65% 35% 59%; }
+  32% { opacity: 1; transform: scale(.82) rotate(5deg); border-radius: 48% 52% 36% 64% / 57% 39% 61% 43%; }
+  74% { opacity: .86; transform: scale(1.24) rotate(-3deg); border-radius: 58% 42% 63% 37% / 39% 59% 41% 61%; }
+  100% { opacity: .14; transform: scale(1.74) rotate(8deg); border-radius: 44% 56% 47% 53% / 62% 41% 59% 38%; }
 }
 
 .transition-curtain--print .transition-curtain__depth {
@@ -113,12 +133,12 @@ ${marker}
 }
 .transition-curtain--ui .transition-curtain__depth {
   background:
-    radial-gradient(34% 42% at 50% 49%, rgba(0,169,200,.16), transparent 72%),
+    radial-gradient(34% 42% at 50% 49%, rgba(0,169,200,.2), transparent 72%),
     radial-gradient(65% 72% at 50% 50%, #0a1016 0, #030508 62%, #010204 100%);
 }
 .transition-curtain--ink .transition-curtain__depth {
   background:
-    radial-gradient(28% 38% at 50% 50%, rgba(209,10,100,.12), transparent 62%),
+    radial-gradient(28% 38% at 50% 50%, rgba(209,10,100,.16), transparent 62%),
     radial-gradient(70% 76% at 50% 50%, #101018 0, #040509 58%, #010204 100%);
 }
 
