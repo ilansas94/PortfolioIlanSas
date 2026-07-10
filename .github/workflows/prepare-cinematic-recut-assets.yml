@@ -1,0 +1,52 @@
+name: Prepare Cinematic Recut Assets
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cinematic-portfolio-recut
+    paths:
+      - '.github/workflows/prepare-cinematic-recut-assets.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout recut branch
+        uses: actions/checkout@v4
+        with:
+          ref: cinematic-portfolio-recut
+          path: recut
+          fetch-depth: 1
+
+      - name: Checkout archived V2 branch
+        uses: actions/checkout@v4
+        with:
+          ref: cinematic-portfolio-v2
+          path: v2
+          fetch-depth: 1
+
+      - name: Copy all archived films
+        run: |
+          set -euo pipefail
+          rm -rf recut/public/cinematic-recut
+          mkdir -p recut/public/cinematic-recut
+          cp -R v2/public/cinematic/. recut/public/cinematic-recut/
+          find recut/public/cinematic-recut -type f -maxdepth 3 | sort
+
+      - name: Commit copied films only to recut branch
+        working-directory: recut
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/cinematic-recut
+          if git diff --cached --quiet; then
+            echo 'Archived films already prepared'
+            exit 0
+          fi
+          git commit -m 'assets: copy archived cinematic films for recut'
+          git push origin HEAD:cinematic-portfolio-recut

@@ -1,0 +1,95 @@
+name: Capture Cinematic Recut
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cinematic-portfolio-recut
+    paths:
+      - 'app/**'
+      - 'components/cinematic-recut/**'
+      - 'public/cinematic-recut/**'
+      - 'scripts/capture-cinematic-recut.cjs'
+      - '.github/workflows/capture-cinematic-recut.yml'
+  pull_request:
+    branches:
+      - cinematic-portfolio-v3
+    paths:
+      - 'app/**'
+      - 'components/cinematic-recut/**'
+      - 'public/cinematic-recut/**'
+      - 'scripts/capture-cinematic-recut.cjs'
+      - '.github/workflows/capture-cinematic-recut.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cinematic-recut-capture-${{ github.event_name }}
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    if: github.head_ref == 'cinematic-portfolio-recut' || github.ref == 'refs/heads/cinematic-portfolio-recut'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout recut branch
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install application dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install standalone Playwright
+        run: |
+          npm install --global playwright@1.55.0
+          playwright install --with-deps chromium
+
+      - name: Build isolated recut
+        run: pnpm build
+
+      - name: Start local production server
+        run: |
+          pnpm start > /tmp/cinematic-recut-server.log 2>&1 &
+          echo $! > /tmp/cinematic-recut-server.pid
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:3000 > /dev/null; then
+              echo 'Cinematic recut server is ready'
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/cinematic-recut-server.log
+          exit 1
+
+      - name: Capture full film journey
+        run: NODE_PATH="$(npm root --global)" node scripts/capture-cinematic-recut.cjs
+
+      - name: Upload visual QA
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cinematic-recut-visual-qa-${{ github.event_name }}
+          path: artifacts/cinematic-recut
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Upload server log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cinematic-recut-server-log-${{ github.event_name }}
+          path: /tmp/cinematic-recut-server.log
+          if-no-files-found: ignore
+          retention-days: 7
