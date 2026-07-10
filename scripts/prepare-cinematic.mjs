@@ -1,15 +1,9 @@
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { gunzipSync } from "node:zlib";
 import path from "node:path";
 
 const partsDirectory = path.join(process.cwd(), "cinematic-v2-parts");
-const partNames = (await readdir(partsDirectory))
-  .filter((name) => name.endsWith(".txt"))
-  .sort();
-
-if (partNames.length !== 8) {
-  throw new Error(`Expected 8 cinematic v2 bundle parts, found ${partNames.length}`);
-}
+const partNames = Array.from({ length: 8 }, (_, index) => `${String(index).padStart(3, "0")}.txt`);
 
 const encoded = (await Promise.all(
   partNames.map((name) => readFile(path.join(partsDirectory, name), "utf8")),
@@ -23,4 +17,4 @@ for (const [relativePath, content] of Object.entries(files)) {
   await writeFile(destination, content, "utf8");
 }
 
-console.log(`Prepared ${Object.keys(files).length} cinematic portfolio files`);
+console.log(`Prepared ${Object.keys(files).length} cinematic portfolio files from ${partNames.join(", ")}`);
