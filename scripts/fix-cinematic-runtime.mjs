@@ -23,6 +23,12 @@ component = component.replace(
   '              window.setTimeout(() => setIntroDone(true), 920);',
 );
 
+const qaAnchor = '  const sceneContent = useMemo(() => {';
+const qaHook = `  useEffect(() => {\n    const qa = new URLSearchParams(window.location.search).get("qa");\n    if (!qa) return;\n\n    const directScenes: NavigableScene[] = ["hub", "work", "about", "contact"];\n    if (directScenes.includes(qa as NavigableScene)) {\n      setHandoff(true);\n      setIntroDone(true);\n      setScene(qa as NavigableScene);\n      return;\n    }\n\n    const [mode, rawId] = qa.split("-");\n    const project = projects.find((item) => item.id === Number(rawId));\n    if (!project || (mode !== "case" && mode !== "open" && mode !== "close")) return;\n\n    setHandoff(true);\n    setIntroDone(true);\n    setSelected(project);\n\n    if (mode === "case") {\n      setScene("case");\n      return;\n    }\n\n    if (mode === "close") {\n      setScene("case");\n      const leaveTimer = window.setTimeout(() => {\n        setTransitionLeaving(true);\n        setTransitioning(true);\n      }, 350);\n      const workTimer = window.setTimeout(() => {\n        setScene("work");\n        setTransitioning(false);\n        setTransitionLeaving(false);\n        setSelected(null);\n      }, 1230);\n      return () => {\n        window.clearTimeout(leaveTimer);\n        window.clearTimeout(workTimer);\n      };\n    }\n\n    setScene("work");\n    setTransitionLeaving(false);\n    setTransitioning(true);\n    const delay = project.transition === "ink" ? 900 : 1850;\n    const caseTimer = window.setTimeout(() => {\n      setScene("case");\n      window.setTimeout(() => setTransitioning(false), 420);\n    }, delay);\n    return () => window.clearTimeout(caseTimer);\n  }, []);\n\n`;
+if (!component.includes('new URLSearchParams(window.location.search).get("qa")')) {
+  component = component.replace(qaAnchor, qaHook + qaAnchor);
+}
+
 await writeFile(componentPath, component, "utf8");
 
 let css = await readFile(cssPath, "utf8");
@@ -32,4 +38,4 @@ if (!css.includes(marker)) {
   await writeFile(cssPath, css, "utf8");
 }
 
-console.log("Applied cinematic runtime type and handoff synchronization fixes");
+console.log("Applied cinematic runtime type, QA, and handoff synchronization fixes");
