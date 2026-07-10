@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/fetch-cinematic-assets.mjs && next build",
+    "build": "node scripts/prepare-cinematic.mjs && node scripts/fetch-cinematic-assets.mjs && next build",
     "start": "next start",
     "lint": "next lint"
   },
