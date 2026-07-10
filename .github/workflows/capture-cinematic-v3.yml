@@ -1,0 +1,90 @@
+name: Capture Cinematic V3 Frames
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cinematic-portfolio-v3
+    paths:
+      - "app/**"
+      - "components/cinematic-v3/**"
+      - "public/cinematic-v3/**"
+      - "public/Essets/**"
+      - "scripts/capture-cinematic-v3.spec.ts"
+      - ".github/workflows/capture-cinematic-v3.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cinematic-v3-frame-capture
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout V3 branch
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install application dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright for this capture run
+        run: |
+          pnpm add --save-dev @playwright/test@1.55.0 --lockfile=false
+          pnpm exec playwright install --with-deps chromium
+
+      - name: Build the isolated V3 site
+        run: pnpm build
+
+      - name: Start local production server
+        run: |
+          pnpm start > /tmp/cinematic-v3-server.log 2>&1 &
+          echo $! > /tmp/cinematic-v3-server.pid
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:3000 > /dev/null; then
+              echo "Cinematic V3 server is ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/cinematic-v3-server.log
+          exit 1
+
+      - name: Capture desktop and mobile transition frames
+        run: pnpm exec playwright test scripts/capture-cinematic-v3.spec.ts --project=chromium --workers=1 --timeout=240000
+
+      - name: Upload frame library
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cinematic-v3-transition-frames
+          path: |
+            artifacts/cinematic-v3
+            playwright-report
+            test-results
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Upload server log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cinematic-v3-server-log
+          path: /tmp/cinematic-v3-server.log
+          if-no-files-found: ignore
+          retention-days: 7
