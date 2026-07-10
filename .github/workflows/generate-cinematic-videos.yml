@@ -39,6 +39,24 @@ jobs:
           python -m pip install pillow numpy cairosvg
           ffmpeg -version
 
+      - name: Optimize generator for cached browser frames and responsive seeking
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("scripts/generate-cinematic-videos.py")
+          source = path.read_text()
+          source = source.replace("import subprocess\n", "import subprocess\nfrom functools import lru_cache\n")
+          source = source.replace("def radial_background(seed: int, pulse: float = 0.0)", "@lru_cache(maxsize=None)\ndef radial_background(seed: int, pulse: float = 0.0)")
+          source = source.replace("def final_project_frame(project: tuple[int, str, str, str, str])", "@lru_cache(maxsize=None)\ndef final_project_frame(project: tuple[int, str, str, str, str])")
+          source = source.replace("radial_background(777, pulse=progress)", "radial_background(777).copy()")
+          source = source.replace("radial_background(project_id * 131 + 17, pulse=math.sin(progress * math.pi))", "radial_background(project_id * 131 + 17).copy()")
+          source = source.replace(
+              '"-an", "-c:v", "libx264", "-preset", "medium", "-crf", "25", "-pix_fmt", "yuv420p",',
+              '"-an", "-c:v", "libx264", "-preset", "veryfast", "-crf", "24", "-g", "6", "-keyint_min", "6", "-sc_threshold", "0", "-pix_fmt", "yuv420p",',
+          )
+          path.write_text(source)
+          PY
+
       - name: Render reversible scroll films
         run: python scripts/generate-cinematic-videos.py
 
