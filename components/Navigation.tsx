@@ -70,10 +70,10 @@ export const Navigation = () => {
           isScrolled ? "py-1" : "py-2"
         )}
       >
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-4 sm:px-6">
           <GlassCard
             className={cn(
-              "px-6 py-2 transition-all duration-300",
+              "px-4 py-1.5 sm:px-6 sm:py-2 transition-all duration-300",
               isScrolled ? "backdrop-blur-xl" : "backdrop-blur-md"
             )}
             intensity={isScrolled ? "heavy" : "medium"}
@@ -81,18 +81,20 @@ export const Navigation = () => {
           >
             <div className="flex items-center justify-between">
               {/* Logo */}
-              <motion.div
-                whileHover={{ 
-                  scale: 1.02, 
+              <motion.button
+                type="button"
+                aria-label="Back to homepage"
+                whileHover={{
+                  scale: 1.02,
                   z: 5,
                   transition: { duration: 0.2, ease: [0.4, 0.0, 0.2, 1] }
                 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => scrollToSection("#home")}
-                className="cursor-pointer"
+                className="cursor-pointer rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70"
               >
                 <NavLogo />
-              </motion.div>
+              </motion.button>
 
               {/* Desktop Navigation */}
               <div className="hidden lg:flex items-center space-x-8">
@@ -140,12 +142,12 @@ export const Navigation = () => {
 
               {/* Mobile Menu Button */}
               <motion.button
-                className="lg:hidden relative w-6 h-6 focus:outline-none"
+                className="lg:hidden relative w-11 h-11 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70" aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={isMobileMenuOpen} aria-controls="mobile-navigation-menu"
                 onClick={toggleMobileMenu}
                 whileTap={{ scale: 0.95 }}
               >
                 <motion.span
-                  className="absolute top-0 left-0 w-full h-0.5 bg-slate-700 rounded-full"
+                  className="absolute top-3 left-[10px] w-6 h-0.5 bg-slate-700 rounded-full"
                   animate={{
                     rotate: isMobileMenuOpen ? 45 : 0,
                     y: isMobileMenuOpen ? 8 : 0
@@ -153,14 +155,14 @@ export const Navigation = () => {
                   transition={{ duration: 0.2 }}
                 />
                 <motion.span
-                  className="absolute top-2 left-0 w-full h-0.5 bg-slate-700 rounded-full"
+                  className="absolute top-5 left-[10px] w-6 h-0.5 bg-slate-700 rounded-full"
                   animate={{
                     opacity: isMobileMenuOpen ? 0 : 1
                   }}
                   transition={{ duration: 0.2 }}
                 />
                 <motion.span
-                  className="absolute top-4 left-0 w-full h-0.5 bg-slate-700 rounded-full"
+                  className="absolute top-7 left-[10px] w-6 h-0.5 bg-slate-700 rounded-full"
                   animate={{
                     rotate: isMobileMenuOpen ? -45 : 0,
                     y: isMobileMenuOpen ? -8 : 0
@@ -181,7 +183,7 @@ export const Navigation = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="fixed top-20 left-6 right-6 z-40 lg:hidden"
+            id="mobile-navigation-menu" className="fixed top-24 left-4 right-4 z-40 sm:left-6 sm:right-6 lg:hidden"
           >
             <GlassCard intensity="heavy" gradient={true} className="p-6">
               <div className="flex flex-col space-y-4">
