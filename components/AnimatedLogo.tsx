@@ -106,7 +106,7 @@ export const HeroLogo = () => (
 export const NavLogo = () => (
   <AnimatedLogo
     size="md"
-    className="transition-all duration-300 scale-110"
+    className="w-16 h-16 lg:w-24 lg:h-24 transition-all duration-300 lg:scale-110"
     hover={true}
   />
 );

@@ -10,26 +10,87 @@ import {
   animations
 } from "@/components/DesignSystem";
 
-const skillCategories = [
+
+type SkillIconName = "palette" | "brush" | "layout" | "printer";
+
+/** Lightweight, consistent line icons without an extra icon dependency. */
+const SkillCategoryIcon = ({ name }: { name: SkillIconName }) => (
+  <svg
+    aria-hidden="true"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.8}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="h-6 w-6 text-white drop-shadow-sm"
+  >
+    {name === "palette" && (
+      <>
+        <path d="M12 3a9 9 0 1 0 0 18h1.1a2.4 2.4 0 0 0 2.36-2.8l-.17-1a2 2 0 0 1 2-2.35H19a2 2 0 0 0 2-2A9 9 0 0 0 12 3Z" />
+        <circle cx="7.5" cy="11" r="0.9" fill="currentColor" stroke="none" />
+        <circle cx="12" cy="7.5" r="0.9" fill="currentColor" stroke="none" />
+        <circle cx="17" cy="10" r="0.9" fill="currentColor" stroke="none" />
+      </>
+    )}
+    {name === "brush" && (
+      <>
+        <path d="m14.7 6.3 3-3a2.12 2.12 0 0 1 3 3l-10 10a3 3 0 0 1-4.2-4.2l8.2-5.8Z" />
+        <path d="M8 16c-2.8 0-5 2.2-5 5 1.4-1 2.6-1 4-1 2.2 0 3-2 3-4" />
+        <path d="m12.6 8.4 3 3" />
+      </>
+    )}
+    {name === "layout" && (
+      <>
+        <rect x="3" y="3" width="18" height="18" rx="2" />
+        <path d="M3 9h18M9 9v12" />
+      </>
+    )}
+    {name === "printer" && (
+      <>
+        <path d="M6 9V3h12v6" />
+        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+        <rect x="6" y="14" width="12" height="7" rx="1" />
+        <path d="M18 12h.01" />
+      </>
+    )}
+  </svg>
+);
+
+const skillCategories: {
+  title: string;
+  skills: string[];
+  icon: SkillIconName;
+  gradient: string;
+  indicator: string;
+}[] = [
   {
     title: "Design & Branding",
     skills: ["Logo Design", "Brand Identity", "Visual Identity", "Brand Guidelines"],
-    color: "blue"
+    icon: "palette",
+    gradient: "from-blue-500 to-blue-600",
+    indicator: "bg-blue-500"
   },
   {
     title: "Digital Art",
     skills: ["Digital Painting", "Illustration", "Character Design", "Concept Art"],
-    color: "purple"
+    icon: "brush",
+    gradient: "from-violet-500 to-purple-600",
+    indicator: "bg-purple-500"
   },
   {
     title: "UI/UX Design",
     skills: ["User Interface", "User Experience", "Prototyping", "Wireframing"],
-    color: "emerald"
+    icon: "layout",
+    gradient: "from-emerald-500 to-teal-600",
+    indicator: "bg-emerald-500"
   },
   {
     title: "Print & Media",
     skills: ["Brochure Design", "Poster Design", "Campaign Design", "Print Layout"],
-    color: "pink"
+    icon: "printer",
+    gradient: "from-pink-500 to-rose-600",
+    indicator: "bg-pink-500"
   }
 ];
 
@@ -69,7 +130,7 @@ export const Skills = () => {
         </motion.div>
 
         {/* Skills Grid */}
-        <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6 mb-16">
+        <div className="grid gap-5 sm:grid-cols-2 lg:gap-6 xl:grid-cols-4 mb-16">
           {skillCategories.map((category, index) => (
             <motion.div
               key={index}
@@ -78,17 +139,14 @@ export const Skills = () => {
               transition={{ duration: 0.6, delay: index * 0.1 }}
             >
               <GlassCard
-                className="p-6 h-full group hover:scale-[1.02] transition-transform duration-300"
+                className="p-6 h-full group hover:scale-[1.015] transition-transform duration-300"
                 intensity="medium"
                 gradient
               >
-                <div className={`w-12 h-12 rounded-xl mb-4 flex items-center justify-center bg-gradient-to-r ${
-                  category.color === 'blue' ? 'from-blue-500 to-blue-600' :
-                  category.color === 'purple' ? 'from-purple-500 to-purple-600' :
-                  category.color === 'emerald' ? 'from-emerald-500 to-emerald-600' :
-                  'from-pink-500 to-pink-600'
-                } shadow-lg group-hover:shadow-xl transition-shadow duration-300`}>
-                  <div className="w-6 h-6 bg-white rounded-md opacity-90"></div>
+                <div
+                  className={`mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${category.gradient} shadow-lg shadow-slate-900/10 ring-1 ring-white/30 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:shadow-xl`}
+                >
+                  <SkillCategoryIcon name={category.icon} />
                 </div>
 
                 <h3 className="text-lg font-semibold text-slate-800 mb-3">
@@ -104,7 +162,7 @@ export const Skills = () => {
                       transition={{ duration: 0.4, delay: (index * 0.1) + (skillIndex * 0.05) }}
                       className="flex items-center space-x-2"
                     >
-                      <div className={`w-2 h-2 rounded-full bg-${category.color}-500`}></div>
+                      <div className={`h-2 w-2 flex-none rounded-full ${category.indicator}`}></div>
                       <span className="text-sm text-slate-600">{skill}</span>
                     </motion.div>
                   ))}
