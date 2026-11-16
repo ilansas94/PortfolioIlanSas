@@ -11,6 +11,7 @@ import {
   animations 
 } from "@/components/DesignSystem";
 import { HeroLogo } from "@/components/AnimatedLogo";
+import { useLanguage } from "@/lib/i18n";
 
 const scrollToSection = (href: string) => {
   const element = document.getElementById(href.substring(1));
@@ -20,6 +21,7 @@ const scrollToSection = (href: string) => {
 };
 
 export const Hero = () => {
+  const { t } = useLanguage();
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
 
   useEffect(() => {
@@ -96,7 +98,7 @@ export const Hero = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="mb-8"
+            className="mb-8 hero-logo"
           >
             <HeroLogo />
           </motion.div>
@@ -107,9 +109,9 @@ export const Hero = () => {
             transition={{ ...animations.fadeInUp.transition, delay: 0.5 }}
           >
             <Heading level={1} gradient className="mb-6 font-display leading-tight md:leading-[1.12] lg:leading-[1.12] pb-2">
-              Creative Designer
+              {t("Creative Designer")}
               <br />
-              Digital Artist
+              {t("Digital Artist")}
             </Heading>
           </motion.div>
 
@@ -119,8 +121,7 @@ export const Hero = () => {
             transition={{ ...animations.fadeInUp.transition, delay: 0.7 }}
             className="text-xl md:text-2xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed"
           >
-            Bringing ideas to life through thoughtful design, compelling branding, 
-            and AI-enhanced creative workflows that turn ideas into meaningful visual experiences.
+            {t("Bringing ideas to life through thoughtful design, compelling branding, and AI-enhanced creative workflows that turn ideas into meaningful visual experiences.")}
           </motion.p>
 
           {/* CTA Buttons */}
@@ -135,15 +136,15 @@ export const Hero = () => {
               onClick={() => scrollToSection("#portfolio")}
               className="min-w-[200px]"
             >
-              View My Work
+              {t("View My Work")}
             </PremiumButton>
             <PremiumButton
               variant="secondary"
               size="lg"
               onClick={() => scrollToSection("#contact")}
-              className="min-w-[200px]"
+              className="min-w-[200px] !border-[1.5px] !border-slate-400/60 !bg-white/85 !text-slate-800 shadow-[0_8px_22px_rgba(45,65,90,0.12)] hover:!border-blue-400/60 hover:!bg-white"
             >
-              Get In Touch
+              {t("Get In Touch")}
             </PremiumButton>
           </motion.div>
 
@@ -171,7 +172,7 @@ export const Hero = () => {
               onClick={() => scrollToSection("#about")}
             >
               <span className="text-sm text-slate-500 mb-2 font-medium">
-                Scroll to explore
+                {t("Scroll to explore")}
               </span>
               <motion.div
                 className="w-6 h-10 rounded-full border-2 border-slate-400 flex justify-center"
