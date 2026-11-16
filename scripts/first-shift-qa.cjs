@@ -72,6 +72,30 @@ async function checkOverflow(page, label) {
       await page.locator(".fs-panel").waitFor({ state: "visible" });
       await checkOverflow(page, preset.name + " journey");
       await page.screenshot({ path: path.join(output, preset.name + "-first-station.png"), fullPage: true });
+
+      // Returning from any learning station should reveal the original landing and its kit.
+      const home = page.getByRole("button", { name: "לעמוד הראשי" });
+      await home.waitFor({ state: "visible" });
+      assert.equal(await home.locator("svg").count(), 1, "Home navigation has a genuine SVG icon");
+      await home.screenshot({ path: path.join(output, preset.name + "-return-home-button.png") });
+      await page.locator(".fs-map button").nth(1).click();
+      await page.locator('.fs-panel[data-stop="1"]').waitFor({ state: "visible" });
+      await page.evaluate(() => window.scrollTo(0, 350));
+      await page.waitForTimeout(150);
+      const stickyTop = await home.evaluate(el => el.getBoundingClientRect().top);
+      assert.ok(stickyTop >= 0 && stickyTop < 28, "Return navigation should remain accessible while scrolling (" + stickyTop + ")");
+      await home.screenshot({ path: path.join(output, preset.name + "-return-home-sticky.png") });
+      await home.click();
+      await page.locator(".fs-hero .fs-action").waitFor({ state: "visible" });
+      await page.locator(".fs-kit-invite").waitFor({ state: "visible" });
+      assert.equal(await home.count(), 0, "Return button is hidden on the landing page");
+      await page.locator(".fs-kit-invite").click();
+      await page.locator("body.fs-kit-active").waitFor();
+      await page.locator(".fs-kit-close").click();
+      await page.locator("body:not(.fs-kit-active)").waitFor();
+      await page.locator(".fs-hero .fs-action").click();
+      await home.waitFor({ state: "visible" });
+      await checkOverflow(page, preset.name + " return/restart");
       console.log("PASS", preset.name, "card/modal/exact source/route/interaction");
       await page.close();
     }
