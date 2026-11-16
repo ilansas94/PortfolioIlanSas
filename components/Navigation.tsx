@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PremiumButton, GlassCard } from "@/components/DesignSystem";
 import { NavLogo } from "@/components/AnimatedLogo";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n";
 
 const navigationItems = [
   { name: "Home", href: "#home" },
@@ -15,6 +16,7 @@ const navigationItems = [
 ];
 
 export const Navigation = () => {
+  const { isHebrew, language, setLanguage, t } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
@@ -55,6 +57,8 @@ export const Navigation = () => {
     setIsMobileMenuOpen(false);
   };
 
+  const changeLanguage = () => setLanguage(language === "en" ? "he" : "en");
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -83,7 +87,7 @@ export const Navigation = () => {
               {/* Logo */}
               <motion.button
                 type="button"
-                aria-label="Back to homepage"
+                aria-label={t("Back to homepage")}
                 whileHover={{
                   scale: 1.02,
                   z: 5,
@@ -97,7 +101,7 @@ export const Navigation = () => {
               </motion.button>
 
               {/* Desktop Navigation */}
-              <div className="hidden lg:flex items-center space-x-8">
+              <div className="hidden lg:flex items-center gap-2 xl:gap-5">
                 {navigationItems.map((item) => (
                   <motion.button
                     key={item.name}
@@ -115,7 +119,7 @@ export const Navigation = () => {
                     }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    {item.name}
+                    {t(item.name)}
                     {activeSection === item.href.substring(1) && (
                       <motion.div
                         layoutId="activeIndicator"
@@ -129,20 +133,36 @@ export const Navigation = () => {
                 ))}
               </div>
 
-              {/* CTA Button */}
-              <div className="hidden lg:block">
+              {/* Desktop contact CTA and language switch */}
+              <div className="hidden lg:flex items-center gap-3">
                 <PremiumButton
                   variant="primary"
                   size="sm"
                   onClick={() => scrollToSection("#contact")}
                 >
-                  Let&apos;s Work Together
+                  {t("Let's Work Together")}
                 </PremiumButton>
+                <button type="button" onClick={changeLanguage}
+                  aria-label={isHebrew ? "Switch to English" : "מעבר לעברית"}
+                  className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-300/80 bg-white/75 px-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                >
+                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-4 w-4"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-3 3-3 15 0 18M12 3c3 3 3 15 0 18"/></svg>
+                  <span lang={isHebrew ? "en" : "he"}>{isHebrew ? "English" : "עברית"}</span>
+                </button>
               </div>
+
+              <div className="flex items-center gap-2 lg:hidden">
+                <button type="button" onClick={changeLanguage}
+                  aria-label={isHebrew ? "Switch to English" : "מעבר לעברית"}
+                  className="inline-flex h-11 min-w-[65px] items-center justify-center gap-1.5 rounded-xl border border-slate-300/70 bg-white/75 px-2.5 text-sm font-bold text-slate-700 shadow-sm transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                >
+                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-4 w-4"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-3 3-3 15 0 18M12 3c3 3 3 15 0 18"/></svg>
+                  <span lang={isHebrew ? "en" : "he"}>{isHebrew ? "EN" : "עברית"}</span>
+                </button>
 
               {/* Mobile Menu Button */}
               <motion.button
-                className="lg:hidden relative w-11 h-11 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70" aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={isMobileMenuOpen} aria-controls="mobile-navigation-menu"
+                className="lg:hidden relative w-11 h-11 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70" aria-label={t(isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu")} aria-expanded={isMobileMenuOpen} aria-controls="mobile-navigation-menu"
                 onClick={toggleMobileMenu}
                 whileTap={{ scale: 0.95 }}
               >
@@ -170,6 +190,7 @@ export const Navigation = () => {
                   transition={{ duration: 0.2 }}
                 />
               </motion.button>
+              </div>
             </div>
           </GlassCard>
         </div>
@@ -192,7 +213,7 @@ export const Navigation = () => {
                     key={item.name}
                     onClick={() => scrollToSection(item.href)}
                     className={cn(
-                      "text-left px-4 py-3 text-lg font-medium transition-colors duration-300 rounded-xl",
+                      "text-start px-4 py-3 text-lg font-medium transition-colors duration-300 rounded-xl",
                       activeSection === item.href.substring(1)
                         ? "text-blue-600 bg-blue-50/50"
                         : "text-slate-700 hover:text-blue-600 hover:bg-white/20"
@@ -207,7 +228,7 @@ export const Navigation = () => {
                     }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    {item.name}
+                    {t(item.name)}
                   </motion.button>
                 ))}
                 
@@ -223,7 +244,7 @@ export const Navigation = () => {
                     className="w-full"
                     onClick={() => scrollToSection("#contact")}
                   >
-                    Let&apos;s Work Together
+                    {t("Let's Work Together")}
                   </PremiumButton>
                 </motion.div>
               </div>
