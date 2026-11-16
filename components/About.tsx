@@ -11,6 +11,7 @@ import {
   PremiumButton,
   animations
 } from "@/components/DesignSystem";
+import { useLanguage } from "@/lib/i18n";
 
 const skills = [
   "Digital Painting",
@@ -40,6 +41,7 @@ const scrollToSection = (href: string) => {
 };
 
 export const About = () => {
+  const { t } = useLanguage();
   return (
     <Section id="about" className="py-20 lg:py-32" background="minimal">
       <Container size="xl">
@@ -66,7 +68,7 @@ export const About = () => {
                 >
                   <Image
                     src="/Essets/passport.jpg"
-                    alt="Ilan Sastiel - Creative Designer"
+                    alt={t("Ilan Sastiel") + " - " + t("Creative Designer")}
                     fill
                     className="object-cover object-center"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -97,7 +99,7 @@ export const About = () => {
                           {stat.number}
                         </div>
                         <div className="text-xs text-slate-600 font-medium">
-                          {stat.label}
+                          {t(stat.label)}
                         </div>
                       </motion.div>
                     </GlassCard>
@@ -119,12 +121,12 @@ export const About = () => {
                 transition={{ duration: 0.6 }}
               >
                 <span className="inline-block px-4 py-2 bg-blue-100 text-blue-600 rounded-full text-sm font-medium mb-4">
-                  About Me
+                  {t("About Me")}
                 </span>
               </motion.div>
 
               <Heading level={2} className="mb-6">
-                Passionate Multidisciplinary Designer
+                {t("Passionate Multidisciplinary Designer")}
               </Heading>
 
               <div className="space-y-4 text-slate-600 leading-relaxed">
@@ -133,7 +135,7 @@ export const About = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.1 }}
                 >
-                  I&apos;m <strong className="text-slate-800">Ilan Sastiel</strong>, a passionate multidisciplinary designer who loves creating meaningful, beautiful visuals.
+                  {t("I'm")} <strong className="text-slate-800">{t("Ilan Sastiel")}</strong>{t(", a passionate multidisciplinary designer who loves creating meaningful, beautiful visuals.")}
                 </motion.p>
 
                 <motion.p
@@ -141,7 +143,7 @@ export const About = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
                 >
-                  My background includes digital painting, branding, logo design, and user interface mockups. I&apos;m not just about the art – I&apos;m also a thinker, a planner, and a storyteller.
+                  {t("My background includes digital painting, branding, logo design, and user interface mockups. I'm not just about the art – I'm also a thinker, a planner, and a storyteller.")}
                 </motion.p>
 
                 <motion.p
@@ -149,7 +151,7 @@ export const About = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
                 >
-                  My journey includes hands-on experience with everything from intuitive sketching to sleek landing pages and full campaign identity systems.
+                  {t("My journey includes hands-on experience with everything from intuitive sketching to sleek landing pages and full campaign identity systems.")}
                 </motion.p>
 
                 <motion.p
@@ -157,7 +159,7 @@ export const About = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
                 >
-                  Beyond traditional graphic design, I work with AI across visual creation and development. I use ChatGPT, Runway and Photoshop for research, concepts and motion, and experiment with ComfyUI. With OpenAI Codex, I also build and iterate on websites and interactive game prototypes, combining design direction with AI-assisted coding and testing.
+                  {t("Beyond traditional graphic design, I work with AI across visual creation and development. I use ChatGPT, Runway and Photoshop for research, concepts and motion, and experiment with ComfyUI. With OpenAI Codex, I also build and iterate on websites and interactive game prototypes, combining design direction with AI-assisted coding and testing.")}
                 </motion.p>
 
                 <motion.p
@@ -166,7 +168,7 @@ export const About = () => {
                   transition={{ duration: 0.6, delay: 0.5 }}
                   className="text-slate-800 font-medium"
                 >
-                  This portfolio is a reflection of my dedication, creativity, and constant curiosity. Thanks for stopping by!
+                  {t("This portfolio is a reflection of my dedication, creativity, and constant curiosity. Thanks for stopping by!")}
                 </motion.p>
               </div>
             </div>
@@ -179,7 +181,7 @@ export const About = () => {
               className="space-y-4"
             >
               <h3 className="text-lg font-semibold text-slate-800 mb-3">
-                Core Expertise
+                {t("Core Expertise")}
               </h3>
               <div className="flex flex-wrap gap-2">
                 {skills.map((skill, index) => (
@@ -195,7 +197,7 @@ export const About = () => {
                     }}
                     className="px-3 py-1.5 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200/50 text-slate-700 rounded-full text-sm font-medium hover:from-blue-100 hover:to-purple-100 hover:animate-[focus-pulse_0.3s_ease-in-out] transition-colors duration-300 cursor-default"
                   >
-                    {skill}
+                    {t(skill)}
                   </motion.span>
                 ))}
               </div>
@@ -213,14 +215,14 @@ export const About = () => {
                 size="lg"
                 onClick={() => scrollToSection("#portfolio")}
               >
-                View My Work
+                {t("View My Work")}
               </PremiumButton>
               <PremiumButton
                 variant="secondary"
                 size="lg"
                 onClick={() => scrollToSection("#contact")}
               >
-                Let&apos;s Connect
+                {t("Let's Connect")}
               </PremiumButton>
             </motion.div>
           </motion.div>
