@@ -1,21 +1,23 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const assert = require("node:assert/strict");
-const { chromium } = require("playwright");
+const { chromium, webkit } = require("playwright");
 
 const TARGET = process.env.LEARNING_URL || "http://127.0.0.1:3000/learning-lab";
 const OUT = path.resolve("visual-qa/learning");
 fs.mkdirSync(OUT, { recursive: true });
 
 async function main() {
-  const browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
   const errors = [];
-  try {
-    for (const preset of [
-      { name: "mobile", viewport: { width: 390, height: 844 }, scale: 2 },
-      { name: "tablet", viewport: { width: 820, height: 1024 }, scale: 1 },
-      { name: "desktop", viewport: { width: 1440, height: 900 }, scale: 1 }
-    ]) {
+  for (const preset of [
+    { name: "mobile-small", engine: chromium, viewport: { width: 320, height: 720 }, scale: 2 },
+    { name: "mobile", engine: chromium, viewport: { width: 390, height: 844 }, scale: 2 },
+    { name: "mobile-safari", engine: webkit, viewport: { width: 390, height: 844 }, scale: 2 },
+    { name: "tablet", engine: chromium, viewport: { width: 820, height: 1024 }, scale: 1 },
+    { name: "desktop", engine: chromium, viewport: { width: 1440, height: 900 }, scale: 1 }
+  ]) {
+    const browser = await preset.engine.launch({ headless: true, args: preset.engine === chromium ? ["--no-sandbox"] : [] });
+    try {
       const page = await browser.newPage({ viewport: preset.viewport, deviceScaleFactor: preset.scale });
       page.on("pageerror", err => errors.push(preset.name + ": " + err.message));
       await page.goto(TARGET.replace(/learning-lab\/?$/, "") + "#portfolio", { waitUntil: "domcontentloaded" });
@@ -77,15 +79,15 @@ async function main() {
       await testOverflow(page, preset.name + " restart");
       console.log("PASS", preset.name, preset.viewport.width, "all stages, 5 decisions, restart & overflow");
       await page.close();
+    } finally {
+      await browser.close();
     }
-    if (errors.length) {
-      console.error("BROWSER ERRORS", errors);
-      throw new Error("Unhandled browser errors: " + errors.length);
-    }
-    console.log("VISUAL QA PASSED: screenshots at", OUT);
-  } finally {
-    await browser.close();
   }
+  if (errors.length) {
+    console.error("BROWSER ERRORS", errors);
+    throw new Error("Unhandled browser errors: " + errors.length);
+  }
+  console.log("VISUAL QA PASSED: screenshots at", OUT);
 }
 
 async function testOverflow(page, label) {
