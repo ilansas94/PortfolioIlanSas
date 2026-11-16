@@ -61,7 +61,7 @@ const portfolioItems: PortfolioItem[] = [
   {
     id: 17,
     title: "FIRST SHIFT",
-    categories: ["Branding", "AI & Interactive", "UI/UX Design"],
+    categories: ["UI/UX Design", "AI & Interactive", "Branding"],
     cardTags: ["AI-Assisted Development", "Interactive Learning"],
     description: "An independent Hebrew onboarding concept for hospital employees, pairing an editorial visual identity with animated wayfinding, interactive workplace scenarios, and a coordinated welcome kit. Built as a responsive experience with AI-assisted development.",
     image: "/first-shift/portfolio-cover.svg",

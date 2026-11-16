@@ -183,3 +183,212 @@ react/cjs/react-jsx-runtime.production.min.js:
    *)
 */
 </script>
+<style>
+
+/* FIRST SHIFT — original welcome-kit visual refinement, local approval draft */
+.fs-kit{display:none !important}
+.fs-kit-backdrop{position:fixed;inset:0;z-index:1099;background:rgba(23,10,30,.76);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;visibility:hidden;transition:opacity .28s ease,visibility .28s ease}
+body.fs-kit-active{overflow:hidden}
+body.fs-kit-active .fs-kit-backdrop{opacity:1;visibility:visible}
+body.fs-kit-active .fs-kit{display:block !important;position:fixed;z-index:1100;inset:clamp(14px,4vh,44px) max(18px,calc((100vw - 1200px)/2));width:auto;max-width:none;max-height:none;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;background:#f9f4ea;box-shadow:0 32px 90px #140b1a88;padding:clamp(22px,3.3vw,42px);border-radius:6px;animation:fs-kit-modal-in .37s cubic-bezier(.16,.75,.22,1) both}
+@keyframes fs-kit-modal-in{from{opacity:0;transform:translateY(16px) scale(.986)}to{opacity:1;transform:translateY(0) scale(1)}}
+.fs-kit-modal-head{display:flex;justify-content:space-between;align-items:center;gap:16px;border-bottom:1px solid rgba(43,24,51,.18);padding-bottom:15px;margin-bottom:26px}
+.fs-kit-modal-label{font:900 .72rem/1.3 Arial,sans-serif;letter-spacing:.20em;direction:ltr;color:#76596b}
+.fs-kit-close{display:inline-flex;align-items:center;gap:9px;justify-content:center;padding:10px 15px;background:var(--ink);color:var(--paper);min-height:42px;font-size:.82rem;font-weight:800;border-radius:3px;transition:background .2s}
+.fs-kit-close:hover{background:#513158}
+.fs-kit-header{margin-bottom:24px;align-items:center}
+.fs-kit-header h2{font-size:clamp(2.5rem,5vw,4.25rem);letter-spacing:-.055em}
+.fs-kit-header p{max-width:330px;line-height:1.65;color:#635267}
+.fs-kit-grid{gap:18px}
+.fs-piece{min-height:480px;padding:clamp(20px,2.25vw,32px);border:1px solid #2b183324;transition:transform .28s ease, box-shadow .28s ease}
+.fs-piece h3{margin:28px 0 13px;font-size:clamp(2rem,3vw,3.25rem)}
+.fs-poster{background:#2b1833;overflow:hidden}
+.fs-poster-art{position:relative;background:none!important;min-height:220px;margin:20px -5px -10px;width:calc(100% + 10px);display:flex;align-items:end;justify-content:center;overflow:hidden;border:1px solid rgba(255,255,255,.12);border-radius:2px;isolation:isolate}
+.fs-poster-art svg{width:100%;height:100%;min-height:220px;max-height:330px;object-fit:cover;flex:1;display:block}
+.fs-poster>.fs-brand{color:#ffdccb}
+.fs-poster-art .fs-poster-route{stroke-dasharray:600;stroke-dashoffset:0}
+.fs-poster-art .fs-poster-node{fill:#f8f1e6;stroke:#f26a4b;stroke-width:5}
+.fs-infographic{background:#ede4ee;position:relative}
+.fs-infographic ol{position:relative;border-inline-start:0!important;margin:20px 0 0!important;padding:0 34px 0 0!important;display:grid;gap:12px}
+.fs-infographic ol::before{content:"";position:absolute;right:10px;top:var(--fs-line-top,32px);bottom:var(--fs-line-bottom,32px);width:5px;border-radius:9px;background:#f26849;box-shadow:1px 0 0 #a83d30}
+.fs-infographic li{position:relative;display:block!important;padding:4px 0 4px!important}
+.fs-infographic li::before{content:"";position:absolute;z-index:2;right:-30px;top:50%;width:17px;height:17px;transform:translateY(-50%);border:4px solid #f26849;border-radius:50%;background:#fffaf5;box-shadow:0 0 0 3px #ede4ee;transition:transform .25s, box-shadow .25s}
+.fs-infographic li:focus-within::before,.fs-infographic li:hover::before{transform:translateY(-50%) scale(1.17);box-shadow:0 0 0 6px #f2684933}
+.fs-kit-stop{min-height:56px!important;gap:13px!important;border-radius:3px;padding:7px!important}
+.fs-kit-stop:focus-visible{outline:2px solid #ad4b36;outline-offset:3px}
+.fs-kit-stop div strong{font-size:1rem;line-height:1.4}
+.fs-kit-stop div span{font-size:.78rem;line-height:1.45;color:#64526b}
+.fs-kit-stop:disabled{opacity:.6}
+.fs-checklist{background:#f16447;position:relative;isolation:isolate}
+.fs-checklist::before{content:"";position:absolute;pointer-events:none;left:-75px;bottom:-65px;width:300px;height:300px;border-radius:50%;border:1px solid #ffcdc080;box-shadow:0 0 0 45px #f7be951b,0 0 0 95px #ffe0bd12;z-index:-1}
+.fs-checklist::after{content:"";position:absolute;pointer-events:none;left:25px;bottom:35px;width:88px;height:88px;border:2px solid #2b18333a;border-radius:50%;z-index:-1}
+.fs-checklist li:has(input:checked){background:#fff5eb35}
+.fs-checklist input{width:19px;height:19px}
+.fs-checklist label{font-size:.9rem;line-height:1.5}
+.fs-kit-invite{margin-top:13px;min-height:48px;width:max-content;max-width:100%;display:inline-flex;gap:10px;align-items:center;justify-content:center;border:1px solid #2b1833;padding:12px 18px;color:#2b1833;background:transparent;font-size:.91rem;font-weight:900;transition:background .2s,transform .2s}
+.fs-kit-invite:hover{background:#e9dce5;transform:translateY(-2px)}
+.fs-kit-invite svg{width:21px;height:21px}
+.fs-hero-copy .fs-kit-invite{margin-inline-end:12px}
+.fs-kit-invite:focus-visible,.fs-kit-close:focus-visible{outline:3px solid #f16c4e;outline-offset:4px}
+.fs-kit-clarity{font-size:.78rem;color:#887883;margin:6px 0 0}
+.fs-kit[data-approved-status]{content-visibility:auto}
+@media(max-width:780px){
+ body.fs-kit-active .fs-kit{inset:10px 9px;max-width:none;padding:18px 14px 24px;border-radius:3px;scrollbar-gutter:auto}
+ .fs-kit-modal-head{margin-bottom:20px}
+ .fs-kit-header{display:block}.fs-kit-header p{margin-top:8px;font-size:.85rem}
+ .fs-kit-grid{grid-template-columns:1fr!important;gap:13px}
+ .fs-piece{min-height:0;padding:25px;overflow:hidden}
+ .fs-poster{min-height:510px}
+ .fs-poster-art{min-height:225px;max-height:320px}
+ .fs-poster-art svg{min-height:235px;max-height:280px}
+ .fs-infographic{min-height:365px}
+ .fs-infographic ol{margin-top:19px!important}
+ .fs-kit-invite{min-height:44px}
+}
+@media(max-width:375px){.fs-piece{padding:21px}.fs-poster{min-height:480px}.fs-kit-modal-head{gap:7px}.fs-kit-close{padding:9px 10px;font-size:.75rem}}
+@media(prefers-reduced-motion:reduce){.fs-kit-backdrop,.fs-kit,.fs-kit-invite,.fs-infographic li::before{transition:none!important;animation:none!important}}
+
+</style>
+<script>
+
+(() => {
+ const kitSVG = `<svg role="img" aria-label="איור מקורי של דלת פתוחה ומסלול ההתחלה" viewBox="0 0 560 350" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+<defs>
+ <linearGradient id="fsNewPaper" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f7eadb"/><stop offset="1" stop-color="#f2d5c4"/></linearGradient>
+ <linearGradient id="fsNewDoor" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff9068"/><stop offset="1" stop-color="#ef4d35"/></linearGradient>
+ <linearGradient id="fsNewHall" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#54324f"/><stop offset="1" stop-color="#2a1731"/></linearGradient>
+ <pattern id="fsNewGrid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" stroke="#4b324c" stroke-opacity=".11" stroke-width="1" fill="none"/></pattern>
+</defs>
+<!-- A branded architectural threshold, deliberately distinct from the hero's hospital corridor. -->
+<rect width="560" height="350" fill="url(#fsNewPaper)"/>
+<path d="M0 350V0H85L142 350Z" fill="#dfc9cd"/>
+<path d="M560 350V0H450L402 350Z" fill="#eed8cf"/>
+<path d="M135 0H425L494 350H72Z" fill="url(#fsNewGrid)"/>
+<path d="M228 33H400V282H228Z" fill="#2b1833"/>
+<path d="M246 51H379V267H246Z" fill="url(#fsNewHall)"/>
+<path d="M263 69H368V250H263Z" fill="#faeddc"/>
+<path d="M263 69H368V250H263Z" fill="#fbf5e8" opacity=".65"/>
+<path d="M368 69L415 42V271L368 250Z" fill="url(#fsNewDoor)"/>
+<path d="M368 69L415 42V271L368 250Z" fill="#df402e" opacity=".13"/>
+<path d="M267 255L369 249L460 350H89Z" fill="#f8d1b9" opacity=".78"/>
+<path d="M247 51H379" stroke="#f5cdb9" stroke-opacity=".5" stroke-width="3"/>
+<path d="M227 283H401" stroke="#663653" stroke-width="8" opacity=".24"/>
+<path d="M0 350H559" stroke="#2b1833" stroke-width="9"/>
+<path class="fs-poster-route" d="M29 333H155Q179 333 179 308V295Q179 275 203 275H253Q277 275 277 254V242Q277 221 299 221H326" fill="none" stroke="#f26849" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+<!-- Five white milestones evenly distributed by SVG path length, including the route endpoint. -->
+<circle class="fs-poster-node" cx="104" cy="333" r="8"/>
+<circle class="fs-poster-node" cx="175.63" cy="323.23" r="8"/>
+<circle class="fs-poster-node" cx="213.46" cy="275" r="8"/>
+<circle class="fs-poster-node" cx="276.98" cy="255.10" r="8"/>
+<circle class="fs-poster-node" cx="326" cy="221" r="10"/>
+<g fill="#2b1833" font-family="Arial,Helvetica,sans-serif" font-weight="900" text-anchor="start">
+ <text x="30" y="43" font-size="16" letter-spacing="5">01 / START HERE</text>
+ <text x="30" y="66" font-size="8" letter-spacing="2.4">THE FIRST STEP COUNTS</text>
+</g>
+<g transform="translate(490 265) rotate(90)"><path d="M0 0H40M26 -14l14 14-14 14" fill="none" stroke="#2b1833" stroke-width="4" stroke-linecap="square"/></g>
+<path d="M429 6V78" stroke="#ef6548" stroke-width="3"/>
+<circle cx="429" cy="82" r="6" fill="#fff6ec" stroke="#ef6548" stroke-width="3"/>
+</svg>`;
+ let previousFocus = null;
+ const body = document.body;
+ const veil = document.createElement('div');
+ veil.className='fs-kit-backdrop';
+ veil.setAttribute('aria-hidden','true');
+ veil.addEventListener('click',closeKit);
+ body.appendChild(veil);
+ function kit(){ return document.querySelector('.fs-kit'); }
+ // The infographic rail must begin and end precisely at the first/last milestone centres.
+ // The rows can change height when Hebrew wraps or fonts load, so fixed offsets would leave a spike.
+ let measuredList=null;
+ let railObserver=null;
+ function alignRail(){
+   const list=measuredList;
+   if(!list || !list.isConnected) return;
+   const rows=Array.from(list.children).filter(el=>el.matches('li'));
+   if(rows.length<2) return;
+   // DOM rects preserve subpixel precision; undo the modal's scale-in animation while measuring.
+   const modal=list.closest('.fs-kit');
+   const matrix=modal ? getComputedStyle(modal).transform : 'none';
+   const values=matrix!=='none' ? matrix.match(/matrix\(([^)]+)\)/) : null;
+   const scaleY=values ? Number(values[1].split(',')[3]) : 1;
+   const factor=Number.isFinite(scaleY) && scaleY>0 ? scaleY : 1;
+   const box=list.getBoundingClientRect();
+   const first=rows[0].getBoundingClientRect();
+   const last=rows[rows.length-1].getBoundingClientRect();
+   const top=(first.top + first.height/2 - box.top)/factor;
+   const bottom=(box.bottom - (last.top + last.height/2))/factor;
+   list.style.setProperty('--fs-line-top',top.toFixed(2)+'px');
+   list.style.setProperty('--fs-line-bottom',bottom.toFixed(2)+'px');
+ }
+ function syncRail(){
+   const list=kit()?.querySelector('.fs-infographic ol');
+   if(!list) return;
+   if(list !== measuredList){
+     railObserver?.disconnect();
+     measuredList=list;
+     if(typeof ResizeObserver!=='undefined'){
+       railObserver=new ResizeObserver(alignRail);
+       railObserver.observe(list);
+       Array.from(list.children).forEach(row=>railObserver.observe(row));
+     }
+   }
+   alignRail();
+ }
+ function openKit(){
+   const panel=kit(); if(!panel)return;
+   previousFocus=document.activeElement;
+   body.classList.add('fs-kit-active');
+   panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-label','ערכת הקליטה — שלושה תוצרים');
+   panel.removeAttribute('inert');panel.removeAttribute('aria-hidden');panel.scrollTop=0;
+   const close=panel.querySelector('.fs-kit-close');if(close)close.focus({preventScroll:true});
+   requestAnimationFrame(syncRail);
+ }
+ function closeKit(){
+   body.classList.remove('fs-kit-active');
+   const panel=kit();if(panel){panel.setAttribute('aria-hidden','true');panel.setAttribute('inert','');panel.removeAttribute('aria-modal');}
+   if(previousFocus&&typeof previousFocus.focus==='function')previousFocus.focus({preventScroll:true});
+   previousFocus=null;
+ }
+ document.addEventListener('keydown', event=>{
+   if(event.key==='Escape' && body.classList.contains('fs-kit-active')){event.preventDefault();closeKit();}
+   if(event.key==='Tab' && body.classList.contains('fs-kit-active')){
+      const all=Array.from(kit()?.querySelectorAll('button:not([disabled]),a[href],input:not([disabled])')||[]).filter(x=>x.getClientRects().length);
+      if(!all.length)return;const first=all[0],last=all[all.length-1];
+      if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+      else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+   }
+ });
+ let locked=false;
+ function enhance(){
+   if(locked)return;locked=true;
+   try{
+     const panel=kit();
+     if(panel){
+       if(!panel.querySelector('.fs-kit-modal-head')){
+        const head=document.createElement('div');head.className='fs-kit-modal-head';
+        head.innerHTML='<div class="fs-kit-modal-label">FIRST SHIFT / WELCOME COLLECTION</div><button class="fs-kit-close" type="button" aria-label="סגירת ערכת הקליטה">סגירה <span aria-hidden="true">×</span></button>';
+        panel.prepend(head);head.querySelector('button').addEventListener('click',closeKit);
+       }
+       const art=panel.querySelector('.fs-poster-art');if(art&&!art.querySelector('svg'))art.innerHTML=kitSVG;
+       if(!body.classList.contains('fs-kit-active')){panel.setAttribute('inert','');panel.setAttribute('aria-hidden','true');}
+       panel.querySelectorAll('.fs-kit-stop').forEach(button=>{
+         if(!button.dataset.kitListener){button.dataset.kitListener='yes';button.addEventListener('click',()=>{if(body.classList.contains('fs-kit-active'))closeKit();});}
+       });
+     }
+     const intro=document.querySelector('.fs-hero-copy');
+     if(intro&&!intro.querySelector('.fs-kit-invite')){
+        const anchor=intro.querySelector('.fs-action');
+        if(anchor){const trigger=document.createElement('button');trigger.type='button';trigger.className='fs-kit-invite';trigger.innerHTML='<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M9 4v16m5-11h4m-4 4h4"/></svg><span>לצפייה בערכת הקליטה</span><span aria-hidden="true">↗</span>';trigger.addEventListener('click',openKit);anchor.insertAdjacentElement('afterend',trigger);}
+     }
+     syncRail();
+     // Separate the branded kit from the learning journey. Only open it by explicit choice.
+     if(!intro && body.classList.contains('fs-kit-active') && !document.querySelector('.fs-journey'))closeKit();
+   }finally{locked=false;}
+ }
+ const root=document.querySelector('#app')||body;
+ const observer=new MutationObserver(()=>enhance());
+ observer.observe(root,{childList:true,subtree:true});
+ enhance();
+})();
+
+</script>
