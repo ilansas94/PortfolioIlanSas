@@ -119,8 +119,8 @@ export const Hero = () => {
             transition={{ ...animations.fadeInUp.transition, delay: 0.7 }}
             className="text-xl md:text-2xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed"
           >
-            Bringing ideas to life through innovative design, compelling branding, 
-            and stunning visual experiences that captivate and inspire.
+            Bringing ideas to life through thoughtful design, compelling branding, 
+            and AI-enhanced creative workflows that turn ideas into meaningful visual experiences.
           </motion.p>
 
           {/* CTA Buttons */}

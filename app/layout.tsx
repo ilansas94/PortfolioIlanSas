@@ -6,13 +6,13 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Ilan Sastiel | Creative Designer & Digital Artist",
-  description: "Creative designer and digital artist specializing in branding, logo design, digital art, and visual identity. Explore my portfolio of innovative designs and artistic creations.",
-  keywords: ["graphic design", "logo design", "branding", "digital art", "creative designer", "visual identity", "portfolio"],
+  description: "Creative designer and digital artist specializing in branding, visual identity, digital art, and AI-assisted creative workflows. Explore selected design projects and visual concepts.",
+  keywords: ["graphic design", "logo design", "branding", "digital art", "creative designer", "visual identity", "AI-assisted design", "generative AI", "portfolio"],
   authors: [{ name: "Ilan Sastiel" }],
   creator: "Ilan Sastiel",
   openGraph: {
     title: "Ilan Sastiel | Creative Designer & Digital Artist",
-    description: "Creative designer and digital artist specializing in branding, logo design, digital art, and visual identity.",
+    description: "Creative designer and digital artist exploring branding, visual design, and AI-assisted creative workflows.",
     type: "website",
     locale: "en_US",
     siteName: "Ilan Sastiel Portfolio",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Ilan Sastiel | Creative Designer & Digital Artist",
-    description: "Creative designer and digital artist specializing in branding, logo design, digital art, and visual identity.",
+    description: "Creative designer and digital artist exploring branding, visual design, and AI-assisted creative workflows.",
   },
   robots: {
     index: true,
