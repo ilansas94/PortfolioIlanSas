@@ -42,7 +42,9 @@ const tools = [
   "After Effects",
   "Photoshop",
   "Illustrator",
-  "ChatGPT"
+  "ChatGPT",
+  "Runway",
+  "ComfyUI (Exploration)"
 ];
 
 export const Skills = () => {
@@ -130,13 +132,14 @@ export const Skills = () => {
                   AI-Assisted Creative Workflow
                 </h3>
                 <p className="text-slate-600 leading-relaxed">
-                  I blend professional design expertise with generative AI to explore ideas,
-                  develop concepts, and refine visual directions. AI expands the creative
-                  process; human judgment shapes the final result.
+                  My workflow combines ChatGPT for research, ideation, and advanced prompting,
+                  Runway for AI-assisted video and cinematic transitions, and Adobe Photoshop
+                  for professional visual refinement. I also explore node-based generative
+                  workflows in ComfyUI. Creative direction remains my own.
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 lg:max-w-sm">
-                {["Prompt Engineering", "Visual Research", "Concept Development", "Creative Iteration"].map((skill) => (
+                {["Prompt Engineering", "AI Video & Motion", "Visual Concept Development", "Creative Iteration"].map((skill) => (
                   <span
                     key={skill}
                     className="px-4 py-2 rounded-full text-sm font-medium bg-white/70 border border-purple-200/60 text-slate-700"
