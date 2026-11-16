@@ -34,7 +34,7 @@ jobs:
         run: |
           mkdir -p /tmp/visual-qa
           npm install --prefix /tmp/visual-qa --no-save --no-audit --no-fund playwright@1.57.0
-          node /tmp/visual-qa/node_modules/playwright/cli.js install --with-deps chromium
+          node /tmp/visual-qa/node_modules/playwright/cli.js install --with-deps chromium webkit
       - name: Test user journeys and capture responsive screenshots
         run: |
           (pnpm start --port 3000 > /tmp/learning-server.log 2>&1 &)
