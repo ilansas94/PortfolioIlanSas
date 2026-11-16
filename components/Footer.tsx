@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { FooterLogo } from "@/components/AnimatedLogo";
 import { Section, Container, GlassCard } from "@/components/DesignSystem";
+import { useLanguage } from "@/lib/i18n";
 
 const socialLinks = [
   {
@@ -37,6 +38,7 @@ const scrollToSection = (href: string) => {
 };
 
 export const Footer = () => {
+  const { t, isHebrew } = useLanguage();
   return (
     <Section className="py-16" background="gradient">
       <Container size="xl">
@@ -61,8 +63,7 @@ export const Footer = () => {
                 <FooterLogo />
               </motion.div>
               <p className="text-slate-600 leading-relaxed mt-4">
-                Creative designer and digital artist passionate about bringing ideas to life 
-                through innovative design and compelling visual experiences.
+                {t("Creative designer and digital artist passionate about bringing ideas to life through innovative design and compelling visual experiences.")}
               </p>
               
               {/* Social Links */}
@@ -94,7 +95,7 @@ export const Footer = () => {
             {/* Quick Links */}
             <div className="lg:col-span-1">
               <h3 className="text-lg font-semibold text-slate-800 mb-4">
-                Quick Links
+                {t("Quick Links")}
               </h3>
               <div className="space-y-2">
                 {quickLinks.map((link, index) => (
@@ -104,7 +105,7 @@ export const Footer = () => {
                     className="block text-slate-600 hover:text-blue-600 transition-colors duration-300"
                     whileHover={{ x: 5 }}
                   >
-                    {link.name}
+                    {t(link.name)}
                   </motion.button>
                 ))}
               </div>
@@ -113,11 +114,11 @@ export const Footer = () => {
             {/* Contact Info */}
             <div className="lg:col-span-1">
               <h3 className="text-lg font-semibold text-slate-800 mb-4">
-                Get In Touch
+                {t("Get In Touch")}
               </h3>
               <div className="space-y-3 text-slate-600">
-                <p>Ready to bring your vision to life?</p>
-                <p>Let&apos;s create something amazing together.</p>
+                <p>{t("Ready to bring your vision to life?")}</p>
+                <p>{t("Let's create something amazing together.")}</p>
                 <motion.button
                   onClick={() => scrollToSection("#contact")}
                   className="inline-block px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors duration-300"
@@ -128,7 +129,7 @@ export const Footer = () => {
                 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  Start a Project
+                  {t("Start a Project")}
                 </motion.button>
               </div>
             </div>
@@ -137,8 +138,7 @@ export const Footer = () => {
           {/* Bottom Bar */}
           <div className="border-t border-white/20 mt-8 pt-6 text-center">
             <p className="text-slate-500 text-sm">
-              © {new Date().getFullYear()} Ilan Sastiel. All rights reserved. 
-              Designed and developed with passion.
+              © {new Date().getFullYear()} {isHebrew ? "אילן ששתיאל" : "Ilan Sastiel"}. {t("All rights reserved. Designed and developed with passion.")}
             </p>
           </div>
         </GlassCard>
