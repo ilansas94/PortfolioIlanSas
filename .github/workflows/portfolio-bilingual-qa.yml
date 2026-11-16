@@ -1,0 +1,53 @@
+name: Bilingual portfolio visual review
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - "app/page.tsx"
+      - "app/layout.tsx"
+      - "app/globals.css"
+      - "components/**"
+      - "lib/**"
+      - "scripts/portfolio-bilingual-qa.cjs"
+      - ".github/workflows/portfolio-bilingual-qa.yml"
+permissions:
+  contents: read
+jobs:
+  bilingual-qa:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "20"
+      - name: Install
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.28.0 --activate
+          pnpm install --frozen-lockfile
+      - name: Production build and TypeScript
+        run: pnpm build
+      - name: Install Playwright in isolated test environment
+        run: |
+          mkdir -p /tmp/portfolio-bilingual-qa
+          npm install --prefix /tmp/portfolio-bilingual-qa --no-save --no-audit --no-fund playwright@1.57.0
+          node /tmp/portfolio-bilingual-qa/node_modules/playwright/cli.js install --with-deps chromium webkit
+      - name: Verify interactive English and Hebrew experiences
+        run: |
+          (pnpm start --port 3000 > /tmp/portfolio-bilingual-server.log 2>&1 &)
+          for i in $(seq 1 50); do
+            if curl -fsS http://127.0.0.1:3000/ > /dev/null; then break; fi
+            sleep 2
+          done
+          NODE_PATH=/tmp/portfolio-bilingual-qa/node_modules node scripts/portfolio-bilingual-qa.cjs
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: bilingual-portfolio-review
+          path: bilingual-visual-qa/
+          if-no-files-found: warn
+          retention-days: 5
