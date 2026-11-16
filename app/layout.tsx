@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Ilan Sastiel | Creative Designer & Digital Artist",
   description: "Creative designer and digital artist specializing in branding, visual identity, digital art, and AI-assisted creative workflows. Explore selected design projects and visual concepts.",
-  keywords: ["graphic design", "logo design", "branding", "digital art", "creative designer", "visual identity", "AI-assisted design", "generative AI", "portfolio"],
+  keywords: ["graphic design", "logo design", "branding", "digital art", "creative designer", "visual identity", "AI-assisted design", "generative AI", "Runway", "AI video", "portfolio"],
   authors: [{ name: "Ilan Sastiel" }],
   creator: "Ilan Sastiel",
   openGraph: {
