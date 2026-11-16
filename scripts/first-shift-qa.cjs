@@ -48,6 +48,23 @@ async function checkOverflow(page, label) {
       const work = await page.goto(url + "/first-shift", { waitUntil: "networkidle" });
       assert.equal(work.status(), 200, "Full FIRST SHIFT experience must load at its short URL");
       assert.ok((await page.title()).includes("FIRST SHIFT"), "Document title should match the source");
+
+      const portfolioHeaderLink = page.locator(".fs-top a.fs-portfolio-back");
+      await portfolioHeaderLink.waitFor({ state: "visible" });
+      assert.equal(await portfolioHeaderLink.getAttribute("href"), "/#portfolio");
+      assert.equal(await portfolioHeaderLink.innerText(), "לתיק העבודות");
+      const arrowPath = await portfolioHeaderLink.locator("svg path").getAttribute("d");
+      assert.equal(arrowPath, "M20 12H4m7-7-7 7 7 7", "Must use the exact Safe Moments arrow geometry");
+      const linkAppearance = await portfolioHeaderLink.evaluate(el => ({
+        display: getComputedStyle(el).display,
+        textDecoration: getComputedStyle(el).textDecorationLine,
+        iconWidth: el.querySelector("svg")?.getBoundingClientRect().width
+      }));
+      assert.ok(["flex", "inline-flex"].includes(linkAppearance.display), "Header link stays flex-aligned");
+      assert.equal(linkAppearance.textDecoration, "none", "No underlined emoji styling");
+      assert.ok(linkAppearance.iconWidth >= 15 && linkAppearance.iconWidth <= 17, "SVG icon size matches Safe Moments");
+      await portfolioHeaderLink.screenshot({ path: path.join(output, preset.name + "-clean-portfolio-header-link.png") });
+
       await page.locator(".fs-cover").waitFor({ state: "visible" });
       await page.waitForTimeout(2500);
       assert.equal(await page.locator(".fs-cover").getAttribute("data-ready"), "true", "Original illustration is ready");
