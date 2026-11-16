@@ -12,6 +12,8 @@ import {
   animations
 } from "@/components/DesignSystem";
 
+const cardTagClass = "rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700";
+
 const filterCategories = [
   "All", "Branding", "Logo Design", "Print Design", "Digital Art",
   "UI/UX Design", "Illustration", "Portrait", "AI & Interactive"
@@ -567,7 +569,7 @@ export const Portfolio = () => {
 
                   <div className="p-6">
                     <div className="mb-3 flex items-center justify-between gap-2">
-                      <span className="rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700">
+                      <span className={cardTagClass}>
                         {item.categories[0]}
                       </span>
                       {item.isPrototype && (
@@ -580,7 +582,7 @@ export const Portfolio = () => {
                     {item.cardTags && (
                       <div className="mb-3 flex flex-wrap gap-1.5">
                         {item.cardTags.map(tag => (
-                          <span key={tag} className="rounded bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700">
+                          <span key={tag} className={cardTagClass}>
                             {tag}
                           </span>
                         ))}
