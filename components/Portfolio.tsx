@@ -457,7 +457,7 @@ export const Portfolio = () => {
                   Explore the live lesson <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-emerald-200/40 transition-transform duration-300 group-hover:translate-x-1">↗</span>
                 </div>
               </div>
-              <div className="relative hidden min-h-[315px] items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_50%_40%,rgba(50,201,178,0.22),transparent_58%)] sm:flex">
+              <div className="relative flex min-h-[270px] items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_50%_40%,rgba(50,201,178,0.22),transparent_58%)] sm:min-h-[315px]">
                 <div className="absolute h-[320px] w-[320px] rounded-full border border-teal-200/10" />
                 <div className="absolute h-[250px] w-[250px] rounded-full border border-teal-200/10" />
                 <div className="relative w-[265px] -rotate-[6deg] rounded-[22px] border border-white/10 bg-white p-5 shadow-2xl transition-transform duration-500 group-hover:-rotate-2">
