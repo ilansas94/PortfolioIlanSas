@@ -103,12 +103,25 @@ export const HeroLogo = () => (
   />
 );
 
+// Crop the actual vector animation to its four emblem layers: no lettering in the
+// navigation, and no manually recreated or rasterized approximation of the brand.
+const emblemLayers = new Set(["PEN Outlines", "Cyen Outlines", "Yellow Outlines", "Magenta Outlines"]);
+const emblemAnimation = {
+  ...logoAnimation,
+  layers: logoAnimation.layers.filter(layer => emblemLayers.has(layer.nm))
+};
+
 export const NavLogo = () => (
-  <AnimatedLogo
-    size="md"
-    className="w-16 h-16 lg:w-24 lg:h-24 transition-all duration-300 lg:scale-110"
-    hover={true}
-  />
+  <span className="relative block h-[52px] w-[52px] overflow-hidden rounded-xl lg:h-[56px] lg:w-[56px]" aria-hidden="true">
+    <span className="pointer-events-none absolute left-1/2 top-[-9px] block h-[148px] w-[264px] -translate-x-1/2 lg:top-[-8px]">
+      <Lottie
+        animationData={emblemAnimation as object}
+        autoplay
+        loop={false}
+        style={{ width: "100%", height: "100%" }}
+      />
+    </span>
+  </span>
 );
 
 export const FooterLogo = () => (
