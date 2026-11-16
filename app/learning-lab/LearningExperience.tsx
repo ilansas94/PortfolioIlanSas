@@ -208,7 +208,7 @@ export default function LearningExperience() {
     setVisited([0]);
     setAnswers([]);
     setQuestionIndex(0);
-    setQuestionOrder(([...Array(questions.length).keys()]).sort(() => Math.random() - 0.5));
+    setQuestionOrder(Array.from({ length: questions.length }, (_, index) => index).sort(() => Math.random() - 0.5));
     setChosen(null);
   };
 
@@ -233,7 +233,7 @@ export default function LearningExperience() {
       setPhase("practice");
       setQuestionIndex(0);
       setAnswers([]);
-      setQuestionOrder(([...Array(questions.length).keys()]).sort(() => Math.random() - 0.5));
+      setQuestionOrder(Array.from({ length: questions.length }, (_, index) => index).sort(() => Math.random() - 0.5));
       setChosen(null);
     }
   };
