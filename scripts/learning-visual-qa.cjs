@@ -13,13 +13,22 @@ async function main() {
   try {
     for (const preset of [
       { name: "mobile", viewport: { width: 390, height: 844 }, scale: 2 },
+      { name: "tablet", viewport: { width: 820, height: 1024 }, scale: 1 },
       { name: "desktop", viewport: { width: 1440, height: 900 }, scale: 1 }
     ]) {
       const page = await browser.newPage({ viewport: preset.viewport, deviceScaleFactor: preset.scale });
       page.on("pageerror", err => errors.push(preset.name + ": " + err.message));
+      await page.goto(TARGET.replace(/learning-lab\/?$/, "") + "#portfolio", { waitUntil: "domcontentloaded" });
+      const feature = page.locator('a[href="/learning-lab"]');
+      await feature.waitFor();
+      await feature.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(900);
+      await feature.screenshot({ path: path.join(OUT, preset.name + "-00-portfolio-feature.png") });
+      await testOverflow(page, preset.name + " portfolio");
       const response = await page.goto(TARGET, { waitUntil: "networkidle" });
       assert.equal(response.status(), 200, preset.name + ": status");
       await page.locator(".ml-hero").waitFor();
+      await page.waitForTimeout(700);
       await page.screenshot({ path: path.join(OUT, preset.name + "-01-intro.png"), fullPage: true });
       await testOverflow(page, preset.name + " intro");
 
@@ -28,10 +37,12 @@ async function main() {
       await hotspots.nth(0).focus();
       await page.keyboard.press("Enter");
       await page.locator(".ml-scene-tooltip").waitFor();
+      await page.waitForTimeout(450);
       await page.screenshot({ path: path.join(OUT, preset.name + "-02-hotspot.png"), fullPage: true });
       await page.getByRole("button", { name: /ללמידה על הרגע/ }).click();
 
       await page.locator(".ml-learning-grid").waitFor();
+      await page.waitForTimeout(650);
       await page.screenshot({ path: path.join(OUT, preset.name + "-03-learning.png"), fullPage: true });
       await testOverflow(page, preset.name + " learn");
       for (let i = 0; i < 5; i++) {
@@ -41,6 +52,7 @@ async function main() {
       await page.getByRole("button", { name: /מוכנים לתרגול/ }).click();
 
       await page.locator(".ml-quiz-card").waitFor();
+      await page.waitForTimeout(650);
       await page.screenshot({ path: path.join(OUT, preset.name + "-04-quiz.png"), fullPage: true });
       await testOverflow(page, preset.name + " quiz");
       for (let i = 0; i < 5; i++) {
@@ -50,11 +62,13 @@ async function main() {
         const disabled = await page.locator(".ml-answer:disabled").count();
         assert.equal(disabled, 5, "Answers lock when one is chosen");
         if (i === 0) {
+          await page.waitForTimeout(650);
           await page.screenshot({ path: path.join(OUT, preset.name + "-05-feedback.png"), fullPage: true });
         }
         await page.getByRole("button", { name: i === 4 ? /לסיכום הלמידה/ : /לתרחיש הבא/ }).click();
       }
       await page.locator(".ml-finish-stage").waitFor();
+      await page.waitForTimeout(650);
       await testOverflow(page, preset.name + " finish");
       await page.screenshot({ path: path.join(OUT, preset.name + "-06-finish.png"), fullPage: true });
 
