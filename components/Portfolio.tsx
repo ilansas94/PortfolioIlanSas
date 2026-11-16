@@ -476,8 +476,8 @@ export const Portfolio = () => {
                   </div>
                   <div className="mt-4 flex items-center justify-between text-[10px] font-semibold text-slate-400"><span>4–5 דקות</span><span>תרגול + משוב</span></div>
                 </div>
-                <div className="absolute left-[14%] top-[20%] flex h-12 w-12 rotate-12 items-center justify-center rounded-2xl bg-[#baf7e8] text-xl text-teal-800 shadow-lg">✦</div>
-                <div className="absolute bottom-[17%] right-[14%] flex h-12 w-12 -rotate-12 items-center justify-center rounded-2xl bg-[#d2ecef] text-xl text-teal-800 shadow-lg">✓</div>
+                <div className="absolute left-[14%] top-[20%] hidden h-12 w-12 lg:flex rotate-12 items-center justify-center rounded-2xl bg-[#baf7e8] text-xl text-teal-800 shadow-lg">✦</div>
+                <div className="absolute bottom-[17%] right-[14%] hidden h-12 w-12 lg:flex -rotate-12 items-center justify-center rounded-2xl bg-[#d2ecef] text-xl text-teal-800 shadow-lg">✓</div>
               </div>
             </div>
           </a>
