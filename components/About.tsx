@@ -157,7 +157,7 @@ export const About = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
                 >
-                  I integrate generative AI into my creative process, from visual research and concept development to advanced prompting and design iteration. For me, AI enhances creative possibilities while thoughtful design and artistic direction remain at the heart of every project.
+                  I bring generative AI into my design process through more than one tool: ChatGPT helps with research, ideas and detailed prompts, Runway enables AI-assisted video and cinematic transitions, and Photoshop brings the visual elements together. I also experiment with local, node-based workflows in ComfyUI. The creative direction and final design decisions remain mine.
                 </motion.p>
 
                 <motion.p
