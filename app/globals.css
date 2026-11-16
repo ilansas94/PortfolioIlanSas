@@ -137,3 +137,18 @@ body {
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+
+/* Editorial Hebrew type is bundled locally to avoid layout shifts and network font failures. */
+@font-face{font-family:"Portfolio Heebo";src:url("/learning-lab/heebo-hebrew.woff2") format("woff2");font-style:normal;font-weight:100 900;font-display:swap;unicode-range:U+0590-05FF,U+FB1D-FB4F}
+@font-face{font-family:"Portfolio Heebo";src:url("/learning-lab/heebo-latin.woff2") format("woff2");font-style:normal;font-weight:100 900;font-display:swap}
+html[lang="he"] body{font-family:"Portfolio Heebo","Arial",sans-serif}
+html[lang="he"] .space-x-2,html[lang="he"] .space-x-3,html[lang="he"] .space-x-4,html[lang="he"] .space-x-8{--tw-space-x-reverse:1}
+html[lang="he"] .text-left{text-align:right}
+html[lang="he"] .left-to-right{direction:ltr}
+html[lang="he"] #portfolio [role="dialog"] .close-portfolio-project{left:1.5rem;right:auto}
+html[lang="he"] #portfolio [role="dialog"] ul{padding-inline-start:1.25rem;padding-left:0}
+html[lang="he"] .portfolio-filter{max-width:42rem}
+@media(max-width:640px){html[lang="he"] .portfolio-filter{max-width:100%;grid-template-columns:repeat(3,minmax(0,1fr))}}
+html[lang="he"] .contact-input-email{direction:ltr;text-align:left}
+html[lang="he"] #home .hero-logo{direction:ltr}
