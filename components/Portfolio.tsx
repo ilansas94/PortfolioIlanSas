@@ -468,9 +468,9 @@ export const Portfolio = () => {
                   <div className="mt-6 rounded-xl bg-[#e9f9f4] p-4" dir="rtl">
                     <span className="text-[10px] font-semibold text-emerald-700">למידה אינטראקטיבית</span>
                     <p className="mt-2 text-base font-bold text-[#113745]">חמשת הרגעים להיגיינת ידיים</p>
-                    <div className="mt-4 flex flex-wrap gap-2">
+                    <div className="mt-4 flex flex-nowrap gap-1.5">
                       {[1, 2, 3, 4, 5].map((n) => (
-                        <span key={n} className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-xs font-extrabold text-emerald-700 shadow-sm">{n}</span>
+                        <span key={n} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white text-xs font-extrabold text-emerald-700 shadow-sm sm:h-8 sm:w-8">{n}</span>
                       ))}
                     </div>
                   </div>
