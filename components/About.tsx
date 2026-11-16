@@ -20,12 +20,14 @@ const skills = [
   "Visual Storytelling",
   "Campaign Design",
   "Illustration",
-  "Print Design"
+  "Print Design",
+  "AI-Assisted Design",
+  "Prompt Engineering"
 ];
 
 const stats = [
   { number: "17+", label: "Creative Projects" },
-  { number: "5+", label: "Years Experience" },
+  { number: "6+", label: "Years Experience" },
   { number: "100%", label: "Passion Driven" },
   { number: "∞", label: "Ideas & Counting" }
 ];
@@ -155,7 +157,7 @@ export const About = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
                 >
-                  I strive to craft projects that are both functional and inspiring. I&apos;m currently exploring how to combine my love for storytelling and interactivity in digital products.
+                  I integrate generative AI into my creative process, from visual research and concept development to advanced prompting and design iteration. For me, AI enhances creative possibilities while thoughtful design and artistic direction remain at the heart of every project.
                 </motion.p>
 
                 <motion.p
