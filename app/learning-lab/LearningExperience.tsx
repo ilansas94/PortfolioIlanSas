@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 type Phase = "intro" | "learn" | "practice" | "finish";
 type IconName = "hand" | "shield" | "drop" | "user" | "bed" | "spark" | "book" | "check" | "arrow" | "refresh" | "clock" | "light" | "play" | "hospital";
@@ -188,6 +188,15 @@ function Scene({ onExplore }: { onExplore: (index: number) => void }) {
   );
 }
 
+function shuffleQuestions(): number[] {
+  const order = questions.map((_, index) => index);
+  for (let index = order.length - 1; index > 0; index--) {
+    const swapWith = Math.floor(Math.random() * (index + 1));
+    [order[index], order[swapWith]] = [order[swapWith], order[index]];
+  }
+  return order;
+}
+
 export default function LearningExperience() {
   const [phase, setPhase] = useState<Phase>("intro");
   const [momentIndex, setMomentIndex] = useState(0);
@@ -202,13 +211,25 @@ export default function LearningExperience() {
   const currentQuestion = questions[questionOrder[questionIndex]];
   const progress = phase === "intro" ? 0 : phase === "learn" ? 10 + visited.length * 8 : phase === "practice" ? 50 + (questionIndex + (chosen !== null ? 1 : 0)) * 10 : 100;
 
+  // Show instructional feedback without making learners hunt below the fold on phones.
+  useEffect(() => {
+    if (phase !== "practice" || chosen === null) return;
+    const timer = window.setTimeout(() => {
+      document.querySelector(".ml-feedback")?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        block: "nearest"
+      });
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [phase, chosen]);
+
   const start = () => {
     setPhase("learn");
     setMomentIndex(0);
     setVisited([0]);
     setAnswers([]);
     setQuestionIndex(0);
-    setQuestionOrder(Array.from({ length: questions.length }, (_, index) => index).sort(() => Math.random() - 0.5));
+    setQuestionOrder(shuffleQuestions());
     setChosen(null);
   };
 
@@ -233,7 +254,7 @@ export default function LearningExperience() {
       setPhase("practice");
       setQuestionIndex(0);
       setAnswers([]);
-      setQuestionOrder(Array.from({ length: questions.length }, (_, index) => index).sort(() => Math.random() - 0.5));
+      setQuestionOrder(shuffleQuestions());
       setChosen(null);
     }
   };
