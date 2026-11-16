@@ -9,6 +9,7 @@ import {
   GlassCard,
   animations
 } from "@/components/DesignSystem";
+import { useLanguage } from "@/lib/i18n";
 
 
 type SkillIconName = "palette" | "brush" | "layout" | "printer" | "sparkles" | "code";
@@ -146,6 +147,7 @@ const tools = [
 ];
 
 export const Skills = () => {
+  const { t } = useLanguage();
   return (
     <Section id="skills" className="py-20 lg:py-32" background="gradient">
       <Container size="xl">
@@ -155,14 +157,13 @@ export const Skills = () => {
           className="text-center mb-16"
         >
           <span className="inline-block px-4 py-2 bg-blue-100 text-blue-600 rounded-full text-sm font-medium mb-4">
-            Skills & Services
+            {t("Skills & Services")}
           </span>
           <Heading level={2} className="mb-6">
-            What I Bring to the Table
+            {t("What I Bring to the Table")}
           </Heading>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            A comprehensive skill set spanning digital design, traditional art, and modern technology 
-            to create compelling visual experiences.
+            {t("A comprehensive skill set spanning digital design, traditional art, and modern technology to create compelling visual experiences.")}
           </p>
         </motion.div>
 
@@ -187,7 +188,7 @@ export const Skills = () => {
                 </div>
 
                 <h3 className="text-lg font-semibold text-slate-800 mb-3">
-                  {category.title}
+                  {t(category.title)}
                 </h3>
 
                 <div className="space-y-2">
@@ -200,7 +201,7 @@ export const Skills = () => {
                       className="flex items-center space-x-2"
                     >
                       <div className={`h-2 w-2 flex-none rounded-full ${category.indicator}`}></div>
-                      <span className="text-sm text-slate-600">{skill}</span>
+                      <span className="text-sm text-slate-600">{t(skill)}</span>
                     </motion.div>
                   ))}
                 </div>
@@ -218,14 +219,13 @@ export const Skills = () => {
             className="mb-7 text-center"
           >
             <span className="mb-3 inline-block rounded-full bg-violet-100 px-4 py-2 text-sm font-medium text-violet-700">
-              Beyond the Canvas
+              {t("Beyond the Canvas")}
             </span>
             <h3 className="mb-3 text-2xl font-semibold tracking-tight text-slate-800 md:text-3xl">
-              Creative Technology &amp; AI
+              {t("Creative Technology & AI")}
             </h3>
             <p className="mx-auto max-w-2xl text-slate-600 leading-relaxed">
-              Combining an experienced designer&apos;s eye with generative AI,
-              interactive prototyping and AI-assisted development.
+              {t("Combining an experienced designer's eye with generative AI, interactive prototyping and AI-assisted development.")}
             </p>
           </motion.div>
 
@@ -250,15 +250,15 @@ export const Skills = () => {
                     </div>
                     <div className="min-w-0">
                       <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">
-                        {feature.eyebrow}
+                        {t(feature.eyebrow)}
                       </p>
                       <h4 className="text-lg font-semibold leading-snug text-slate-800 sm:text-xl">
-                        {feature.title}
+                        {t(feature.title)}
                       </h4>
                     </div>
                   </div>
                   <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
-                    {feature.description}
+                    {t(feature.description)}
                   </p>
                   <div className="mt-6 flex flex-wrap gap-2">
                     {feature.tags.map((tag) => (
@@ -266,7 +266,7 @@ export const Skills = () => {
                         key={tag}
                         className="rounded-full border border-violet-200/50 bg-white/70 px-3 py-1.5 text-xs font-medium text-slate-700 sm:text-sm"
                       >
-                        {tag}
+                        {t(tag)}
                       </span>
                     ))}
                   </div>
@@ -288,7 +288,7 @@ export const Skills = () => {
             gradient
           >
             <h3 className="text-xl font-semibold text-slate-800 mb-6">
-              Tools & Technologies
+              {t("Tools & Technologies")}
             </h3>
             <div className="flex flex-wrap justify-center gap-3">
               {tools.map((tool, index) => (
@@ -304,7 +304,7 @@ export const Skills = () => {
                   }}
                   className="px-4 py-2 bg-white/60 border border-white/40 text-slate-700 rounded-full text-sm font-medium hover:bg-white/80 hover:animate-[focus-pulse_0.3s_ease-in-out] transition-colors duration-300 cursor-default"
                 >
-                  {tool}
+                  {t(tool)}
                 </motion.span>
               ))}
             </div>
