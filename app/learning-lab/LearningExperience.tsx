@@ -140,9 +140,19 @@ const Icon = ({ name, size = 24 }: { name: IconName; size?: number }) => (
   </svg>
 );
 
-function Scene() {
+function Scene({ onExplore }: { onExplore: (index: number) => void }) {
+  const [active, setActive] = useState<number | null>(null);
+  const shown = active === null ? null : moments[active];
+  const hotspots = [
+    { index: 0, position: "ml-orbit-b" },
+    { index: 1, position: "ml-orbit-a" },
+    { index: 2, position: "ml-orbit-c" },
+    { index: 3, position: "ml-orbit-d" },
+    { index: 4, position: "ml-orbit-e" }
+  ];
+
   return (
-    <div className="ml-scene" aria-label="איור של חדר מטופל עם סימוני למידה">
+    <div className="ml-scene" aria-label="איור אינטראקטיבי של חדר מטופל עם חמישה רגעים ללמידה">
       <div className="ml-scene-grid" />
       <div className="ml-scene-window"><span/><span/><span/></div>
       <div className="ml-scene-monitor"><div className="ml-ecg">⌁⌁</div><span>72</span></div>
@@ -152,10 +162,28 @@ function Scene() {
         <div className="ml-scene-person"><span className="ml-person-head"/><span className="ml-person-body"/></div>
         <div className="ml-bed-frame"/>
       </div>
-      <div className="ml-orbit ml-orbit-a"><Icon name="shield" size={23}/><span>02</span></div>
-      <div className="ml-orbit ml-orbit-b"><Icon name="hand" size={22}/><span>01</span></div>
-      <div className="ml-orbit ml-orbit-c"><Icon name="drop" size={21}/><span>03</span></div>
-      <div className="ml-scene-caption"><span className="ml-pulse"/> סביבת טיפול · המחשה אינטראקטיבית</div>
+      {hotspots.map(({index, position}) => (
+        <button
+          type="button"
+          key={index}
+          aria-label={"גלו את רגע מספר " + moments[index].number + ": " + moments[index].title}
+          aria-pressed={active === index}
+          onClick={() => setActive(active === index ? null : index)}
+          className={"ml-orbit " + position + (active === index ? " ml-orbit-selected" : "")}
+        >
+          <Icon name={moments[index].icon} size={23}/>
+          <span>{String(index + 1).padStart(2, "0")}</span>
+        </button>
+      ))}
+      {shown && (
+        <div className="ml-scene-tooltip" role="status">
+          <button type="button" className="ml-tooltip-close" onClick={() => setActive(null)} aria-label="סגור מידע">×</button>
+          <small>רגע {shown.number} מתוך 5</small>
+          <strong>{shown.title}</strong>
+          <button type="button" onClick={() => onExplore(active!)}>ללמידה על הרגע ←</button>
+        </div>
+      )}
+      <div className="ml-scene-caption"><span className="ml-pulse"/> לחצו על סמן כדי לגלות רגע</div>
     </div>
   );
 }
@@ -167,10 +195,12 @@ export default function LearningExperience() {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [chosen, setChosen] = useState<number | null>(null);
   const [answers, setAnswers] = useState<boolean[]>([]);
+  const [questionOrder, setQuestionOrder] = useState<number[]>([3, 0, 4, 1, 2]);
   const score = answers.filter(Boolean).length;
+  const missedQuestions = answers.flatMap((isCorrect, index) => isCorrect ? [] : [questions[questionOrder[index]]]);
   const currentMoment = moments[momentIndex];
-  const currentQuestion = questions[questionIndex];
-  const progress = phase === "intro" ? 0 : phase === "learn" ? 10 + (momentIndex + 1) * 8 : phase === "practice" ? 50 + questionIndex * 10 : 100;
+  const currentQuestion = questions[questionOrder[questionIndex]];
+  const progress = phase === "intro" ? 0 : phase === "learn" ? 10 + visited.length * 8 : phase === "practice" ? 50 + (questionIndex + (chosen !== null ? 1 : 0)) * 10 : 100;
 
   const start = () => {
     setPhase("learn");
@@ -178,6 +208,16 @@ export default function LearningExperience() {
     setVisited([0]);
     setAnswers([]);
     setQuestionIndex(0);
+    setQuestionOrder(([...Array(questions.length).keys()]).sort(() => Math.random() - 0.5));
+    setChosen(null);
+  };
+
+  const exploreMoment = (index: number) => {
+    setPhase("learn");
+    setMomentIndex(index);
+    setVisited([index]);
+    setQuestionIndex(0);
+    setAnswers([]);
     setChosen(null);
   };
 
@@ -192,6 +232,8 @@ export default function LearningExperience() {
     } else {
       setPhase("practice");
       setQuestionIndex(0);
+      setAnswers([]);
+      setQuestionOrder(([...Array(questions.length).keys()]).sort(() => Math.random() - 0.5));
       setChosen(null);
     }
   };
@@ -251,7 +293,7 @@ export default function LearningExperience() {
                 <button type="button" className="ml-primary ml-primary-light" onClick={start}>בואו נתחיל <Icon name="arrow" size={20}/></button>
                 <div className="ml-hero-under">ללא הרשמה · ללא איסוף מידע אישי</div>
               </div>
-              <Scene />
+              <Scene onExplore={exploreMoment} />
             </section>
             <section className="ml-intro-row" aria-label="תהליך הלמידה">
               <div className="ml-intro-stat"><span className="ml-intro-stat-icon"><Icon name="light" size={22}/></span><div><strong>מבינים</strong><span>מזהים את חמשת הרגעים</span></div></div>
@@ -287,7 +329,10 @@ export default function LearningExperience() {
                 <div className="ml-fact"><div className="ml-fact-label"><Icon name="shield" size={20}/> למה זה חשוב?</div><p>{currentMoment.why}</p></div>
                 <div className="ml-fact ml-fact-example"><div className="ml-fact-label"><Icon name="hospital" size={20}/> דוגמה מהשטח</div><p>{currentMoment.example}</p></div>
                 <div className="ml-memory"><Icon name="light" size={19}/><span><strong>כדאי לזכור:</strong> {currentMoment.remember}</span></div>
-                <button type="button" className="ml-primary ml-primary-dark" onClick={advanceMoment}>{momentIndex === 4 ? "מוכנים לתרגול" : "לרגע הבא"} <Icon name="arrow" size={18}/></button>
+                <div className="ml-learning-actions">
+                  {momentIndex > 0 && <button type="button" className="ml-back-button" onClick={() => openMoment(momentIndex - 1)}>→ לרגע הקודם</button>}
+                  <button type="button" className="ml-primary ml-primary-dark" onClick={advanceMoment}>{momentIndex === 4 ? "מוכנים לתרגול" : "לרגע הבא"} <Icon name="arrow" size={18}/></button>
+                </div>
               </article>
             </div>
             <div className="ml-learning-tip"><Icon name="book" size={20}/> הטיפ: שני הרגעים הראשונים הם לפני הפעולה. שלושת האחרים — אחריה.</div>
@@ -342,6 +387,19 @@ export default function LearningExperience() {
             <h1>כל הכבוד! <em>זה רגע בטוח.</em></h1>
             <p className="ml-finish-intro">סיימתם את חמשת התרחישים ולמדתם לזהות את חמשת הרגעים להיגיינת ידיים.</p>
             <div className="ml-score-card"><div className="ml-score-value"><strong>{score}</strong><span> / {questions.length}</span></div><div><strong>תשובות נכונות</strong><p>{score === questions.length ? "זיהוי מצוין! עכשיו חשוב ליישם גם בשגרה." : "כל תרחיש הוא הזדמנות לזכור טוב יותר את הרגע המתאים."}</p></div></div>
+            {missedQuestions.length > 0 && (
+              <div className="ml-review-card">
+                <h2>לומדים גם מהתשובות הלא נכונות</h2>
+                <p>אפשר לחזור על הרגעים הבאים לפני סבב חדש:</p>
+                {missedQuestions.map((question) => (
+                  <div key={question.title} className="ml-review-item">
+                    <Icon name="light" size={18}/>
+                    <span><strong>{question.title}</strong> — {moments[question.answer].title}</span>
+                  </div>
+                ))}
+                <button type="button" className="ml-review-action" onClick={() => exploreMoment(missedQuestions[0].answer)}>לחזרה לרגע הראשון שדורש חיזוק ←</button>
+              </div>
+            )}
             <div className="ml-finish-reminder"><Icon name="light" size={24}/><span>כל רגע נכון מתחיל בזיהוי נכון. לפני מגע או פעולה נקייה — ואחרי חשיפה, מגע במטופל או מגע בסביבתו.</span></div>
             <div className="ml-finish-actions"><button type="button" className="ml-primary ml-primary-dark" onClick={start}>לתרגל מחדש <Icon name="refresh" size={18}/></button><a className="ml-secondary" href="/#portfolio">לתיק העבודות <Icon name="arrow" size={17}/></a></div>
           </section>
