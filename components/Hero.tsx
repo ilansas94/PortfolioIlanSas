@@ -148,54 +148,57 @@ export const Hero = () => {
             </PremiumButton>
           </motion.div>
 
-          {/* Scroll Indicator */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ 
-              opacity: showScrollIndicator ? 1 : 0, 
-              y: showScrollIndicator ? 0 : 20 
-            }}
-            transition={{ 
-              duration: showScrollIndicator ? 0.8 : 0.5,
-              delay: showScrollIndicator ? 1.2 : 0 
-            }}
-            className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
-          >
-            <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ 
-                duration: 2, 
-                repeat: Infinity, 
-                ease: "easeInOut" 
-              }}
-              className="flex flex-col items-center cursor-pointer"
-              onClick={() => scrollToSection("#about")}
-            >
-              <span className="text-sm text-slate-500 mb-2 font-medium">
-                {t("Scroll to explore")}
-              </span>
-              <motion.div
-                className="w-6 h-10 rounded-full border-2 border-slate-400 flex justify-center"
-                whileHover={{ 
-                  scale: 1.05, 
-                  z: 5,
-                  transition: { duration: 0.2, ease: [0.4, 0.0, 0.2, 1] }
-                }}
-              >
-                <motion.div
-                  className="w-1 h-3 bg-slate-400 rounded-full mt-2"
-                  animate={{ y: [0, 12, 0] }}
-                  transition={{ 
-                    duration: 1.5, 
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
-              </motion.div>
-            </motion.div>
-          </motion.div>
+
         </div>
       </Container>
+
+      {/* Position the scroll cue relative to the section, not its centered content. */}
+      {/* Scroll Indicator */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ 
+          opacity: showScrollIndicator ? 1 : 0, 
+          y: showScrollIndicator ? 0 : 20 
+        }}
+        transition={{ 
+          duration: showScrollIndicator ? 0.8 : 0.5,
+          delay: showScrollIndicator ? 1.2 : 0 
+        }}
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
+      >
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ 
+            duration: 2, 
+            repeat: Infinity, 
+            ease: "easeInOut" 
+          }}
+          className="flex flex-col items-center cursor-pointer"
+          onClick={() => scrollToSection("#about")}
+        >
+          <span className="text-sm text-slate-500 mb-2 font-medium">
+            {t("Scroll to explore")}
+          </span>
+          <motion.div
+            className="w-6 h-10 rounded-full border-2 border-slate-400 flex justify-center"
+            whileHover={{ 
+              scale: 1.05, 
+              z: 5,
+              transition: { duration: 0.2, ease: [0.4, 0.0, 0.2, 1] }
+            }}
+          >
+            <motion.div
+              className="w-1 h-3 bg-slate-400 rounded-full mt-2"
+              animate={{ y: [0, 12, 0] }}
+              transition={{ 
+                duration: 1.5, 
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          </motion.div>
+        </motion.div>
+      </motion.div>
 
       {/* Background Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10 pointer-events-none" />
