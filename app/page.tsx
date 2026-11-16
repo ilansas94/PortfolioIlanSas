@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { LanguageProvider } from "@/lib/i18n";
 import { Navigation } from "@/components/Navigation";
 import { Hero } from "@/components/Hero";
 import { About } from "@/components/About";
@@ -12,6 +13,7 @@ import { FloatingElement } from "@/components/DesignSystem";
 
 export default function HomePage() {
   return (
+    <LanguageProvider>
     <div className="relative min-h-screen overflow-hidden">
       {/* Floating Background Elements */}
       <FloatingElement
@@ -50,5 +52,6 @@ export default function HomePage() {
       <Contact />
       <Footer />
     </div>
+    </LanguageProvider>
   );
 }
