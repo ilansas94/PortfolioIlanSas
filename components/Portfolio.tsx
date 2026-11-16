@@ -526,7 +526,7 @@ export const Portfolio = () => {
                 className="group cursor-pointer rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600"
               >
                 <GlassCard
-                  className="overflow-hidden group-hover:scale-[1.02] transition-transform duration-300"
+                  className="overflow-hidden motion-safe:[@media(hover:hover)]:group-hover:scale-[1.02] transition-transform duration-300"
                   intensity="medium"
                   gradient
                   hover={false}
@@ -541,28 +541,10 @@ export const Portfolio = () => {
                         alt={item.title}
                         fill
                         className={item.liveHref
-                          ? "bg-[#0b2a38] object-contain motion-safe:group-hover:scale-105 transition-transform duration-500"
-                          : "object-cover object-center group-hover:scale-110 transition-transform duration-500"}
+                          ? "bg-[#0b2a38] object-contain motion-safe:[@media(hover:hover)]:group-hover:scale-105 transition-transform duration-500"
+                          : "object-cover object-center motion-safe:[@media(hover:hover)]:group-hover:scale-110 transition-transform duration-500"}
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      
-                      {/* Overlay Content */}
-                      <div className="absolute bottom-4 left-4 right-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="inline-block px-2 py-1 bg-blue-600 rounded text-xs font-medium">
-                            {item.category}
-                          </span>
-                          {item.isPrototype && (
-                            <span className="inline-block px-2 py-1 bg-green-600 rounded text-xs font-medium">
-                              Interactive
-                            </span>
-                          )}
-                        </div>
-                        <h3 className="text-lg font-semibold">
-                          {item.title}
-                        </h3>
-                      </div>
                     </motion.div>
                   </div>
 
