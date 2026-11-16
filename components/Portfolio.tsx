@@ -11,6 +11,8 @@ import {
   PremiumButton,
   animations
 } from "@/components/DesignSystem";
+import { useLanguage } from "@/lib/i18n";
+import { hebrewProjects } from "@/lib/portfolio-he";
 
 const cardTagClass = "rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700";
 
@@ -242,6 +244,8 @@ interface PortfolioModalProps {
 }
 
 const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
+  const { t, isHebrew } = useLanguage();
+  const display = item ? { ...item, ...(isHebrew ? hebrewProjects[item.id] : {}) } : null;
   const closeButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -253,7 +257,7 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
     };
   }, [isOpen]);
 
-  if (!item) return null;
+  if (!item || !display) return null;
 
   return (
     <AnimatePresence mode="sync">
@@ -307,9 +311,9 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
               {/* Close Button */}
               <motion.button
                 ref={closeButton}
-                aria-label="Close project"
+                aria-label={t("Close project")}
                 onClick={onClose}
-                className="absolute top-6 right-6 z-20 w-10 h-10 bg-white text-slate-800 rounded-full flex items-center justify-center hover:bg-slate-100 hover:animate-[focus-pulse_0.3s_ease-in-out] transition-colors duration-300 shadow-lg"
+                className="close-portfolio-project absolute top-6 right-6 z-20 w-10 h-10 bg-white text-slate-800 rounded-full flex items-center justify-center hover:bg-slate-100 hover:animate-[focus-pulse_0.3s_ease-in-out] transition-colors duration-300 shadow-lg"
                 whileHover={{ 
                   scale: 1.05, 
                   z: 5,
@@ -332,13 +336,13 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
                         src={item.figmaUrl}
                         className="w-full h-[70vh] lg:h-[80vh] rounded-xl border-0"
                         allowFullScreen
-                        title={`${item.title} - Interactive Prototype`}
+                        title={`${display.title} - Interactive Prototype`}
                       />
                     ) : (
                       <div className="w-full max-h-[70vh] lg:max-h-[80vh] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
                         <Image
                           src={item.detailImage}
-                          alt={item.title}
+                          alt={display.title}
                           width={800}
                           height={1200}
                           className="w-full h-auto object-contain"
@@ -353,48 +357,48 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
                 <div className="flex flex-col justify-center space-y-6">
                   <div>
                     <span className="inline-block px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm font-medium mb-4">
-                      {item.categories[0]}
+                      {t(item.categories[0])}
                     </span>
                     <h3 id="portfolio-project-title" className="text-3xl font-bold text-slate-800 mb-4">
-                      {item.title}
+                      {display.title}
                     </h3>
                     <p className="text-lg text-slate-600 leading-relaxed mb-6">
-                      {item.description}
+                      {display.description}
                     </p>
                     {item.liveHref && (
                       <a
                         href={item.liveHref}
                         className="mb-6 inline-flex min-h-11 items-center gap-3 rounded-xl bg-[#0b2a38] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#145063] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-600"
                       >
-                        Open the interactive lesson <span aria-hidden="true">→</span>
+                        {t("Open the interactive lesson")} <span aria-hidden="true">{isHebrew ? "←" : "→"}</span>
                       </a>
                     )}
                     {item.isPrototype && item.figmaUrl && (
                       <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
                         <div className="flex items-center space-x-2 mb-2">
                           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                          <span className="text-green-700 font-medium text-sm">Interactive Prototype</span>
+                          <span className="text-green-700 font-medium text-sm">{t("Interactive Prototype")}</span>
                         </div>
                         <p className="text-green-600 text-sm">
-                          Click and interact with the prototype on the left to explore the full user experience.
+                          {t("Click and interact with the prototype on the left to explore the full user experience.")}
                         </p>
                       </div>
                     )}
-                    {item.highlights && item.highlights.length > 0 && (
+                    {display.highlights && display.highlights.length > 0 && (
                       <div className="mb-6">
-                        <h4 className="text-sm font-semibold text-slate-800 mb-2">Highlights</h4>
+                        <h4 className="text-sm font-semibold text-slate-800 mb-2">{t("Highlights")}</h4>
                         <ul className="list-disc pl-5 space-y-1 text-slate-700">
-                          {item.highlights.map((h, i) => (
+                          {display.highlights.map((h, i) => (
                             <li key={i} className="text-sm">{h}</li>
                           ))}
                         </ul>
                       </div>
                     )}
-                    {item.deliverables && item.deliverables.length > 0 && (
+                    {display.deliverables && display.deliverables.length > 0 && (
                       <div className="mb-6">
-                        <h4 className="text-sm font-semibold text-slate-800 mb-2">Deliverables</h4>
+                        <h4 className="text-sm font-semibold text-slate-800 mb-2">{t("Deliverables")}</h4>
                         <ul className="list-disc pl-5 space-y-1 text-slate-700">
-                          {item.deliverables.map((d, i) => (
+                          {display.deliverables.map((d, i) => (
                             <li key={i} className="text-sm">{d}</li>
                           ))}
                         </ul>
@@ -402,7 +406,7 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
                     )}
                     {item.tools && item.tools.length > 0 && (
                       <div className="mb-6">
-                        <h4 className="text-sm font-semibold text-slate-800 mb-2">Tools</h4>
+                        <h4 className="text-sm font-semibold text-slate-800 mb-2">{t("Tools")}</h4>
                         <div className="flex flex-wrap gap-2">
                           {item.tools.map((tool, i) => (
                             <span key={i} className="px-2.5 py-1 bg-white/70 border border-white/50 rounded-full text-xs text-slate-700">{tool}</span>
@@ -414,10 +418,10 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
 
                   <div>
                     <h4 className="text-sm font-semibold text-slate-800 mb-3">
-                      Tags
+                      {t("Tags")}
                     </h4>
                     <div className="flex flex-wrap gap-2">
-                      {item.tags.map((tag, index) => (
+                      {display.tags.map((tag, index) => (
                         <span
                           key={index}
                           className="px-3 py-1 bg-white/60 border border-white/40 text-slate-700 rounded-full text-sm"
@@ -437,6 +441,7 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
 };
 
 export const Portfolio = () => {
+  const { t, isHebrew } = useLanguage();
   const [activeCategory, setActiveCategory] = useState<FilterCategory>("All");
   const [selectedItem, setSelectedItem] = useState<typeof portfolioItems[number] | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -490,14 +495,13 @@ export const Portfolio = () => {
           className="text-center mb-16"
         >
           <span className="inline-block px-4 py-2 bg-blue-100 text-blue-600 rounded-full text-sm font-medium mb-4">
-            Portfolio
+            {t("Portfolio")}
           </span>
           <Heading level={2} className="mb-6">
-            Featured Work
+            {t("Featured Work")}
           </Heading>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            Explore my collection of creative projects spanning branding, digital art, 
-            and visual design across various industries and mediums.
+            {t("Explore my collection of creative projects spanning branding, digital art, and visual design across various industries and mediums.")}
           </p>
         </motion.div>
 
@@ -507,8 +511,8 @@ export const Portfolio = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           role="group"
-          aria-label="Filter projects by category"
-          className="mx-auto mb-8 grid max-w-lg grid-cols-3 gap-1.5 max-[350px]:grid-cols-[1fr_1fr_1.2fr] sm:mb-12 sm:flex sm:max-w-none sm:flex-wrap sm:justify-center sm:gap-2"
+          aria-label={t("Filter projects by category")}
+          className="portfolio-filter mx-auto mb-8 grid max-w-lg grid-cols-3 gap-1.5 max-[350px]:grid-cols-[1fr_1fr_1.2fr] sm:mb-12 sm:flex sm:max-w-none sm:flex-wrap sm:justify-center sm:gap-2"
         >
           {filterCategories.map((category) => (
             <motion.button
@@ -533,7 +537,7 @@ export const Portfolio = () => {
                   <path d="M18.5 13v7m-3.5-3.5h7" />
                 </svg>
               )}
-              {category}
+              {t(category)}
             </motion.button>
           ))}
         </motion.div>
@@ -554,7 +558,7 @@ export const Portfolio = () => {
                 transition={{ duration: 0.4, delay: index * 0.1 }}
                 role="button"
                 tabIndex={0}
-                aria-label={`Open ${item.title}`}
+                aria-label={`${isHebrew ? "פתיחת פרויקט" : "Open"} ${isHebrew ? (hebrewProjects[item.id]?.title ?? item.title) : item.title}`}
                 onClick={() => openModal(item)}
                 onKeyDown={(event) => {
                   if (event.key === "Enter" || event.key === " ") {
@@ -577,7 +581,7 @@ export const Portfolio = () => {
                     >
                       <Image
                         src={item.image}
-                        alt={item.title}
+                        alt={isHebrew ? (hebrewProjects[item.id]?.title ?? item.title) : item.title}
                         fill
                         className={item.liveHref
                           ? "bg-[#0b2a38] object-contain motion-safe:[@media(hover:hover)]:group-hover:scale-105 transition-transform duration-500"
@@ -590,12 +594,12 @@ export const Portfolio = () => {
                   <div className="p-6">
                     <div className="mb-3 flex items-center justify-between gap-2">
                       <span className={cardTagClass}>
-                        {item.categories[0]}
+                        {t(item.categories[0])}
                       </span>
                       {item.isPrototype && (
                         <div className="flex items-center space-x-1">
                           <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                          <span className="text-xs text-green-600 font-medium">Live</span>
+                          <span className="text-xs text-green-600 font-medium">{t("Live")}</span>
                         </div>
                       )}
                     </div>
@@ -603,16 +607,16 @@ export const Portfolio = () => {
                       <div className="mb-3 flex flex-wrap gap-1.5">
                         {item.cardTags.map(tag => (
                           <span key={tag} className={cardTagClass}>
-                            {tag}
+                            {t(tag)}
                           </span>
                         ))}
                       </div>
                     )}
                     <h3 className="text-lg font-semibold text-slate-800 mb-2">
-                      {item.title}
+                      {isHebrew ? (hebrewProjects[item.id]?.title ?? item.title) : item.title}
                     </h3>
                     <p className="text-sm text-slate-600 line-clamp-2">
-                      {item.description}
+                      {isHebrew ? (hebrewProjects[item.id]?.description ?? item.description) : item.description}
                     </p>
                   </div>
                 </GlassCard>
@@ -629,7 +633,7 @@ export const Portfolio = () => {
           className="text-center mt-16"
         >
           <p className="text-lg text-slate-600 mb-6">
-            Like what you see? Let&apos;s create something amazing together.
+            {t("Like what you see? Let's create something amazing together.")}
           </p>
           <PremiumButton
             variant="primary"
@@ -641,7 +645,7 @@ export const Portfolio = () => {
               }
             }}
           >
-            Start Your Project
+            {t("Start Your Project")}
           </PremiumButton>
         </motion.div>
       </Container>
