@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { 
@@ -22,6 +22,7 @@ interface PortfolioItem {
   detailImage: string;
   tags: string[];
   figmaUrl?: string;
+  liveHref?: string;
   isPrototype?: boolean;
   highlights?: string[];
   deliverables?: string[];
@@ -30,6 +31,17 @@ interface PortfolioItem {
 
 // Portfolio Data Structure
 const portfolioItems: PortfolioItem[] = [
+  {
+    id: 16,
+    title: "Safe Moments",
+    category: "UI/UX Design",
+    description: "An independent Hebrew microlearning experience. Explore an illustrated patient room, discover the WHO Five Moments for Hand Hygiene, and apply them in five practice scenarios.",
+    image: "/learning-lab/portfolio-cover.webp",
+    detailImage: "/learning-lab/portfolio-cover.webp",
+    liveHref: "/learning-lab",
+    isPrototype: true,
+    tags: ["Learning Design", "Isometric Artwork", "Accessibility"]
+  },
   
   {
     id: 2,
@@ -195,6 +207,17 @@ interface PortfolioModalProps {
 }
 
 const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
+  const closeButton = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const trigger = document.activeElement;
+    closeButton.current?.focus({ preventScroll: true });
+    return () => {
+      if (trigger instanceof HTMLElement) trigger.focus({ preventScroll: true });
+    };
+  }, [isOpen]);
+
   if (!item) return null;
 
   return (
@@ -212,6 +235,25 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
       {isOpen && (
         <motion.div
           key="portfolio-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="portfolio-project-title"
+          onKeyDown={(event) => {
+            if (event.key === "Escape") {
+              onClose();
+              return;
+            }
+            if (event.key !== "Tab") return;
+            const controls = event.currentTarget.querySelectorAll<HTMLElement>("button, a[href], iframe");
+            const first = controls[0];
+            const last = controls[controls.length - 1];
+            const destination = event.shiftKey && document.activeElement === first ? last
+              : !event.shiftKey && document.activeElement === last ? first : null;
+            if (destination) {
+              event.preventDefault();
+              destination.focus();
+            }
+          }}
           initial={{ opacity: 0, scale: 0.9, y: 50 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: 20 }}
@@ -231,6 +273,8 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
             >
               {/* Close Button */}
               <motion.button
+                ref={closeButton}
+                aria-label="Close project"
                 onClick={onClose}
                 className="absolute top-6 right-6 z-20 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 hover:animate-[focus-pulse_0.3s_ease-in-out] transition-colors duration-300 shadow-lg"
                 whileHover={{ 
@@ -278,13 +322,21 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
                     <span className="inline-block px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm font-medium mb-4">
                       {item.category}
                     </span>
-                    <h3 className="text-3xl font-bold text-slate-800 mb-4">
+                    <h3 id="portfolio-project-title" className="text-3xl font-bold text-slate-800 mb-4">
                       {item.title}
                     </h3>
                     <p className="text-lg text-slate-600 leading-relaxed mb-6">
                       {item.description}
                     </p>
-                    {item.isPrototype && (
+                    {item.liveHref && (
+                      <a
+                        href={item.liveHref}
+                        className="mb-6 inline-flex min-h-11 items-center gap-3 rounded-xl bg-[#0b2a38] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#145063] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-600"
+                      >
+                        Open the interactive lesson <span aria-hidden="true">→</span>
+                      </a>
+                    )}
+                    {item.isPrototype && item.figmaUrl && (
                       <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
                         <div className="flex items-center space-x-2 mb-2">
                           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -419,48 +471,6 @@ export const Portfolio = () => {
           </p>
         </motion.div>
 
-        {/* Featured concept study: independent learning experience, not a client commission */}
-        <motion.div
-          {...animations.fadeInUp}
-          className="mb-12"
-        >
-          <a
-            href="/learning-lab"
-            className="group block scroll-mt-32 overflow-hidden rounded-[28px] border border-teal-200/30 bg-[#0b2a38] shadow-[0_24px_55px_-35px_rgba(10,60,65,0.55)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-400/70"
-            aria-label="Open Safe Moments interactive healthcare learning demo"
-          >
-            <div className="grid lg:grid-cols-[0.9fr_1fr]">
-              <div className="flex flex-col justify-center px-6 pb-7 pt-2 text-white sm:px-10 sm:pb-9 lg:py-11">
-                <p className="mb-3 text-xs font-semibold text-emerald-200">
-                  Independent concept · Hebrew demo
-                </p>
-                <h3 className="mb-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
-                  SAFE MOMENTS
-                </h3>
-                <p className="mb-3 max-w-lg text-base font-semibold text-emerald-200 sm:text-lg">
-                  Interactive healthcare microlearning
-                </p>
-                <p className="max-w-lg text-sm leading-relaxed text-slate-300">
-                  Explore an illustrated patient room, discover the WHO Five Moments for Hand Hygiene, and apply them in five practice scenarios.
-                </p>
-                <div className="mt-7 inline-flex items-center gap-3 text-sm font-extrabold text-[#a7fce4]">
-                  Explore the lesson <span aria-hidden="true" className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-emerald-200/40 transition-transform duration-300 motion-safe:group-hover:translate-x-1">→</span>
-                </div>
-              </div>
-              <div className="order-first flex items-center justify-center px-3 pb-4 pt-3 sm:px-5 lg:order-last lg:py-5 lg:pl-0">
-                <Image
-                  src="/learning-lab/portfolio-cover.webp"
-                  alt=""
-                  width={1080}
-                  height={720}
-                  sizes="(max-width: 1023px) 94vw, 560px"
-                  className="h-auto w-full rounded-[18px] border border-white/10"
-                />
-              </div>
-            </div>
-          </a>
-        </motion.div>
-
         {/* Category Filter */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -503,8 +513,17 @@ export const Portfolio = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 30 }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
+                role="button"
+                tabIndex={0}
+                aria-label={`Open ${item.title}`}
                 onClick={() => openModal(item)}
-                className="cursor-pointer group"
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    openModal(item);
+                  }
+                }}
+                className="group cursor-pointer rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600"
               >
                 <GlassCard
                   className="overflow-hidden group-hover:scale-[1.02] transition-transform duration-300"
@@ -521,7 +540,9 @@ export const Portfolio = () => {
                         src={item.image}
                         alt={item.title}
                         fill
-                        className="object-cover object-center group-hover:scale-110 transition-transform duration-500"
+                        className={item.liveHref
+                          ? "bg-[#0b2a38] object-contain motion-safe:group-hover:scale-105 transition-transform duration-500"
+                          : "object-cover object-center group-hover:scale-110 transition-transform duration-500"}
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
