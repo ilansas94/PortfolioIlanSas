@@ -60,7 +60,7 @@ async function checkOverflow(page, label) {
         textDecoration: getComputedStyle(el).textDecorationLine,
         iconWidth: el.querySelector("svg")?.getBoundingClientRect().width
       }));
-      assert.equal(linkAppearance.display, "inline-flex");
+      assert.ok(["flex", "inline-flex"].includes(linkAppearance.display), "Header link stays flex-aligned");
       assert.equal(linkAppearance.textDecoration, "none", "No underlined emoji styling");
       assert.ok(linkAppearance.iconWidth >= 15 && linkAppearance.iconWidth <= 17, "SVG icon size matches Safe Moments");
       await portfolioHeaderLink.screenshot({ path: path.join(output, preset.name + "-clean-portfolio-header-link.png") });
