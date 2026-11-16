@@ -11,7 +11,7 @@ import {
 } from "@/components/DesignSystem";
 
 
-type SkillIconName = "palette" | "brush" | "layout" | "printer";
+type SkillIconName = "palette" | "brush" | "layout" | "printer" | "sparkles" | "code";
 
 /** Lightweight, consistent line icons without an extra icon dependency. */
 const SkillCategoryIcon = ({ name }: { name: SkillIconName }) => (
@@ -44,6 +44,17 @@ const SkillCategoryIcon = ({ name }: { name: SkillIconName }) => (
       <>
         <rect x="3" y="3" width="18" height="18" rx="2" />
         <path d="M3 9h18M9 9v12" />
+      </>
+    )}
+    {name === "sparkles" && (
+      <>
+        <path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3Z" />
+        <path d="M19 17v4m-2-2h4M4 3v4M2 5h4" />
+      </>
+    )}
+    {name === "code" && (
+      <>
+        <path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14" />
       </>
     )}
     {name === "printer" && (
@@ -94,6 +105,29 @@ const skillCategories: {
   }
 ];
 
+const creativeCapabilities: {
+  title: string;
+  eyebrow: string;
+  icon: "sparkles" | "code";
+  description: string;
+  tags: string[];
+}[] = [
+  {
+    eyebrow: "Visual creation & motion",
+    title: "AI-Assisted Creative Workflows",
+    icon: "sparkles",
+    description: "I use ChatGPT for research and advanced prompting, Runway for AI video and cinematic transitions, and Photoshop for visual refinement. I also explore node-based generation in ComfyUI, with creative direction guiding every result.",
+    tags: ["ChatGPT", "Runway", "Adobe Photoshop", "ComfyUI (Exploration)"]
+  },
+  {
+    eyebrow: "Websites & interactive projects",
+    title: "AI-Assisted Development",
+    icon: "code",
+    description: "Working with OpenAI Codex, I design and develop websites, refine interfaces, and experiment with interactive game prototypes. I combine design thinking with AI-assisted coding, testing and iteration, including projects published through GitHub and Vercel.",
+    tags: ["OpenAI Codex", "Web Development", "Game Prototyping", "GitHub & Vercel"]
+  }
+];
+
 const tools = [
   "Adobe Creative Suite",
   "Figma",
@@ -104,6 +138,9 @@ const tools = [
   "Photoshop",
   "Illustrator",
   "ChatGPT",
+  "OpenAI Codex",
+  "GitHub",
+  "Vercel",
   "Runway",
   "ComfyUI (Exploration)"
 ];
@@ -173,42 +210,71 @@ export const Skills = () => {
         </div>
 
 
-        {/* AI-Enhanced Workflow Spotlight */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-8"
-        >
-          <GlassCard className="p-6 md:p-8" intensity="medium" gradient>
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-              <div className="max-w-xl">
-                <span className="inline-block px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold mb-3">
-                  Creative AI
-                </span>
-                <h3 className="text-xl md:text-2xl font-semibold text-slate-800 mb-3">
-                  AI-Assisted Creative Workflow
-                </h3>
-                <p className="text-slate-600 leading-relaxed">
-                  My workflow combines ChatGPT for research, ideation, and advanced prompting,
-                  Runway for AI-assisted video and cinematic transitions, and Adobe Photoshop
-                  for professional visual refinement. I also explore node-based generative
-                  workflows in ComfyUI. Creative direction remains my own.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2 lg:max-w-sm">
-                {["Prompt Engineering", "AI Video & Motion", "Visual Concept Development", "Creative Iteration"].map((skill) => (
-                  <span
-                    key={skill}
-                    className="px-4 py-2 rounded-full text-sm font-medium bg-white/70 border border-purple-200/60 text-slate-700"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </GlassCard>
-        </motion.div>
+
+        {/* AI and creative coding share one design language and equal visual weight. */}
+        <div className="mb-16">
+          <motion.div
+            {...animations.fadeInUp}
+            className="mb-7 text-center"
+          >
+            <span className="mb-3 inline-block rounded-full bg-violet-100 px-4 py-2 text-sm font-medium text-violet-700">
+              Beyond the Canvas
+            </span>
+            <h3 className="mb-3 text-2xl font-semibold tracking-tight text-slate-800 md:text-3xl">
+              Creative Technology &amp; AI
+            </h3>
+            <p className="mx-auto max-w-2xl text-slate-600 leading-relaxed">
+              Combining an experienced designer&apos;s eye with generative AI,
+              interactive prototyping and AI-assisted development.
+            </p>
+          </motion.div>
+
+          <div className="grid gap-5 lg:grid-cols-2 lg:gap-6">
+            {creativeCapabilities.map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 28 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className="h-full"
+              >
+                <GlassCard className="h-full p-6 sm:p-8" intensity="medium" gradient>
+                  <div className="mb-5 flex items-center gap-4">
+                    <div
+                      className={feature.icon === "sparkles"
+                        ? "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 shadow-lg shadow-violet-900/10 ring-1 ring-white/30"
+                        : "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-600 shadow-lg shadow-blue-900/10 ring-1 ring-white/30"}
+                    >
+                      <SkillCategoryIcon name={feature.icon} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                        {feature.eyebrow}
+                      </p>
+                      <h4 className="text-lg font-semibold leading-snug text-slate-800 sm:text-xl">
+                        {feature.title}
+                      </h4>
+                    </div>
+                  </div>
+                  <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
+                    {feature.description}
+                  </p>
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    {feature.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full border border-violet-200/50 bg-white/70 px-3 py-1.5 text-xs font-medium text-slate-700 sm:text-sm"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </GlassCard>
+              </motion.div>
+            ))}
+          </div>
+        </div>
 
         {/* Tools Section */}
         <motion.div
