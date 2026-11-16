@@ -12,6 +12,7 @@ import {
   animations
 } from "@/components/DesignSystem";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n";
 
 interface FormData {
   name: string;
@@ -39,21 +40,22 @@ const contactInfo = [
   {
     title: "Let's Collaborate",
     description: "Ready to bring your vision to life? I'm always excited to work on new creative projects.",
-    icon: "💡"
+    icon: "idea"
   },
   {
     title: "Quick Response",
     description: "I typically respond to all inquiries within 24 hours during business days.",
-    icon: "⚡"
+    icon: "bolt"
   },
   {
     title: "Professional Service",
     description: "From concept to completion, I ensure every project meets the highest standards.",
-    icon: "🎯"
+    icon: "target"
   }
 ];
 
 export const Contact = () => {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -104,14 +106,13 @@ export const Contact = () => {
           className="text-center mb-16"
         >
           <span className="inline-block px-4 py-2 bg-blue-100 text-blue-600 rounded-full text-sm font-medium mb-4">
-            Contact
+            {t("Contact")}
           </span>
           <Heading level={2} className="mb-6">
-            Let&apos;s Create Something Amazing
+            {t("Let's Create Something Amazing")}
           </Heading>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            Have a project in mind? I&apos;d love to hear about it. 
-            Let&apos;s discuss how we can bring your vision to life.
+            {t("Have a project in mind? I'd love to hear about it. Let's discuss how we can bring your vision to life.")}
           </p>
         </motion.div>
 
@@ -126,7 +127,7 @@ export const Contact = () => {
               gradient
             >
               <h3 className="text-2xl font-semibold text-slate-800 mb-6">
-                Send me a message
+                {t("Send me a message")}
               </h3>
 
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -134,7 +135,7 @@ export const Contact = () => {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">
-                      Name *
+                      {t("Name *")}
                     </label>
                     <input
                       type="text"
@@ -144,12 +145,12 @@ export const Contact = () => {
                       onChange={handleInputChange}
                       required
                       className="w-full px-4 py-3 bg-white/60 border border-white/40 rounded-xl text-slate-700 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent focus:animate-[focus-pulse_0.3s_ease-in-out] transition-all duration-300"
-                      placeholder="Your name"
+                      placeholder={t("Your name")}
                     />
                   </div>
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
-                      Email *
+                      {t("Email *")}
                     </label>
                     <input
                       type="email"
@@ -158,7 +159,7 @@ export const Contact = () => {
                       value={formData.email}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 bg-white/60 border border-white/40 rounded-xl text-slate-700 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent focus:animate-[focus-pulse_0.3s_ease-in-out] transition-all duration-300"
+                      className="contact-input-email w-full px-4 py-3 bg-white/60 border border-white/40 rounded-xl text-slate-700 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent focus:animate-[focus-pulse_0.3s_ease-in-out] transition-all duration-300"
                       placeholder="your.email@example.com"
                     />
                   </div>
@@ -167,7 +168,7 @@ export const Contact = () => {
                 {/* Subject */}
                 <div>
                   <label htmlFor="subject" className="block text-sm font-medium text-slate-700 mb-2">
-                    Subject *
+                    {t("Subject *")}
                   </label>
                   <input
                     type="text"
@@ -177,14 +178,14 @@ export const Contact = () => {
                     onChange={handleInputChange}
                     required
                     className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-white/40 rounded-xl text-slate-700 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300"
-                    placeholder="Project inquiry, collaboration, etc."
+                    placeholder={t("Project inquiry, collaboration, etc.")}
                   />
                 </div>
 
                 {/* Message */}
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-slate-700 mb-2">
-                    Message *
+                    {t("Message *")}
                   </label>
                   <textarea
                     id="message"
@@ -194,7 +195,7 @@ export const Contact = () => {
                     required
                     rows={6}
                     className="w-full px-4 py-3 bg-white/60 border border-white/40 rounded-xl text-slate-700 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent focus:animate-[focus-pulse_0.3s_ease-in-out] transition-all duration-300 resize-none"
-                    placeholder="Tell me about your project, ideas, timeline, and any specific requirements..."
+                    placeholder={t("Tell me about your project, ideas, timeline, and any specific requirements...")}
                   />
                 </div>
 
@@ -214,7 +215,7 @@ export const Contact = () => {
                     type="submit"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Sending..." : "Send Message"}
+                    {t(isSubmitting ? "Sending..." : "Send Message")}
                   </PremiumButton>
                 </motion.div>
 
@@ -225,7 +226,7 @@ export const Contact = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="p-4 bg-green-100 text-green-700 rounded-xl text-center"
                   >
-                    ✅ Message sent successfully! I&apos;ll get back to you soon.
+                    <span aria-hidden="true">✓ </span>{t("Message sent successfully! I'll get back to you soon.")}
                   </motion.div>
                 )}
 
@@ -235,7 +236,7 @@ export const Contact = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="p-4 bg-red-100 text-red-700 rounded-xl text-center"
                   >
-                    ❌ Something went wrong. Please try again or contact me directly.
+                    <span aria-hidden="true">! </span>{t("Something went wrong. Please try again or contact me directly.")}
                   </motion.div>
                 )}
               </form>
@@ -260,14 +261,20 @@ export const Contact = () => {
                     className="p-6 hover:scale-[1.02] transition-transform duration-300"
                     intensity="medium"
                   >
-                    <div className="flex items-start space-x-4">
-                      <div className="text-2xl">{info.icon}</div>
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                          {info.icon === "idea" && <path d="M9 18h6M10 21h4M9 15c-1.5-1.2-2.5-2.7-2.5-5a5.5 5.5 0 1 1 11 0c0 2.3-1 3.8-2.5 5-.7.6-1 1.2-1 3h-4c0-1.8-.3-2.4-1-3Z"/>}
+                          {info.icon === "bolt" && <path d="m13.5 2-9 11h7l-1 9 9-11h-7l1-9Z"/>}
+                          {info.icon === "target" && <><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></>}
+                        </svg>
+                      </div>
                       <div>
                         <h4 className="text-lg font-semibold text-slate-800 mb-2">
-                          {info.title}
+                          {t(info.title)}
                         </h4>
                         <p className="text-slate-600 leading-relaxed">
-                          {info.description}
+                          {t(info.description)}
                         </p>
                       </div>
                     </div>
@@ -288,9 +295,9 @@ export const Contact = () => {
                 gradient
               >
                 <h4 className="text-lg font-semibold text-slate-800 mb-4">
-                  Connect with me
+                  {t("Connect with me")}
                 </h4>
-                <div className="flex space-x-4">
+                <div className="flex flex-wrap gap-3">
                   {socialLinks.map((social, index) => (
                     <motion.a
                       key={index}
@@ -298,7 +305,7 @@ export const Contact = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       className={cn(
-                        "flex items-center space-x-3 px-4 py-3 bg-white/40 rounded-xl hover:bg-white/60 hover:animate-[focus-pulse_0.3s_ease-in-out] transition-all duration-300 group",
+                        "flex items-center gap-3 px-4 py-3 bg-white/40 rounded-xl hover:bg-white/60 hover:animate-[focus-pulse_0.3s_ease-in-out] transition-all duration-300 group",
                         social.color
                       )}
                       whileHover={{ 
@@ -323,8 +330,7 @@ export const Contact = () => {
 
                 <div className="mt-6 pt-6 border-t border-white/20">
                   <p className="text-sm text-slate-600 leading-relaxed">
-                    Follow me on social media for behind-the-scenes content, 
-                    design tips, and the latest updates on my creative journey.
+                    {t("Follow me on social media for behind-the-scenes content, design tips, and the latest updates on my creative journey.")}
                   </p>
                 </div>
               </GlassCard>
@@ -343,11 +349,11 @@ export const Contact = () => {
                 <div className="flex items-center justify-center space-x-2 mb-3">
                   <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                   <span className="text-sm font-medium text-slate-700">
-                    Open to design opportunities
+                    {t("Open to design opportunities")}
                   </span>
                 </div>
                 <p className="text-sm text-slate-600">
-                  Interested in graphic design roles and meaningful creative collaborations.
+                  {t("Interested in graphic design roles and meaningful creative collaborations.")}
                 </p>
               </GlassCard>
             </motion.div>
