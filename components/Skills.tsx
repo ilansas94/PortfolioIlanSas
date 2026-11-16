@@ -41,7 +41,8 @@ const tools = [
   "Blender",
   "After Effects",
   "Photoshop",
-  "Illustrator"
+  "Illustrator",
+  "ChatGPT"
 ];
 
 export const Skills = () => {
@@ -110,6 +111,43 @@ export const Skills = () => {
             </motion.div>
           ))}
         </div>
+
+
+        {/* AI-Enhanced Workflow Spotlight */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-8"
+        >
+          <GlassCard className="p-6 md:p-8" intensity="medium" gradient>
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+              <div className="max-w-xl">
+                <span className="inline-block px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold mb-3">
+                  Creative AI
+                </span>
+                <h3 className="text-xl md:text-2xl font-semibold text-slate-800 mb-3">
+                  AI-Assisted Creative Workflow
+                </h3>
+                <p className="text-slate-600 leading-relaxed">
+                  I blend professional design expertise with generative AI to explore ideas,
+                  develop concepts, and refine visual directions. AI expands the creative
+                  process; human judgment shapes the final result.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 lg:max-w-sm">
+                {["Prompt Engineering", "Visual Research", "Concept Development", "Creative Iteration"].map((skill) => (
+                  <span
+                    key={skill}
+                    className="px-4 py-2 rounded-full text-sm font-medium bg-white/70 border border-purple-200/60 text-slate-700"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </GlassCard>
+        </motion.div>
 
         {/* Tools Section */}
         <motion.div
