@@ -12,11 +12,19 @@ import {
   animations
 } from "@/components/DesignSystem";
 
-// Types
+const filterCategories = [
+  "All", "Branding", "Logo Design", "Print Design", "Digital Art",
+  "UI/UX Design", "Illustration", "Portrait", "AI & Interactive"
+] as const;
+
+type FilterCategory = (typeof filterCategories)[number];
+type ProjectCategory = Exclude<FilterCategory, "All"> | "Poster Design";
+
 interface PortfolioItem {
   id: number;
   title: string;
-  category: string;
+  categories: [ProjectCategory, ...ProjectCategory[]];
+  cardTags?: string[];
   description: string;
   image: string;
   detailImage: string;
@@ -34,19 +42,24 @@ const portfolioItems: PortfolioItem[] = [
   {
     id: 16,
     title: "Safe Moments",
-    category: "UI/UX Design",
-    description: "An independent Hebrew microlearning experience. Explore an illustrated patient room, discover the WHO Five Moments for Hand Hygiene, and apply them in five practice scenarios.",
+    categories: ["UI/UX Design", "AI & Interactive"],
+    cardTags: ["AI-Assisted Development", "Interactive Learning"],
+    description: "Built with OpenAI Codex, this independent Hebrew learning experience combines graphic design, UX design, and interactive development. An illustrated, animated patient room guides learners through the WHO Five Moments for Hand Hygiene and five practice scenarios.",
     image: "/learning-lab/portfolio-cover.webp",
     detailImage: "/learning-lab/portfolio-cover.webp",
     liveHref: "/learning-lab",
     isPrototype: true,
-    tags: ["Learning Design", "Isometric Artwork", "Accessibility"]
+    tags: ["Learning Design", "Isometric Artwork", "Accessibility"],
+    highlights: [
+      "AI-assisted visual exploration for the illustrated patient room",
+      "Interactive learning, animation, and responsive development with OpenAI Codex"
+    ]
   },
   
   {
     id: 2,
     title: "Company Redesign",
-    category: "Branding",
+    categories: ["Branding"],
     description: "Playful identity for a youth initiative featuring a celebratory splash icon and a bilingual wordmark. The system extends to stationery, event shirts, and social posts with a bright, optimistic palette.",
     image: "/Essets/BIGFUN.jpg",
     detailImage: "/Essets/BIGFUN_in.jpg",
@@ -66,7 +79,7 @@ const portfolioItems: PortfolioItem[] = [
   {
     id: 3,
     title: "HAKAMERI Brochure",
-    category: "Print Design",
+    categories: ["Print Design"],
     description: "Clean multi‑page brochure designed on a strict grid with generous white space, edited copy, and image‑first spreads. Prepared press‑ready with bleeds, CMYK color management, and export specs for offset printing.",
     image: "/Essets/BROCHURE HAKAMERI.jpg",
     detailImage: "/Essets/BROCHURE HAKAMERI_inside.jpg",
@@ -83,7 +96,7 @@ const portfolioItems: PortfolioItem[] = [
   {
     id: 5,
     title: "Digital Painting",
-    category: "Digital Art",
+    categories: ["Digital Art", "Illustration", "Portrait"],
     description: "Illustrative concept piece painted in a layered workflow with textured brushes and soft lighting. Focus on mood, color harmony, and painterly details across characters and environment.",
     image: "/Essets/DIGITAL PAINTING.jpg",
     detailImage: "/Essets/DIGITAL PAINTING_inside.jpg",
@@ -95,7 +108,7 @@ const portfolioItems: PortfolioItem[] = [
   {
     id: 6,
     title: "Gesture Poster",
-    category: "Poster Design",
+    categories: ["Poster Design"],
     description: "Exploration of motion through expressive line work and layered textures. Designed for large‑format printing with attention to contrast, viewing distance, and visual rhythm.",
     image: "/Essets/GESTURE POSTER.jpg",
     detailImage: "/Essets/GESTURE POSTER_inside.jpg",
@@ -111,7 +124,7 @@ const portfolioItems: PortfolioItem[] = [
   {
     id: 8,
     title: "Keren Nails Logo",
-    category: "Logo Design",
+    categories: ["Logo Design"],
     description: "Clean, feminine mark for a beauty studio—balanced letterforms, subtle curves, and a neutral palette. Optimized for signage, appointment cards, and Instagram profile usage.",
     image: "/Essets/KEREN NAILS LOGO.jpg",
     detailImage: "/Essets/KEREN NAILS LOGO_inside.jpg",
@@ -123,7 +136,7 @@ const portfolioItems: PortfolioItem[] = [
   {
     id: 9,
     title: "Landing Page Prototype",
-    category: "UI/UX Design",
+    categories: ["UI/UX Design"],
     description: "Responsive landing page for a mini‑course: clear hero value prop, course syllabus highlights, pricing section, and testimonial carousel. Built in Figma with clickable flows for key CTAs.",
     image: "/Essets/LANDING PAGE PROTOTYPE.png",
     detailImage: "/Essets/LANDING.png",
@@ -137,7 +150,7 @@ const portfolioItems: PortfolioItem[] = [
   {
     id: 10,
     title: "PASSPORTOGO",
-    category: "Logo Design",
+    categories: ["Logo Design"],
     description: "Friendly travel mark that combines motion and direction cues—ideal for tickets, app icons, and social avatars. Designed to stay legible at small sizes.",
     image: "/Essets/PASSPORTOGO.png",
     detailImage: "/Essets/PASSPORTOGO LOGO DESIGN_inside.jpg",
@@ -149,7 +162,7 @@ const portfolioItems: PortfolioItem[] = [
   {
     id: 11,
     title: "Sketchbook",
-    category: "Illustration",
+    categories: ["Illustration"],
     description: "Selected pages from ongoing studies—anatomy, objects, and quick thumbnails. Focused on process, line economy, and ideation rather than polished finishes.",
     image: "/Essets/SKETCHBOOK.jpg",
     detailImage: "/Essets/SKETCHBOOK_inside.jpg",
@@ -161,7 +174,7 @@ const portfolioItems: PortfolioItem[] = [
   {
     id: 13,
     title: "SPACE Logo",
-    category: "Logo Design",
+    categories: ["Logo Design"],
     description: "Modern tech‑leaning mark inspired by orbits and negative space. Designed to work on dark backgrounds and to scale cleanly from favicon to signage.",
     image: "/Essets/SPACE LOGO.jpg",
     detailImage: "/Essets/SPACE LOGO_inside.jpg",
@@ -173,7 +186,7 @@ const portfolioItems: PortfolioItem[] = [
   {
     id: 14,
     title: "THE GRIND Logo",
-    category: "Logo Design",
+    categories: ["Logo Design"],
     description: "Primary badge for the coffee brand—robust letterforms and simple geometry for easy reproduction on cups, stickers, and merchandise.",
     image: "/Essets/THE GRIND LOGO.jpg",
     detailImage: "/Essets/THE GRIND LOGO_inside.jpg",
@@ -185,7 +198,7 @@ const portfolioItems: PortfolioItem[] = [
   {
     id: 15,
     title: "Twitchy Rabbit Logo",
-    category: "Logo Design",
+    categories: ["Logo Design"],
     description: "Energetic mascot character tailored for gaming/streaming contexts. Strong silhouette and expressive features make it instantly recognizable as an avatar.",
     image: "/Essets/TWITCHY RABBIT LOGO.jpg",
     detailImage: "/Essets/TWITCHY RABBIT LOGO_inside.jpg",
@@ -197,8 +210,6 @@ const portfolioItems: PortfolioItem[] = [
   
   
 ];
-
-const categories = ["All", "Branding", "Logo Design", "Print Design", "Digital Art", "UI/UX Design", "Illustration", "Portrait"];
 
 interface PortfolioModalProps {
   item: PortfolioItem | null;
@@ -320,7 +331,7 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
                 <div className="flex flex-col justify-center space-y-6">
                   <div>
                     <span className="inline-block px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm font-medium mb-4">
-                      {item.category}
+                      {item.categories[0]}
                     </span>
                     <h3 id="portfolio-project-title" className="text-3xl font-bold text-slate-800 mb-4">
                       {item.title}
@@ -404,7 +415,7 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
 };
 
 export const Portfolio = () => {
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeCategory, setActiveCategory] = useState<FilterCategory>("All");
   const [selectedItem, setSelectedItem] = useState<typeof portfolioItems[number] | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -435,10 +446,7 @@ export const Portfolio = () => {
 
   const filteredItems = activeCategory === "All" 
     ? baseItems 
-    : baseItems.filter(item => 
-        item.category === activeCategory ||
-        (["Portrait", "Illustration"].includes(activeCategory) && item.tags.includes(activeCategory))
-      );
+    : baseItems.filter(item => item.categories.includes(activeCategory));
 
   const openModal = (item: typeof portfolioItems[0]) => {
     setSelectedItem(item);
@@ -476,16 +484,19 @@ export const Portfolio = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="flex flex-wrap justify-center gap-2 mb-12"
+          role="group"
+          aria-label="Filter projects by category"
+          className="mx-auto mb-8 grid max-w-lg grid-cols-3 gap-1.5 max-[350px]:grid-cols-[1fr_1fr_1.2fr] sm:mb-12 sm:flex sm:max-w-none sm:flex-wrap sm:justify-center sm:gap-2"
         >
-          {categories.map((category) => (
+          {filterCategories.map((category) => (
             <motion.button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-300 ${
+              aria-pressed={activeCategory === category}
+              className={`inline-flex min-h-11 items-center justify-center gap-1 whitespace-nowrap rounded-full border px-1 py-2 text-[11px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:px-3.5 sm:text-sm ${
                 activeCategory === category
-                  ? "bg-blue-600 text-white"
-                  : "bg-white/60 border border-white/40 text-slate-700 hover:bg-white/80 hover:animate-[focus-pulse_0.3s_ease-in-out]"
+                  ? "border-blue-600 bg-blue-600 text-white"
+                  : "border-slate-200 bg-white/60 text-slate-700 hover:bg-blue-50"
               }`}
               whileHover={{ 
                 scale: 1.02, 
@@ -494,6 +505,12 @@ export const Portfolio = () => {
               }}
               whileTap={{ scale: 0.98 }}
             >
+              {category === "AI & Interactive" && (
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 shrink-0 sm:h-4 sm:w-4">
+                  <path d="M10 2.5 12 8l5.5 2-5.5 2-2 5.5L8 12l-5.5-2L8 8 10 2.5Z" />
+                  <path d="M18.5 13v7m-3.5-3.5h7" />
+                </svg>
+              )}
               {category}
             </motion.button>
           ))}
@@ -549,9 +566,9 @@ export const Portfolio = () => {
                   </div>
 
                   <div className="p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs font-medium">
-                        {item.category}
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                      <span className="rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700">
+                        {item.categories[0]}
                       </span>
                       {item.isPrototype && (
                         <div className="flex items-center space-x-1">
@@ -560,6 +577,15 @@ export const Portfolio = () => {
                         </div>
                       )}
                     </div>
+                    {item.cardTags && (
+                      <div className="mb-3 flex flex-wrap gap-1.5">
+                        {item.cardTags.map(tag => (
+                          <span key={tag} className="rounded bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                     <h3 className="text-lg font-semibold text-slate-800 mb-2">
                       {item.title}
                     </h3>
