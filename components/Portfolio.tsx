@@ -419,6 +419,70 @@ export const Portfolio = () => {
           </p>
         </motion.div>
 
+        {/* Featured concept study: independent learning experience, not a client commission */}
+        <motion.div
+          {...animations.fadeInUp}
+          className="mb-12"
+        >
+          <a
+            href="/learning-lab"
+            className="group block scroll-mt-32 overflow-hidden rounded-[28px] border border-teal-200/30 bg-[#0b2a38] shadow-[0_24px_55px_-35px_rgba(10,60,65,0.55)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-400/70"
+            aria-label="Open Safe Moments interactive healthcare learning demo"
+          >
+            <div className="grid min-h-[315px] lg:grid-cols-[1fr_0.85fr]">
+              <div className="relative z-10 flex flex-col justify-center px-7 py-10 text-white sm:px-11 lg:py-12">
+                <div className="mb-5 flex flex-wrap items-center gap-2">
+                  <span className="rounded-full border border-emerald-300/30 bg-emerald-300/10 px-3 py-1.5 text-[11px] font-bold tracking-[0.12em] text-emerald-200">
+                    FEATURED · LIVE EXPERIENCE
+                  </span>
+                  <span className="rounded-full border border-white/15 px-3 py-1.5 text-[11px] text-slate-300">
+                    Independent concept
+                  </span>
+                </div>
+                <h3 className="mb-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
+                  SAFE MOMENTS
+                </h3>
+                <p className="mb-5 max-w-lg text-base font-semibold text-emerald-200 sm:text-lg">
+                  Interactive healthcare microlearning
+                </p>
+                <p className="max-w-lg text-sm leading-relaxed text-slate-300">
+                  An original, Hebrew-first learning experience exploring the WHO Five Moments for Hand Hygiene, with guided visual lessons, real-world scenarios, instant feedback and a knowledge check.
+                </p>
+                <div className="mt-6 flex flex-wrap gap-2 text-[11px] font-semibold text-slate-300">
+                  <span className="rounded-full border border-white/15 px-3 py-1.5">Learning design</span>
+                  <span className="rounded-full border border-white/15 px-3 py-1.5">Interactive UX</span>
+                  <span className="rounded-full border border-white/15 px-3 py-1.5">AI-assisted development</span>
+                </div>
+                <div className="mt-7 inline-flex items-center gap-3 text-sm font-extrabold text-[#a7fce4]">
+                  Explore the live lesson <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-emerald-200/40 transition-transform duration-300 group-hover:translate-x-1">↗</span>
+                </div>
+              </div>
+              <div className="relative flex min-h-[335px] items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_50%_40%,rgba(50,201,178,0.22),transparent_58%)] sm:min-h-[355px]">
+                <div className="absolute h-[320px] w-[320px] rounded-full border border-teal-200/10" />
+                <div className="absolute h-[250px] w-[250px] rounded-full border border-teal-200/10" />
+                <div className="relative w-[265px] -rotate-[6deg] rounded-[22px] border border-white/10 bg-white p-5 shadow-2xl transition-transform duration-500 group-hover:-rotate-2">
+                  <div className="flex items-center justify-between text-xs font-extrabold text-slate-800">
+                    <span>רגע בטוח</span><span className="text-emerald-600">05 / 05</span>
+                  </div>
+                  <div className="mt-4 flex h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full w-[72%] rounded-full bg-emerald-400" /></div>
+                  <div className="mt-6 rounded-xl bg-[#e9f9f4] p-4" dir="rtl">
+                    <span className="text-[10px] font-semibold text-emerald-700">למידה אינטראקטיבית</span>
+                    <p className="mt-2 text-base font-bold text-[#113745]">חמשת הרגעים להיגיינת ידיים</p>
+                    <div className="mt-4 flex flex-nowrap gap-1.5">
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <span key={n} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white text-xs font-extrabold text-emerald-700 shadow-sm sm:h-8 sm:w-8">{n}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="mt-4 flex items-center justify-between text-[10px] font-semibold text-slate-400"><span>4–5 דקות</span><span>תרגול + משוב</span></div>
+                </div>
+                <div className="absolute left-[14%] top-[20%] hidden h-12 w-12 lg:flex rotate-12 items-center justify-center rounded-2xl bg-[#baf7e8] text-xl text-teal-800 shadow-lg">✦</div>
+                <div className="absolute bottom-[17%] right-[14%] hidden h-12 w-12 lg:flex -rotate-12 items-center justify-center rounded-2xl bg-[#d2ecef] text-xl text-teal-800 shadow-lg">✓</div>
+              </div>
+            </div>
+          </a>
+        </motion.div>
+
         {/* Category Filter */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
