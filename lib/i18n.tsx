@@ -96,11 +96,9 @@ const hebrewCopy: Record<string, string> = {
     "מבחר עבודות במיתוג, בעיצוב גרפי, באמנות דיגיטלית ובחוויות אינטראקטיביות — במגוון סגנונות ופורמטים.",
   "All": "הכול",
   "Branding": "מיתוג",
-  "Print Design": "עיצוב לדפוס",
   "Digital Art": "אמנות דיגיטלית",
   "Portrait": "דיוקן",
   "AI & Interactive": "AI ואינטראקטיב",
-  "AI-Assisted Development": "פיתוח בסיוע AI",
   "Interactive Learning": "למידה אינטראקטיבית",
   "Live": "לצפייה",
   "Open the interactive lesson": "לפתיחת החוויה האינטראקטיבית",
@@ -116,7 +114,6 @@ const hebrewCopy: Record<string, string> = {
   "Like what you see? Let's create something amazing together.":
     "אהבתם את מה שראיתם? אשמח ליצור משהו מיוחד גם יחד איתכם.",
   "Start Your Project": "בואו נתחיל",
-  "Contact": "יצירת קשר",
   "Let's Create Something Amazing": "בואו ניצור משהו מיוחד",
   "Have a project in mind? I'd love to hear about it. Let's discuss how we can bring your vision to life.":
     "יש לכם רעיון או פרויקט בראש? אשמח לשמוע עליו ולחשוב יחד איך להפוך אותו למציאות.",
