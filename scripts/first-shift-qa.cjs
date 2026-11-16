@@ -54,6 +54,18 @@ async function checkOverflow(page, label) {
       assert.equal(await page.locator(".fs-beacon").count(), 5, "Original orange route's five beacons are present");
       await checkOverflow(page, preset.name + " hero");
       await page.screenshot({ path: path.join(output, preset.name + "-interactive-hero.png"), fullPage: true });
+      const kitTrigger = page.locator(".fs-kit-invite");
+      await kitTrigger.waitFor({ state: "visible" });
+      assert.equal(await kitTrigger.locator("svg").count(), 2, "Kit action uses vector icons only");
+      assert.equal(await kitTrigger.locator(".fs-kit-invite-arrow").count(), 1, "The action arrow is SVG");
+      assert.ok(!(await kitTrigger.innerText()).includes("↗"), "No emoji-rendered arrow remains");
+      await kitTrigger.screenshot({ path: path.join(output, preset.name + "-kit-button.png") });
+      await kitTrigger.click();
+      await page.locator("body.fs-kit-active").waitFor();
+      await page.locator(".fs-kit-close").click();
+      await page.locator("body:not(.fs-kit-active)").waitFor();
+
+
 
       await page.locator(".fs-hero .fs-action").click();
       await page.locator(".fs-map").waitFor({ state: "visible" });
