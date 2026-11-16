@@ -82,8 +82,17 @@ async function checkOverflow(page, label) {
       await page.locator('.fs-panel[data-stop="1"]').waitFor({ state: "visible" });
       await page.evaluate(() => window.scrollTo(0, 350));
       await page.waitForTimeout(150);
-      const stickyTop = await home.evaluate(el => el.getBoundingClientRect().top);
-      assert.ok(stickyTop >= 0 && stickyTop < 28, "Return navigation should remain accessible while scrolling (" + stickyTop + ")");
+      const stickyInfo = await home.evaluate(el => ({
+        top: el.getBoundingClientRect().top,
+        position: getComputedStyle(el).position,
+        actualScrollY: window.scrollY
+      }));
+      assert.equal(stickyInfo.position, "sticky", "Return navigation is styled to stay reachable");
+      if (stickyInfo.actualScrollY > 120) {
+        assert.ok(stickyInfo.top >= 0 && stickyInfo.top < 28, "Return navigation stays at top when scrolling (" + stickyInfo.top + ")");
+      } else {
+        assert.ok(await home.isVisible(), "Return navigation is visible on pages too short for sticky behavior");
+      }
       await home.screenshot({ path: path.join(output, preset.name + "-return-home-sticky.png") });
       await home.click();
       await page.locator(".fs-hero .fs-action").waitFor({ state: "visible" });
