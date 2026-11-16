@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import PatientRoomArt, { roomHeight, roomWidth } from "./PatientRoomArt";
 
 type Phase = "intro" | "learn" | "practice" | "finish";
 type IconName = "hand" | "shield" | "drop" | "user" | "bed" | "spark" | "book" | "check" | "arrow" | "refresh" | "clock" | "light" | "play" | "hospital";
@@ -140,51 +141,96 @@ const Icon = ({ name, size = 24 }: { name: IconName; size?: number }) => (
   </svg>
 );
 
+const roomMoments = [
+  {
+    area: "בכניסה לחדר",
+    cue: "לפני שניגשים לבדוק למטופל את הדופק, מבצעים היגיינת ידיים.",
+    pin: [124, 201], target: [97, 202],
+    outline: "M56 184L68 179 73 170 92 170 97 179 96 236 85 244 61 245 54 237Z"
+  },
+  {
+    area: "ליד העירוי",
+    cue: "מיד לפני טיפול בגישה ורידית, מבצעים היגיינת ידיים, גם כשמשתמשים בכפפות.",
+    pin: [458, 140], target: [432, 150],
+    outline: "M390 142L410 135 431 141 434 181 425 191 392 188Z"
+  },
+  {
+    area: "בסיום טיפול עם כפפות",
+    cue: "מיד לאחר סיכון לחשיפה לנוזלי גוף, מבצעים היגיינת ידיים. אם נלבשו כפפות, מסירים אותן תחילה.",
+    pin: [155, 338], target: [129, 335],
+    outline: "M53 304L92 291 129 302 128 377 119 390 74 399 53 389Z"
+  },
+  {
+    area: "לצד המטופל",
+    cue: "לאחר בדיקה שכללה מגע במטופל, מבצעים היגיינת ידיים לפני שעוברים לאזור אחר.",
+    pin: [449, 320], target: [466, 295],
+    outline: "M441 278Q453 267 470 271L519 266 523 261 546 266 541 288 532 299Q510 300 476 294L450 296Q438 293 441 278Z"
+  },
+  {
+    area: "במעקה המיטה",
+    cue: "כשיוצאים מאזור המטופל לאחר מגע במעקה, מבצעים היגיינת ידיים גם אם לא נגענו במטופל.",
+    pin: [659, 245], target: [626, 229],
+    outline: "M563 280L594 225Q607 204 619 213Q628 219 628 243L619 268 576 331Q570 343 561 338L559 329Z"
+  }
+] as const;
+
 function Scene({ onExplore }: { onExplore: (index: number) => void }) {
   const [active, setActive] = useState<number | null>(null);
-  const shown = active === null ? null : moments[active];
-  const hotspots = [
-    { index: 0, position: "ml-orbit-b" },
-    { index: 1, position: "ml-orbit-a" },
-    { index: 2, position: "ml-orbit-c" },
-    { index: 3, position: "ml-orbit-d" },
-    { index: 4, position: "ml-orbit-e" }
-  ];
+  const [paused, setPaused] = useState(false);
+  const selected = active === null ? null : { moment: moments[active], location: roomMoments[active] };
 
   return (
-    <div className="ml-scene" aria-label="איור אינטראקטיבי של חדר מטופל עם חמישה רגעים ללמידה">
-      <div className="ml-scene-grid" />
-      <div className="ml-scene-window"><span/><span/><span/></div>
-      <div className="ml-scene-monitor"><div className="ml-ecg">⌁⌁</div><span>72</span></div>
-      <div className="ml-scene-stand"><span className="ml-iv-bag"/><span className="ml-iv-line"/></div>
-      <div className="ml-scene-bed">
-        <div className="ml-scene-pillow"/>
-        <div className="ml-scene-person"><span className="ml-person-head"/><span className="ml-person-body"/></div>
-        <div className="ml-bed-frame"/>
-      </div>
-      {hotspots.map(({index, position}) => (
-        <button
-          type="button"
-          key={index}
-          aria-label={"גלו את רגע מספר " + moments[index].number + ": " + moments[index].title}
-          aria-pressed={active === index}
-          onClick={() => setActive(active === index ? null : index)}
-          className={"ml-orbit " + position + (active === index ? " ml-orbit-selected" : "")}
-        >
-          <Icon name={moments[index].icon} size={23}/>
-          <span>{String(index + 1).padStart(2, "0")}</span>
+    <section className="ml-scene" aria-label="חדר המטופל האינטראקטיבי">
+      <div className="ml-room" data-paused={paused}>
+        <PatientRoomArt />
+        {selected && (
+          <svg key={selected.moment.number} className="ml-room-highlight"
+            viewBox={`0 0 ${roomWidth} ${roomHeight}`} aria-hidden="true">
+            <path className="ml-room-connector" d={`M${selected.location.pin.join(" ")} L${selected.location.target.join(" ")}`} />
+            <path className="ml-room-outline" d={selected.location.outline} />
+          </svg>
+        )}
+        {roomMoments.map(({ pin }, index) => (
+          <button type="button" key={index} className="ml-room-pin"
+            style={{ left: `${pin[0] / roomWidth * 100}%`, top: `${pin[1] / roomHeight * 100}%` }}
+            aria-label={`רגע ${index + 1} · ${moments[index].title}`}
+            aria-controls="ml-room-detail" aria-pressed={active === index}
+            onClick={() => setActive(active === index ? null : index)}>
+            <span>{index + 1}</span>
+          </button>
+        ))}
+        <button type="button" className="ml-room-motion-toggle" onClick={() => setPaused(!paused)}
+          aria-label={paused ? "הפעלת אנימציה בחדר" : "השהיית אנימציה בחדר"}
+          title={paused ? "להפעיל תנועה" : "להשהות תנועה"}>
+          {paused ? <Icon name="play" size={15} /> : (
+            <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true">
+              <path d="M7 5v10m6-10v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          )}
         </button>
-      ))}
-      {shown && (
-        <div className="ml-scene-tooltip" role="status">
-          <button type="button" className="ml-tooltip-close" onClick={() => setActive(null)} aria-label="סגור מידע">×</button>
-          <small>רגע {shown.number} מתוך 5</small>
-          <strong>{shown.title}</strong>
-          <button type="button" onClick={() => onExplore(active!)}>ללמידה על הרגע ←</button>
+      </div>
+      <div className="ml-room-detail" id="ml-room-detail">
+        <div className="ml-room-description" aria-live="polite" aria-atomic="true">
+          {selected ? (
+            <div className="ml-room-reveal" key={selected.moment.number}>
+              <span className="ml-room-label">רגע {selected.moment.number} מתוך {moments.length} · {selected.location.area}</span>
+              <h2>{selected.moment.title}</h2>
+              <p>{selected.location.cue}</p>
+            </div>
+          ) : (
+            <div className="ml-room-reveal">
+              <h2>גלו את חמשת הרגעים בחדר</h2>
+              <p>בחרו סמן כדי לגלות מתי צריך לבצע היגיינת ידיים.</p>
+            </div>
+          )}
         </div>
-      )}
-      <div className="ml-scene-caption"><span className="ml-pulse"/> לחצו על סמן כדי לגלות רגע</div>
-    </div>
+        {active !== null && (
+          <button type="button" className="ml-room-lesson" onClick={() => onExplore(active)}>
+            ליחידת הלמידה <Icon name="arrow" size={16}/>
+          </button>
+        )}
+      </div>
+    </section>
   );
 }
 
@@ -205,6 +251,13 @@ export default function LearningExperience() {
   const [chosen, setChosen] = useState<number | null>(null);
   const [answers, setAnswers] = useState<boolean[]>([]);
   const [questionOrder, setQuestionOrder] = useState<number[]>([3, 0, 4, 1, 2]);
+  const stageHeading = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    // Buttons that open another stage unmount, so move focus to the new stage.
+    if (phase !== "intro") stageHeading.current?.focus();
+  }, [phase]);
+
   const score = answers.filter(Boolean).length;
   const missedQuestions = answers.flatMap((isCorrect, index) => isCorrect ? [] : [questions[questionOrder[index]]]);
   const currentMoment = moments[momentIndex];
@@ -304,8 +357,11 @@ export default function LearningExperience() {
             <section className="ml-hero">
               <div className="ml-hero-copy">
                 <span className="ml-eyebrow"><span className="ml-eyebrow-dot"/> מיקרו־למידה · בטיחות המטופל</span>
-                <h1>לפעמים,<br/><em>רגע אחד</em><br/>עושה את ההבדל.</h1>
+                <h1>לפעמים, <br className="ml-hero-break"/><em>רגע אחד</em><br/>עושה את ההבדל.</h1>
                 <p className="ml-hero-text">חמישה רגעים להיגיינת ידיים. מסע קצר שמתרגם ידע חשוב להחלטות אמיתיות, בתוך סביבת טיפול יומיומית.</p>
+              </div>
+              <Scene onExplore={exploreMoment} />
+              <div className="ml-hero-actions">
                 <div className="ml-hero-metadata">
                   <span><Icon name="clock" size={17}/> 4–5 דקות</span>
                   <span><Icon name="book" size={17}/> 5 רגעי למידה</span>
@@ -314,7 +370,6 @@ export default function LearningExperience() {
                 <button type="button" className="ml-primary ml-primary-light" onClick={start}>בואו נתחיל <Icon name="arrow" size={20}/></button>
                 <div className="ml-hero-under">ללא הרשמה · ללא איסוף מידע אישי</div>
               </div>
-              <Scene onExplore={exploreMoment} />
             </section>
             <section className="ml-intro-row" aria-label="תהליך הלמידה">
               <div className="ml-intro-stat"><span className="ml-intro-stat-icon"><Icon name="light" size={22}/></span><div><strong>מבינים</strong><span>מזהים את חמשת הרגעים</span></div></div>
@@ -328,13 +383,13 @@ export default function LearningExperience() {
           <section className="ml-learning-stage">
             <div className="ml-stage-top">
               <span className="ml-section-label">01 / לומדים</span>
-              <h1>חמישה רגעים.<br/><em>הרגל בטוח אחד.</em></h1>
+              <h1 ref={stageHeading} tabIndex={-1}>חמישה רגעים.<br/><em>הרגל בטוח אחד.</em></h1>
               <p>בחרו רגע מהרשימה כדי לראות מתי הוא מתרחש, למה הוא חשוב ואיך מזהים אותו בעבודה.</p>
             </div>
             <div className="ml-learning-grid">
               <div className="ml-moment-list" role="group" aria-label="בחירת רגע ללמידה">
                 {moments.map((m, i) => (
-                  <button type="button" key={m.number} onClick={() => openMoment(i)} className={"ml-moment-tab " + (i === momentIndex ? "ml-moment-active " : "") + (visited.includes(i) ? "ml-moment-visited" : "")} aria-pressed={i === momentIndex}>
+                  <button type="button" key={m.number} onClick={() => openMoment(i)} aria-label={m.title} className={"ml-moment-tab " + (i === momentIndex ? "ml-moment-active " : "") + (visited.includes(i) ? "ml-moment-visited" : "")} aria-pressed={i === momentIndex}>
                     <span className={"ml-moment-no ml-color-" + m.color}>{String(m.number).padStart(2, "0")}</span>
                     <span className="ml-moment-text"><small>{m.label}</small><strong>{m.title}</strong></span>
                     {visited.includes(i) && <span className="ml-done-icon"><Icon name="check" size={15}/></span>}
@@ -364,7 +419,7 @@ export default function LearningExperience() {
           <section className="ml-practice-stage">
             <div className="ml-stage-top ml-stage-centered">
               <span className="ml-section-label">02 / מתרגלים</span>
-              <h1>הידע פוגש את <em>הרגע.</em></h1>
+              <h1 ref={stageHeading} tabIndex={-1}>הידע פוגש את <em>הרגע.</em></h1>
               <p>חמישה מצבים קצרים מהשגרה. בחרו את הרגע המתאים לכל מצב וקבלו משוב מיידי.</p>
             </div>
             <div className="ml-quiz-card">
@@ -405,7 +460,7 @@ export default function LearningExperience() {
           <section className="ml-finish-stage">
             <div className="ml-finish-graphic"><div className="ml-finish-ring"><Icon name="shield" size={54}/></div><div className="ml-finish-spark ml-finish-spark-a">✦</div><div className="ml-finish-spark ml-finish-spark-b">✦</div></div>
             <span className="ml-section-label">03 / מסכמים</span>
-            <h1>כל הכבוד! <em>זה רגע בטוח.</em></h1>
+            <h1 ref={stageHeading} tabIndex={-1}>כל הכבוד! <em>זה רגע בטוח.</em></h1>
             <p className="ml-finish-intro">סיימתם את חמשת התרחישים ולמדתם לזהות את חמשת הרגעים להיגיינת ידיים.</p>
             <div className="ml-score-card"><div className="ml-score-value"><strong>{score}</strong><span> / {questions.length}</span></div><div><strong>תשובות נכונות</strong><p>{score === questions.length ? "זיהוי מצוין! עכשיו חשוב ליישם גם בשגרה." : "כל תרחיש הוא הזדמנות לזכור טוב יותר את הרגע המתאים."}</p></div></div>
             {missedQuestions.length > 0 && (
@@ -421,7 +476,7 @@ export default function LearningExperience() {
                 <button type="button" className="ml-review-action" onClick={() => exploreMoment(missedQuestions[0].answer)}>לחזרה לרגע הראשון שדורש חיזוק ←</button>
               </div>
             )}
-            <div className="ml-finish-reminder"><Icon name="light" size={24}/><span>כל רגע נכון מתחיל בזיהוי נכון. לפני מגע או פעולה נקייה — ואחרי חשיפה, מגע במטופל או מגע בסביבתו.</span></div>
+            <div className="ml-finish-reminder"><Icon name="light" size={24}/><span>כל רגע נכון מתחיל בזיהוי נכון. לפני מגע או פעולה נקייה — ואחרי סיכון לחשיפה לנוזלי גוף, מגע במטופל או מגע בסביבתו.</span></div>
             <div className="ml-finish-actions"><button type="button" className="ml-primary ml-primary-dark" onClick={start}>לתרגל מחדש <Icon name="refresh" size={18}/></button><a className="ml-secondary" href="/#portfolio">לתיק העבודות <Icon name="arrow" size={17}/></a></div>
           </section>
         )}
@@ -429,7 +484,7 @@ export default function LearningExperience() {
 
       <footer className="ml-footer"><div className="ml-shell ml-footer-inner">
         <div><span className="ml-footer-brand">רגע בטוח<span> · </span>SAFE MOMENTS</span><p>פרויקט קונספט עצמאי של אילן ששתיאל · חוויית למידה דיגיטלית</p></div>
-        <div className="ml-sources"><span>מבוסס על עקרונות WHO של 5 רגעים להיגיינת ידיים</span><a href="https://www.who.int/campaigns/world-hand-hygiene-day/key-resources-on-hand-hygiene" target="_blank" rel="noopener noreferrer">מקור מקצועי — WHO ↗</a><small>להדגמה בלבד. אינו תחליף להכשרה מוסדית, הנחיות מקצועיות או נהלי מקום העבודה. ללא קשר רשמי לבית חולים כלשהו.</small></div>
+        <div className="ml-sources"><span>מבוסס על עקרונות WHO של 5 רגעים להיגיינת ידיים</span><a href="https://www.who.int/publications/m/item/five-moments-for-hand-hygiene" target="_blank" rel="noopener noreferrer">מקור מקצועי — WHO ↗</a><small>להדגמה בלבד. אינו תחליף להכשרה מוסדית, הנחיות מקצועיות או נהלי מקום העבודה. ללא קשר רשמי לבית חולים כלשהו.</small></div>
       </div></footer>
     </main>
   );

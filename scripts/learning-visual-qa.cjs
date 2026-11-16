@@ -34,14 +34,15 @@ async function main() {
       await page.screenshot({ path: path.join(OUT, preset.name + "-01-intro.png"), fullPage: true });
       await testOverflow(page, preset.name + " intro");
 
-      const hotspots = page.locator(".ml-orbit");
+      const hotspots = page.locator(".ml-room-pin");
       assert.equal(await hotspots.count(), 5, "Five hotspot buttons should be visible");
       await hotspots.nth(0).focus();
       await page.keyboard.press("Enter");
-      await page.locator(".ml-scene-tooltip").waitFor();
+      await page.locator(".ml-room-outline").waitFor();
+      await page.locator(".ml-room-label").waitFor();
       await page.waitForTimeout(450);
       await page.screenshot({ path: path.join(OUT, preset.name + "-02-hotspot.png"), fullPage: true });
-      await page.getByRole("button", { name: /ללמידה על הרגע/ }).click();
+      await page.getByRole("button", { name: /ליחידת הלמידה/ }).click();
 
       await page.locator(".ml-learning-grid").waitFor();
       await page.waitForTimeout(650);
