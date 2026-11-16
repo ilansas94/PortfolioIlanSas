@@ -1,0 +1,52 @@
+name: Learning experience visual QA
+
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - "app/learning-lab/**"
+      - "components/Portfolio.tsx"
+      - "scripts/learning-visual-qa.cjs"
+      - ".github/workflows/learning-visual-qa.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  learning-visual-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout application
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "20"
+      - name: Install application dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+      - name: Check production build
+        run: pnpm build
+      - name: Set up browser in isolated runner
+        run: |
+          mkdir -p /tmp/visual-qa
+          npm install --prefix /tmp/visual-qa --no-save --no-audit --no-fund playwright@1.57.0
+          node /tmp/visual-qa/node_modules/playwright/cli.js install --with-deps chromium
+      - name: Test user journeys and capture responsive screenshots
+        run: |
+          (pnpm start --port 3000 > /tmp/learning-server.log 2>&1 &)
+          for i in $(seq 1 45); do
+            if curl -fsS http://127.0.0.1:3000/learning-lab > /dev/null; then break; fi
+            sleep 2
+          done
+          NODE_PATH=/tmp/visual-qa/node_modules node scripts/learning-visual-qa.cjs
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-visual-qa-screenshots
+          path: visual-qa/learning/
+          if-no-files-found: warn
+          retention-days: 3
