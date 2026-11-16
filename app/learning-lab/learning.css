@@ -164,3 +164,36 @@
 @media (max-width:960px){.ml-hero{grid-template-columns:1fr 1fr}.ml-hero-copy{padding:65px 38px 48px 16px}.ml-hero h1{font-size:52px}.ml-scene{transform:scale(.92);transform-origin:center}.ml-learning-grid{grid-template-columns:275px minmax(0,1fr)}.ml-learning-panel{padding:27px}.ml-learning-panel h2{font-size:23px}}
 @media (max-width:720px){.ml-shell{width:min(100% - 34px,600px)}.ml-header-inner{height:75px}.ml-header-tag{display:none}.ml-header-actions{gap:0}.ml-header-back{font-size:12px}.ml-brand{font-size:21px}.ml-progress-row{gap:12px;margin:20px 0}.ml-progress-details{flex-direction:column;align-items:flex-start;gap:2px}.ml-progress-kicker{font-size:11px}.ml-progress-name{font-size:10px}.ml-hero{grid-template-columns:1fr;border-radius:21px}.ml-hero-copy{padding:42px 29px 30px}.ml-hero h1{font-size:clamp(43px,11vw,62px);margin:21px 0}.ml-hero-text{font-size:14px;max-width:440px}.ml-hero-metadata{margin:25px 0 27px;gap:10px 16px}.ml-scene{min-height:310px;height:310px;transform:none}.ml-scene:before{top:-120px;left:8%;width:400px;height:400px}.ml-scene-window{top:25px;left:21%;transform:scale(.7) skewY(-3deg)}.ml-scene-stand{top:-36px}.ml-scene-monitor{top:53px}.ml-scene-bed{bottom:105px;height:116px;right:10%;left:7%}.ml-orbit{width:51px;height:51px;border-radius:15px}.ml-orbit-a{top:30px;right:26%}.ml-orbit-b{top:110px;left:9%}.ml-orbit-c{bottom:59px;right:16%}.ml-scene-caption{bottom:14px;left:14px;font-size:9px}.ml-intro-row{grid-template-columns:1fr;margin:16px 0 60px;gap:10px}.ml-intro-stat{padding:17px 19px}.ml-stage-top{margin:35px 0 25px}.ml-stage-top h1{font-size:39px;letter-spacing:-1.5px}.ml-stage-top p{font-size:13px}.ml-learning-grid{display:flex;flex-direction:column;gap:15px}.ml-moment-list{width:100%;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.ml-moment-tab{padding:8px 3px;justify-content:center;border-radius:11px}.ml-moment-no{width:38px;height:38px;border-radius:9px;font-size:14px}.ml-moment-text,.ml-done-icon{display:none}.ml-learning-panel{width:100%;min-height:auto;padding:22px 19px}.ml-moment-bigicon{width:60px;height:60px;border-radius:14px}.ml-moment-bigicon svg{width:31px;height:31px}.ml-learning-panel h2{font-size:21px}.ml-panel-subtitle{font-size:14px}.ml-fact{padding:15px}.ml-learning-tip{font-size:11px;line-height:1.65;margin:15px 0 65px}.ml-stage-centered{margin:34px 0 23px}.ml-quiz-card{border-radius:18px;padding:24px 18px}.ml-quiz-card h2{font-size:29px}.ml-scenario-desc{font-size:14px}.ml-answers{grid-template-columns:1fr;gap:9px}.ml-answer{min-height:57px;font-size:12px}.ml-scenario-badge{margin-top:28px}.ml-finish-stage{margin:33px auto 70px}.ml-finish-stage h1{font-size:38px;letter-spacing:-1.5px}.ml-score-card{padding:22px 16px;gap:18px}.ml-score-value strong{font-size:53px}.ml-footer-inner{flex-direction:column;gap:22px}.ml-footer{padding:31px 0}}
 @media (prefers-reduced-motion:reduce){.ml *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+
+/* Interaction polish: clinical scene hotspots and lesson review */
+.ml-orbit{border:1px solid rgba(124,232,214,.36);cursor:pointer;transition:box-shadow .2s,background .2s,scale .2s}
+.ml-orbit:hover,.ml-orbit-selected{background:#f9fffc;scale:1.08;box-shadow:0 16px 40px #031d268c,0 0 0 5px rgba(93,229,201,.22)}
+.ml-orbit:focus-visible{outline:3px solid #69f6da;outline-offset:5px}
+.ml-orbit-d{top:53%;right:2%;transform:rotate(-10deg)}
+.ml-orbit-e{bottom:42px;left:38%;transform:rotate(7deg)}
+.ml-scene-tooltip{position:absolute;top:17px;left:16px;z-index:9;width:min(245px,calc(100% - 32px));border:1px solid #aaf7e0b2;background:#ecfff9;box-shadow:0 16px 30px rgba(0,26,36,.3);border-radius:15px;padding:15px 17px 14px;color:#0e3b45;display:flex;flex-direction:column;gap:6px;animation:ml-fade .24s both}
+.ml-scene-tooltip small{font-size:10px;font-weight:800;color:#0a9d88}
+.ml-scene-tooltip strong{font-size:14px;line-height:1.5;padding-left:15px}
+.ml-scene-tooltip button:not(.ml-tooltip-close){color:#048b78;font-size:11px;font-weight:900;text-align:right;align-self:flex-start;padding-top:3px}
+.ml-tooltip-close{position:absolute;top:8px;left:10px;width:26px;height:26px;font-size:20px;color:#607e79;border:0;background:transparent;display:grid;place-items:center}
+.ml-learning-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:8px}
+.ml-back-button{font-size:12px;color:#52757d;font-weight:800;border:1px solid #d7e5e5;border-radius:11px;padding:13px 16px;background:white;min-height:52px}
+.ml-back-button:hover{background:#eefaf6;border-color:#a4dbd2}
+.ml-review-card{margin:20px 0 22px;padding:21px 24px;border:1px solid #eddcbc;border-radius:16px;background:#fffbef;text-align:right}
+.ml-review-card h2{font-size:17px;color:#675331}
+.ml-review-card>p{font-size:13px;color:#927754;margin:7px 0 16px}
+.ml-review-item{display:flex;align-items:center;gap:11px;font-size:12px;line-height:1.6;color:#6e5b3c;background:#fff;border:1px solid #f5e6c7;padding:10px 12px;border-radius:9px;margin-bottom:8px}
+.ml-review-item svg{flex:none;color:#b58b46}
+.ml-review-action{font-weight:800;font-size:12px;color:#81601f;margin-top:8px;border-bottom:1px solid #b99b69;padding-bottom:4px}
+@media(max-width:720px){
+.ml-orbit{width:48px;height:48px}
+.ml-orbit-d{top:105px;right:4%}
+.ml-orbit-e{bottom:68px;left:43%}
+.ml-scene-tooltip{left:12px;top:7px;width:210px;padding:12px 13px 11px}
+.ml-scene-tooltip strong{font-size:12px}
+.ml-scene-caption{bottom:12px;font-size:9px}
+.ml-learning-actions{gap:8px}
+.ml-learning-actions .ml-primary{min-height:46px}
+.ml-back-button{min-height:46px}
+}
