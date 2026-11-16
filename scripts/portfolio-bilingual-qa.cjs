@@ -18,9 +18,28 @@ async function fit(page, label) {
   assert.ok(dims.body <= dims.client + 3, label + " body overflow: " + JSON.stringify(dims));
 }
 async function capture(page, id, suffix) {
-  await page.locator(id).scrollIntoViewIfNeeded();
+  const region = page.locator(id);
+  // Lazy-loaded portfolio art must be brought into view before the full gallery is captured.
+  if (id === "#portfolio") {
+    const images = region.locator("img");
+    const total = await images.count();
+    for (let index = 0; index < total; index++) {
+      const img = images.nth(index);
+      await img.scrollIntoViewIfNeeded();
+      await img.evaluate(image => new Promise(resolve => {
+        if (image.complete) resolve();
+        else {
+          image.addEventListener("load", resolve, { once: true });
+          image.addEventListener("error", resolve, { once: true });
+        }
+      }));
+      const details = await img.evaluate(image => ({src:image.currentSrc, naturalWidth:image.naturalWidth}));
+      assert.ok(details.naturalWidth > 0, "Portfolio artwork must load: " + details.src);
+    }
+  }
+  await region.scrollIntoViewIfNeeded();
   await page.waitForTimeout(550);
-  await page.locator(id).screenshot({ path: shot(suffix) });
+  await region.screenshot({ path: shot(suffix) });
 }
 
 (async () => {
@@ -58,6 +77,14 @@ async function capture(page, id, suffix) {
       assert.equal(await page.getByText("לצפייה בעבודות").count() > 0,true);
       assert.equal(await page.getByText("קצת עליי").count() > 0,true);
       await navbar.screenshot({path: shot(preset.name + "-03-hebrew-nav")});
+      if (preset.width < 1024) {
+        await page.getByRole("button", {name:"פתיחת תפריט ניווט"}).click();
+        await page.locator("#mobile-navigation-menu").waitFor({state:"visible"});
+        assert.ok((await page.locator("#mobile-navigation-menu").innerText()).includes("תיק עבודות"), "Hebrew mobile menu is localized");
+        await page.locator("#mobile-navigation-menu").screenshot({path:shot(preset.name + "-03b-hebrew-mobile-menu")});
+        await page.getByRole("button", {name:"סגירת תפריט ניווט"}).click();
+      }
+
       await capture(page,"#home",preset.name + "-04-hebrew-hero");
       await capture(page,"#about",preset.name + "-05-hebrew-about");
       await capture(page,"#portfolio",preset.name + "-06-hebrew-portfolio");
