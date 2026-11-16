@@ -278,10 +278,8 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
             }
           }}
         >
-            <GlassCard
-              className="w-full max-w-6xl h-full max-h-[90vh] p-6 lg:p-8 overflow-y-auto relative"
-              intensity="heavy"
-              gradient
+            <div
+              className="relative h-full max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl lg:p-8"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}
@@ -289,7 +287,7 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
                 ref={closeButton}
                 aria-label="Close project"
                 onClick={onClose}
-                className="absolute top-6 right-6 z-20 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 hover:animate-[focus-pulse_0.3s_ease-in-out] transition-colors duration-300 shadow-lg"
+                className="absolute top-6 right-6 z-20 w-10 h-10 bg-white text-slate-800 rounded-full flex items-center justify-center hover:bg-slate-100 hover:animate-[focus-pulse_0.3s_ease-in-out] transition-colors duration-300 shadow-lg"
                 whileHover={{ 
                   scale: 1.05, 
                   z: 5,
@@ -297,7 +295,7 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
                 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <span className="text-white text-xl">×</span>
+                <span className="text-xl">×</span>
               </motion.button>
 
               <div className="grid lg:grid-cols-2 gap-8 h-full">
@@ -409,7 +407,7 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
                   </div>
                 </div>
               </div>
-            </GlassCard>
+            </div>
           </motion.div>
       )}
     </AnimatePresence>
