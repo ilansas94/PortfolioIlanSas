@@ -37,9 +37,22 @@ async function capture(page, id, suffix) {
       assert.ok(details.naturalWidth > 0, "Portfolio artwork must load: " + details.src);
     }
   }
-  await region.scrollIntoViewIfNeeded();
-  await page.waitForTimeout(550);
+  // Trigger each Framer Motion whileInView element before the tall-element screenshot.
+  const geometry = await region.evaluate(el => {
+    const bounds = el.getBoundingClientRect();
+    return { top: bounds.top + window.scrollY, height: bounds.height, viewport: window.innerHeight };
+  });
+  const increment = Math.max(200, Math.floor(geometry.viewport * 0.55));
+  for (let y = geometry.top; y < geometry.top + geometry.height; y += increment) {
+    await page.evaluate(scrollY => window.scrollTo(0, scrollY), y);
+    await page.waitForTimeout(230);
+  }
+  await page.waitForTimeout(750);
+  // The fixed navbar is captured separately; hide it only while photographing a tall section.
+  const nav = page.locator("nav").first();
+  if (id !== "#home") await nav.evaluate(el => { el.style.visibility = "hidden"; });
   await region.screenshot({ path: shot(suffix) });
+  if (id !== "#home") await nav.evaluate(el => { el.style.visibility = ""; });
 }
 
 (async () => {
@@ -90,6 +103,10 @@ async function capture(page, id, suffix) {
       await capture(page,"#portfolio",preset.name + "-06-hebrew-portfolio");
       await capture(page,"#skills",preset.name + "-07-hebrew-skills");
       await capture(page,"#contact",preset.name + "-08-hebrew-contact");
+
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.waitForTimeout(500);
+      await page.screenshot({path:shot(preset.name + "-08b-hebrew-full-page"),fullPage:true});
       await fit(page,preset.name + " HE");
       assert.ok((await page.locator("#portfolio").innerText()).includes("עבודות נבחרות"));
 
