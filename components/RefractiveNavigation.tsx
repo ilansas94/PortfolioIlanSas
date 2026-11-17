@@ -5,6 +5,17 @@ import { createPortal } from "react-dom";
 import { mountDomRefraction } from "@/lib/dom-refraction";
 import { needsDomRefraction } from "@/lib/refractive-glass";
 
+/** CSS-mask bands approximate a curved optical field without WebKit's broken SVG
+ * backdrop filter. A band only clones what the live source paints behind it. */
+const PRISM_BANDS=[
+  {name:"top-outer",shift:{x:0,y:14}},
+  {name:"bottom-outer",shift:{x:0,y:-14}},
+  {name:"top-inner",shift:{x:0,y:5}},
+  {name:"bottom-inner",shift:{x:0,y:-5}},
+  {name:"left",shift:{x:11,y:0}},
+  {name:"right",shift:{x:-11,y:0}}
+] as const;
+
 /** Encodes a rounded glass bezel's Snell displacement into R/G channels.
  * The native backdrop filter bends the real page behind the bar. Navigation
  * labels live on a separate plane and remain sharp, selectable and interactive.
@@ -71,6 +82,8 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   const [detached,setDetached]=useState(false);
   const [singlePass,setSinglePass]=useState(false);
   const [sliced,setSliced]=useState(false);
+  const [prism,setPrism]=useState(false);
+  const prismHosts=useRef<Array<HTMLDivElement|null>>([]);
   const revision=useRef(0);
   const [compatible,setCompatible]=useState<boolean|null>(null);
   const [map,setMap]=useState<(BezelMap&{revision:number})|null>(null);
@@ -91,6 +104,7 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
     setDetached(params.get("glass-layer")==="detached");
     setSinglePass(params.get("glass-engine")==="single");
     setSliced(params.get("glass-engine")==="slices");
+    setPrism(params.get("glass-engine")==="prism");
   },[]);
   useEffect(()=>{
     // Establish non-zero source bounds before attaching the filter receiver.
@@ -106,7 +120,17 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
     return()=>{clearTop();clearBottom();};
   },[sliced,compatible]);
   useEffect(()=>{
-    if(sliced||!mirrorReady||!mirror.current)return;
+    if(!prism||compatible!==true)return;
+    // All mirrors are static, bounded viewport snapshots; do not clone navigation
+    // controls or attach input handlers to the mirrors themselves.
+    const cleanups=PRISM_BANDS.map((band,index)=>{
+      const host=prismHosts.current[index];
+      return host?mountDomRefraction(host,{shift:band.shift}):null;
+    });
+    return()=>{for(const cleanup of cleanups)cleanup?.();};
+  },[prism,compatible]);
+  useEffect(()=>{
+    if(prism||sliced||!mirrorReady||!mirror.current)return;
     if(!detached)return mountDomRefraction(mirror.current);
     const element=root.current;
     if(!element)return;
@@ -178,14 +202,25 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
     <div key={id} id={`${instanceId}-mirror`} ref={mirror} className="liquid-navigation-mirror" style={{filter:`url("#${id}") saturate(1.12)`}}/>
   </div>;
   const useSlices=sliced&&compatible===true;
-  const usePlane=detached&&compatible===true&&!useSlices;
-  return <div ref={root} data-glass-reflection={`${instanceId}-mirror`} data-glass-layer={usePlane?"detached":"inline"} data-glass-engine={compatible===false?"backdrop":useSlices?"slices":useSinglePass?"single":"split"} className={`liquid-navigation ${mirrorReady&&!useSlices?"has-dom-refraction":""} ${className}`}>
-    {usePlane?createPortal(<div ref={plane} className="liquid-navigation-detached" aria-hidden="true">{definitions}{reflection}</div>,document.body):<>{definitions}{!useSlices&&reflection}</>}
+  const usePrism=prism&&compatible===true;
+  const usePlane=detached&&compatible===true&&!useSlices&&!usePrism;
+  return <div ref={root} data-glass-reflection={`${instanceId}-mirror`} data-glass-layer={usePlane?"detached":"inline"} data-glass-engine={compatible===false?"backdrop":usePrism?"prism":useSlices?"slices":useSinglePass?"single":"split"} className={`liquid-navigation ${mirrorReady&&!useSlices&&!usePrism?"has-dom-refraction":""} ${usePrism?"glass-prism-active":""} ${className}`}>
+    {usePlane?createPortal(<div ref={plane} className="liquid-navigation-detached" aria-hidden="true">{definitions}{reflection}</div>,document.body):<>{definitions}{!useSlices&&!usePrism&&reflection}</>}
     <div className="liquid-navigation-material" aria-hidden="true" style={map&&compatible===false?{backdropFilter:`url("#${id}") saturate(1.12)`}:undefined}/>
     {useSlices&&<div className="glass-slices-clip" aria-hidden="true">
       <div ref={topSlice} className="glass-slice-layer glass-slice-top"/>
       <div ref={bottomSlice} className="glass-slice-layer glass-slice-bottom"/>
     </div>}
+    {usePrism&&<>
+      <div className="glass-prism-refraction" aria-hidden="true">
+        {PRISM_BANDS.map((band,index)=><div
+          key={band.name}
+          ref={element=>{prismHosts.current[index]=element;}}
+          className={`glass-prism-band glass-prism-${band.name}`}
+        />)}
+      </div>
+      <div className="glass-prism-specular" aria-hidden="true"/>
+    </>}
     <div className="liquid-navigation-content">{children}</div>
   </div>;
 }
