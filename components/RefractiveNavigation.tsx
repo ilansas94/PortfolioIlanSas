@@ -67,19 +67,26 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   const mirror=useRef<HTMLDivElement>(null);
   const plane=useRef<HTMLDivElement>(null);
   const [detached,setDetached]=useState(false);
+  const [singlePass,setSinglePass]=useState(false);
   const revision=useRef(0);
   const [compatible,setCompatible]=useState<boolean|null>(null);
   const [map,setMap]=useState<(BezelMap&{revision:number})|null>(null);
   // A filter resource must be immutable for its receiver's lifetime. In WebKit,
   // inserting/replacing a referenced filter while its receiver already exists
   // can leave a permanently unfiltered layer (webkit.org/b/61455).
-  const id=map?`${instanceId}-${compatible?"dom":"backdrop"}-${map.revision}`:instanceId;
+  // Optional iOS experiment: bypass the two objectBoundingBox displacement passes
+  // and use one local-pixel-space primitive, as recommended for small WebKit inputs.
+  // Never changes the default production renderer or Chromium desktop path.
+  const useSinglePass=compatible===true&&singlePass;
+  const id=map?`${instanceId}-${compatible?"dom":"backdrop"}${useSinglePass?"-single":""}-${map.revision}`:instanceId;
   const [readyResource,setReadyResource]=useState("");
   const mirrorReady=compatible===true&&map!==null&&readyResource===id;
   useEffect(()=>{
     // These engines parse SVG backdrop URLs but do not paint their refraction.
     setCompatible(needsDomRefraction());
-    setDetached(new URLSearchParams(location.search).get("glass-layer")==="detached");
+    const params=new URLSearchParams(location.search);
+    setDetached(params.get("glass-layer")==="detached");
+    setSinglePass(params.get("glass-engine")==="single");
   },[]);
   useEffect(()=>{
     // Establish non-zero source bounds before attaching the filter receiver.
@@ -127,10 +134,21 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   },[]);
   const definitions=
     <svg key={id} className="liquid-navigation-defs" width="1" height="1" aria-hidden="true" focusable="false">
-      <defs>{map&&compatible!==null&&<filter id={id} x="0" y="0" width={compatible?1:"100%"} height={compatible?1:"100%"}
-        filterUnits="objectBoundingBox" primitiveUnits={compatible?"objectBoundingBox":"userSpaceOnUse"} colorInterpolationFilters="sRGB">
-        <feImage href={map.src} x="0" y="0" width={compatible?1:map.width} height={compatible?1:map.height} preserveAspectRatio="none" result="bezel"/>
-        {compatible?<>
+      <defs>{map&&compatible!==null&&<filter id={id}
+        x={useSinglePass?-8:0} y={useSinglePass?-8:0}
+        width={useSinglePass?map.width+16:compatible?1:"100%"}
+        height={useSinglePass?map.height+16:compatible?1:"100%"}
+        filterUnits={useSinglePass?"userSpaceOnUse":"objectBoundingBox"}
+        primitiveUnits={useSinglePass?"userSpaceOnUse":compatible?"objectBoundingBox":"userSpaceOnUse"}
+        colorInterpolationFilters="sRGB">
+        <feImage href={map.src} x="0" y="0"
+          width={useSinglePass?map.width:compatible?1:map.width}
+          height={useSinglePass?map.height:compatible?1:map.height}
+          preserveAspectRatio="none" result="bezel"/>
+        {compatible?(useSinglePass?
+          <feDisplacementMap in="SourceGraphic" in2="bezel" scale={map.scale}
+            xChannelSelector="R" yChannelSelector="G"/>:<>
+
           {/* Normalize each axis separately to retain the original map's pixel
               precision on a wide bar. The bounded source stage makes this local
               box independent of document scroll and WebKit platform offsets. */}
@@ -140,14 +158,14 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
           <feColorMatrix in="bezel" type="matrix" values="0 0 0 0 .5019607843137255  0 1 0 0 0  0 0 0 0 .5  0 0 0 0 1" result="vertical"/>
           <feDisplacementMap in="horizontalAligned" in2="vertical" scale={map.scale/map.height} xChannelSelector="R" yChannelSelector="G" result="verticalBend"/>
           <feOffset in="verticalBend" dx={map.scale/map.height/510} dy={map.scale/map.height/510}/>
-        </>:<feDisplacementMap in="SourceGraphic" in2="bezel" scale={map.scale} xChannelSelector="R" yChannelSelector="G"/>}
+        </>):<feDisplacementMap in="SourceGraphic" in2="bezel" scale={map.scale} xChannelSelector="R" yChannelSelector="G"/>}
       </filter>}</defs>
     </svg>;
   const reflection=mirrorReady&&<div className="liquid-navigation-mirror-clip" aria-hidden="true">
     <div key={id} id={`${instanceId}-mirror`} ref={mirror} className="liquid-navigation-mirror" style={{filter:`url("#${id}") saturate(1.12)`}}/>
   </div>;
   const usePlane=detached&&compatible===true;
-  return <div ref={root} data-glass-reflection={`${instanceId}-mirror`} data-glass-layer={usePlane?"detached":"inline"} className={`liquid-navigation ${mirrorReady?"has-dom-refraction":""} ${className}`}>
+  return <div ref={root} data-glass-reflection={`${instanceId}-mirror`} data-glass-layer={usePlane?"detached":"inline"} data-glass-engine={compatible===false?"backdrop":useSinglePass?"single":"split"} className={`liquid-navigation ${mirrorReady?"has-dom-refraction":""} ${className}`}>
     {usePlane?createPortal(<div ref={plane} className="liquid-navigation-detached" aria-hidden="true">{definitions}{reflection}</div>,document.body):<>{definitions}{reflection}</>}
     <div className="liquid-navigation-material" aria-hidden="true" style={map&&compatible===false?{backdropFilter:`url("#${id}") saturate(1.12)`}:undefined}/>
     <div className="liquid-navigation-content">{children}</div>
