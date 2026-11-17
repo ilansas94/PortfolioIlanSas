@@ -30,7 +30,7 @@ export function inspectDomRefraction(host: HTMLElement) {
  * displace this real DOM paint with an ordinary SVG filter, although its SVG
  * backdrop-filter is unsupported. The original controls stay on a sharp plane.
  */
-export function mountDomRefraction(host: HTMLElement, options?: { receiver: Element|null; align: ()=>void }) {
+export function mountDomRefraction(host: HTMLElement, options?: { receiver?: Element|null; align?: ()=>void; shift?: { x: number; y: number } }) {
   const source = document.getElementById("portfolio-site");
   if (!source) return () => {};
   host.inert = true;
@@ -122,7 +122,7 @@ export function mountDomRefraction(host: HTMLElement, options?: { receiver: Elem
     html.className = `glass-source-document ${document.documentElement.className}`;
     html.style.cssText = `position:absolute;left:${-lens.left}px;top:${-lens.top}px;width:${sourceWidth}px;height:${innerHeight}px`;
     root.className = source!.className;
-    root.style.cssText = `position:relative;width:${sourceWidth}px;height:${innerHeight}px`;
+    root.style.cssText = `position:relative;width:${sourceWidth}px;height:${innerHeight}px${options?.shift?`;transform:translate3d(${options.shift.x}px,${options.shift.y}px,0)`:""}`;
     dim.hidden = !dimVisible;
     dim.style.opacity = dimOpacity;
     const active = new Set<HTMLElement>();
