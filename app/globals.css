@@ -232,6 +232,56 @@ html[lang="he"] #portfolio-site .tracking-wider { letter-spacing: normal; }
 /* Match the inline WebKit compositing path in opt-in detached mode. */
 .liquid-navigation-detached .liquid-navigation-mirror-clip { position:absolute;inset:0;overflow:hidden;border-radius:24px;clip-path:inset(0 round 24px);contain:paint;pointer-events:none; }
 .liquid-navigation-detached .liquid-navigation-mirror { position:absolute;inset:0;pointer-events:none;transform:translateZ(0); }
+
+/* iPhone preview only (?glass-engine=magnify): one opaque DOM reflection.
+ * Unlike multi-band Prism, there is never more than one copy of a glyph.
+ * A subtle continuous magnification mimics a convex lens on WebKit.
+ * Chromium's existing backdrop-displacement renderer remains untouched. */
+#portfolio-site .glass-magnify-active .glass-magnifier-clip {
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  overflow:hidden;
+  clip-path:inset(0 round 24px);
+  contain:paint;
+  pointer-events:none;
+  isolation:isolate;
+}
+#portfolio-site .glass-magnify-active .glass-magnifier-source {
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+#portfolio-site .glass-magnify-active .liquid-navigation-material {
+  /* The mirrored scene is opaque. Do not blur the original scene into it:
+     that would create a second ghost copy of every letter. */
+  background:rgba(255,255,255,.10);
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+  border:1px solid rgba(255,255,255,.74);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.92);
+}
+#portfolio-site .glass-magnify-active .glass-magnifier-highlight {
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  border:1px solid rgba(255,255,255,.82);
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse 40% 180% at -7% 20%,rgba(255,255,255,.20),transparent 72%),
+    radial-gradient(ellipse 40% 180% at 107% 82%,rgba(51,137,162,.07),transparent 74%),
+    linear-gradient(180deg,rgba(255,255,255,.13),transparent 19%,transparent 83%,rgba(255,255,255,.08));
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,.95),
+    inset 2px 0 2px rgba(51,137,162,.13),
+    inset -2px 0 2px rgba(198,63,112,.07),
+    inset 0 -2px 4px rgba(51,137,162,.07),
+    0 12px 32px rgba(24,63,75,.10);
+}
+#portfolio-site .liquid-menu-panel.glass-magnify-active .liquid-navigation-material {
+  background:rgba(255,255,255,.20);
+}
+
 #portfolio-site .liquid-menu-panel .liquid-navigation-material {
  background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,.86) 8%,rgba(255,255,255,.86) 92%,rgba(255,255,255,.34));
 }
