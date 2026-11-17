@@ -175,28 +175,82 @@ export function createGlassRenderer(canvas: HTMLCanvasElement) {
 
 export function glassPositions(width: number, height: number, seconds: number, phase = 0) {
   const mobile = width < 640;
+  // At UltraWide resolutions the original fixed-size lenses became too sparse
+  // and their independent animation could separate the two refractive pairs.
+  // Blend into tighter, slightly larger clusters only on wide desktop screens.
+  const ultraWide = mobile ? 0 : Math.max(0, Math.min(1, (width - 1650) / 1450));
   const reach = mobile ? 32 : Math.min(75, width * .052);
-  const leftBack=Math.min(150,width*.105), leftFront=Math.min(112,width*.079);
-  const rightBack=Math.min(135,width*.095), rightFront=Math.min(105,width*.075);
+  const leftBack = Math.min(150 + ultraWide * 42, width * .105);
+  const leftFront = Math.min(112 + ultraWide * 34, width * .079);
+  const rightBack = Math.min(135 + ultraWide * 38, width * .095);
+  const rightFront = Math.min(105 + ultraWide * 32, width * .075);
+
+  // Keep each glass pair in the same neighbourhood even on a 32:9 monitor.
+  const leftX = width * (.025 + ultraWide * .073);
+  const rightX = width * (.97 - ultraWide * .075);
+  const gapRatio = .60 - ultraWide * .18;
+  const leftGap = Math.min(width * .105, (leftBack + leftFront) * gapRatio);
+  const rightGap = Math.min(width * .10, (rightBack + rightFront) * gapRatio);
+  const leftY = height * .28;
+  const rightY = height * .60;
   const bases = mobile
-    ? [[-44,height*.08,115],[10,height*.10,88],[width+30,height*.72,100],[width-8,height*.78,76]]
-    : [[width*.025,height*.28,leftBack],
-       [width*.025+Math.min(width*.105,(leftBack+leftFront)*.6),height*.28+Math.min(height*.05,70),leftFront],
-       [width*.97,height*.60,rightBack],
-       [width*.97-Math.min(width*.10,(rightBack+rightFront)*.6),height*.60+Math.min(height*.07,70),rightFront]];
-  const random = (i:number) => {
-    const n=Math.sin(phase*19.73+i*127.1)*43758.5453;
-    return n-Math.floor(n);
+    ? [[-44, height * .08, 115], [10, height * .10, 88],
+       [width + 30, height * .72, 100], [width - 8, height * .78, 76]]
+    : [[leftX, leftY, leftBack],
+       [leftX + leftGap, leftY + Math.min(height * .05, 70) * (1 - .45 * ultraWide), leftFront],
+       [rightX, rightY, rightBack],
+       [rightX - rightGap, rightY + Math.min(height * .07, 70) * (1 - .45 * ultraWide), rightFront]];
+
+  const random = (i: number) => {
+    const n = Math.sin(phase * 19.73 + i * 127.1) * 43758.5453;
+    return n - Math.floor(n);
   };
+
+  // Small atmospheric satellites join the larger lenses on 32:9 monitors
+  // instead of being scattered across thousands of empty horizontal pixels.
+  const regularSingles = [[width * .24, height * .14, 25],
+    [width * .80, height * .23, 18],
+    [width * .76, height * .88, 35],
+    [width * .19, height * .78, 16],
+    [width * .60, height * .09, 12]];
+  const clusteredSingles = [[leftX + leftBack * .58, leftY - leftBack * .78, 25],
+    [rightX - rightBack * .48, rightY - rightBack * .87, 18],
+    [rightX - rightBack * .84, rightY + rightBack * .82, 35],
+    [leftX + leftBack * .78, leftY + leftBack * .88, 16],
+    [width * .60, height * .09, 12]];
   const singles = mobile
-    ? [[width*.15,height*.40,15],[width*.86,height*.28,12],[width*.92,height*.92,22],[width*.09,height*.86,10],[width*.75,height*.045,8]]
-    : [[width*.24,height*.14,25],[width*.80,height*.23,18],[width*.76,height*.88,35],[width*.19,height*.78,16],[width*.60,height*.09,12]];
-  return [...bases,...singles].flatMap(([x,y,size],i)=>{
-    const seed=random(i+1),offset=random(i+21)*Math.PI*2;
-    const a=seconds*(.36+seed*.43)+offset;
-    const travel=i<4?reach:(mobile?12:22);
-    const dx=travel*(.72*Math.cos(a)+.28*Math.sin(a*.47+offset));
-    const dy=(i<4?38:17)*(.7*Math.sin(a*.81+offset)+.3*Math.cos(a*1.31));
-    return [x+dx,y+dy,size*(i<4?1:.78+random(i+41)*.44)];
+    ? [[width * .15, height * .40, 15], [width * .86, height * .28, 12],
+       [width * .92, height * .92, 22], [width * .09, height * .86, 10],
+       [width * .75, height * .045, 8]]
+    : regularSingles.map(([x, y, size], i) => [
+        x + (clusteredSingles[i][0] - x) * ultraWide,
+        y + (clusteredSingles[i][1] - y) * ultraWide,
+        size
+      ]);
+
+  return [...bases, ...singles].flatMap(([x, y, size], i) => {
+    const seed = random(i + 1), offset = random(i + 21) * Math.PI * 2;
+    const a = seconds * (.36 + seed * .43) + offset;
+    const travel = i < 4 ? reach : (mobile ? 12 : 22);
+    let dx = travel * (.72 * Math.cos(a) + .28 * Math.sin(a * .47 + offset));
+    let dy = (i < 4 ? 38 : 17) * (.7 * Math.sin(a * .81 + offset) + .3 * Math.cos(a * 1.31));
+
+    // Coupled pair drift guarantees the two large lenses keep overlapping,
+    // while their small independent relative motion remains lively.
+    if (i < 4 && ultraWide > 0) {
+      const leader = i - (i % 2);
+      const pairSeed = random(leader + 1);
+      const pairOffset = random(leader + 21) * Math.PI * 2;
+      const pairAngle = seconds * (.36 + pairSeed * .43) + pairOffset;
+      const groupDx = travel * (.72 * Math.cos(pairAngle) + .28 * Math.sin(pairAngle * .47 + pairOffset));
+      const groupDy = 38 * (.7 * Math.sin(pairAngle * .81 + pairOffset) + .3 * Math.cos(pairAngle * 1.31));
+      dx = dx * (1 - ultraWide) + groupDx * ultraWide;
+      dy = dy * (1 - ultraWide) + groupDy * ultraWide;
+      if (i % 2) {
+        dx += ultraWide * 9 * Math.sin(seconds * .42 + pairOffset);
+        dy += ultraWide * 7 * Math.cos(seconds * .37 + pairOffset);
+      }
+    }
+    return [x + dx, y + dy, size * (i < 4 ? 1 : .78 + random(i + 41) * .44)];
   });
 }
