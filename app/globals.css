@@ -207,3 +207,4 @@ html[lang="he"] #portfolio-site .tracking-wider { letter-spacing: normal; }
  .brand-wash { width:110%; opacity:.4; }
 }
 @media (prefers-reduced-motion:reduce) { .brand-orbit { animation:none; } }
+@media (max-width:639px) { #portfolio-site .hero-scroll-cue { display:none; } }
