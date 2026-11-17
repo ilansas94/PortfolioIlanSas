@@ -52,7 +52,7 @@ export function mountGlassSourceDebug(renderer: GlassRenderer, lens: HTMLElement
     const svg = document.querySelector("#home .hero-logo svg");
     const svgRect = svg?.getBoundingClientRect();
     const svgOverlaps = !!svgRect && svgRect.bottom > lensRect.top && svgRect.top < lensRect.bottom;
-    const imageCount = [...document.querySelectorAll("img")].filter(el => {
+    const imageCount = Array.from(document.querySelectorAll("img")).filter(el => {
       const r = el.getBoundingClientRect();
       return r.bottom > lensRect.top && r.top < lensRect.bottom;
     }).length;
