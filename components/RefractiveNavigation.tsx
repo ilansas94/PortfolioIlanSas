@@ -2,11 +2,18 @@
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 
+// Keep a few completed maps across menu openings and navbar height changes.
+// Only geometry is cached; live backdrop pixels are still refracted every frame.
+const bezelCache = new Map<string, {src:string;width:number;height:number;scale:number}>();
+
 /** Encodes a rounded glass bezel's Snell displacement into R/G channels.
  * The native backdrop filter bends the real page behind the bar. Navigation
  * labels live on a separate plane and remain sharp, selectable and interactive.
  */
 function makeBezel(width: number, height: number) {
+  const key=`${width}:${height}`;
+  const cached=bezelCache.get(key);
+  if(cached)return cached;
   const canvas=document.createElement("canvas");canvas.width=width;canvas.height=height;
   const ctx=canvas.getContext("2d")!;const image=ctx.createImageData(width,height);
   const radius=Math.min(24,height/2),bevel=Math.min(24,height*.35),scale=52;
@@ -32,7 +39,11 @@ function makeBezel(width: number, height: number) {
     image.data[k+1]=Math.max(0,Math.min(255,Math.round((.5+dy/scale)*255)));
     image.data[k+2]=128;image.data[k+3]=255;
   }
-  ctx.putImageData(image,0,0);return {src:canvas.toDataURL(),width,height,scale};
+  ctx.putImageData(image,0,0);
+  const map={src:canvas.toDataURL(),width,height,scale};
+  if(bezelCache.size>=8)bezelCache.delete(bezelCache.keys().next().value!);
+  bezelCache.set(key,map);
+  return map;
 }
 
 export function RefractiveNavigation({children,className=""}:{children:ReactNode;className?:string}) {

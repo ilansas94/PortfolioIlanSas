@@ -132,7 +132,29 @@ export function createGlassRenderer(canvas: HTMLCanvasElement) {
       gl.uniform2f(resolution, rw, rh);
       gl.uniform3fv(bubbles, positions.map(v => v * scale));
       gl.uniform1f(strength, refraction); gl.uniform1f(grid, diagnostic ? 1 : 0);
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      // The shader is unchanged. Clear transparent paper, then shade only the
+      // conservative bounds of the two pairs and five independent lenses.
+      // Eight render pixels also cover the smooth union's 5px expansion and AA.
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      if (diagnostic) {
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        return;
+      }
+      gl.enable(gl.SCISSOR_TEST);
+      for (const indices of [[0,1],[2,3],[4],[5],[6],[7],[8]]) {
+        let left=rw,right=0,top=rh,bottom=0;
+        for (const i of indices) {
+          const x=positions[i*3]*scale,y=positions[i*3+1]*scale,r=positions[i*3+2]*scale;
+          left=Math.min(left,Math.floor(x-r-8));right=Math.max(right,Math.ceil(x+r+8));
+          top=Math.min(top,Math.floor(y-r-8));bottom=Math.max(bottom,Math.ceil(y+r+8));
+        }
+        left=Math.max(0,left);right=Math.min(rw,right);
+        top=Math.max(0,top);bottom=Math.min(rh,bottom);
+        if(right<=left||bottom<=top)continue;
+        gl.scissor(left,rh-bottom,right-left,bottom-top);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+      }
+      gl.disable(gl.SCISSOR_TEST);
     },
     dispose() { gl.deleteBuffer(buffer); gl.deleteProgram(program); gl.deleteShader(vertex); gl.deleteShader(fragment); }
   };
