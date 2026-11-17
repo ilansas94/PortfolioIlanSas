@@ -235,12 +235,17 @@ html[lang="he"] #portfolio-site .tracking-wider { letter-spacing: normal; }
 
 /* Opt-in iOS WebGL refraction: real per-pixel shader on a reconstructed DOM
    backdrop. Keep labels in their original clickable DOM layer above the canvas. */
+/* Keep the native blur until the WebGL renderer confirms its first surface.
+   Module load failures must not leave an invisible or transparent navbar. */
 #portfolio-site .ios-webgl-optics .liquid-navigation-material {
+  background:rgba(255,255,255,.23);
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.80);
+}
+#portfolio-site .ios-webgl-optics[data-liquid-glass="webgl"] .liquid-navigation-material {
   -webkit-backdrop-filter:none;
   backdrop-filter:none;
   background:rgba(255,255,255,.055);
-  border:1px solid rgba(255,255,255,.7);
-  box-shadow:inset 0 1px 1px rgba(255,255,255,.80);
 }
 #portfolio-site .ios-webgl-optics[data-liquid-glass="fallback"] .liquid-navigation-material {
   -webkit-backdrop-filter:blur(12px) saturate(1.12);
