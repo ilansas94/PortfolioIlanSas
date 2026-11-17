@@ -30,7 +30,7 @@ export function inspectDomRefraction(host: HTMLElement) {
  * displace this real DOM paint with an ordinary SVG filter, although its SVG
  * backdrop-filter is unsupported. The original controls stay on a sharp plane.
  */
-export function mountDomRefraction(host: HTMLElement) {
+export function mountDomRefraction(host: HTMLElement, options?: { receiver: Element|null; align: ()=>void }) {
   const source = document.getElementById("portfolio-site");
   if (!source) return () => {};
   host.inert = true;
@@ -59,7 +59,7 @@ export function mountDomRefraction(host: HTMLElement) {
   dim.style.cssText = "position:absolute;inset:0;background:rgba(0,0,0,.2);z-index:100";
   root.append(dim); body.append(root); html.append(body); stage.append(html); shadow.append(style, stage);
   const copies = new WeakMap<Node, Node>();
-  const receiver = host.closest("nav") || host.closest("#mobile-navigation-menu");
+  const receiver = options?.receiver || host.closest("nav") || host.closest("#mobile-navigation-menu");
   const sections = new Map<HTMLElement, { wrapper: HTMLElement; clone: HTMLElement }>();
   const canvases = new Map<HTMLCanvasElement, { clone: HTMLCanvasElement; rect: DOMRect }>();
   let frame = 0, disposed = false, lens = host.getBoundingClientRect();
@@ -106,6 +106,7 @@ export function mountDomRefraction(host: HTMLElement) {
   function refresh() {
     frame = 0;
     if (disposed) return;
+    options?.align();
     lens = host.getBoundingClientRect();
     const sourceWidth = source!.clientWidth;
     const sourceRects = Array.from(source!.children)

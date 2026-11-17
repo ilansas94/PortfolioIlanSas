@@ -20,10 +20,12 @@ export function mountGlassDiagnostic() {
   let snapshot="";
   function sample() {
     const receiver=document.querySelector("nav .liquid-navigation");
-    const mirror=receiver?.querySelector<HTMLElement>(".liquid-navigation-mirror");
-    const filter=receiver?.querySelector("filter");
+    const mirror=document.getElementById(receiver?.getAttribute("data-glass-reflection")||"");
+    const plane=mirror?.closest(".liquid-navigation-detached")||receiver;
+    const filter=plane?.querySelector("filter");
     const data={
-      diagnostic:"ios-glass-check-1",ua:navigator.userAgent,
+      diagnostic:"ios-glass-check-2",ua:navigator.userAgent,
+      layer:receiver?.getAttribute("data-glass-layer"),
       compatible:needsDomRefraction(),
       mounted:!!mirror,
       filter:mirror?getComputedStyle(mirror).filter:null,
@@ -35,7 +37,8 @@ export function mountGlassDiagnostic() {
       reflection:mirror?inspectDomRefraction(mirror):null,
       menu:!!document.getElementById("mobile-navigation-menu"),
       menuReflection:(()=>{
-        const host=document.querySelector<HTMLElement>("#mobile-navigation-menu .liquid-navigation-mirror");
+        const menu=document.querySelector("#mobile-navigation-menu .liquid-navigation");
+        const host=document.getElementById(menu?.getAttribute("data-glass-reflection")||"");
         return host?inspectDomRefraction(host):null;
       })(),
     };

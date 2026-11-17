@@ -228,6 +228,9 @@ html[lang="he"] #portfolio-site .tracking-wider { letter-spacing: normal; }
  transform:translateZ(0);
 }
 #portfolio-site .has-dom-refraction .liquid-navigation-material { -webkit-backdrop-filter:none;backdrop-filter:none; }
+.liquid-navigation-detached { position:fixed;border-radius:24px;pointer-events:none; }
+.liquid-navigation-detached .liquid-navigation-mirror-clip { position:absolute;inset:0;overflow:hidden;border-radius:24px;pointer-events:none; }
+.liquid-navigation-detached .liquid-navigation-mirror { position:absolute;inset:0;pointer-events:none; }
 #portfolio-site .liquid-menu-panel .liquid-navigation-material {
  background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,.86) 8%,rgba(255,255,255,.86) 92%,rgba(255,255,255,.34));
 }

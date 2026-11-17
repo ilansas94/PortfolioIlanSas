@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { mountDomRefraction } from "@/lib/dom-refraction";
 import { needsDomRefraction } from "@/lib/refractive-glass";
 
@@ -52,10 +53,20 @@ function makeBezel(width: number, height: number): BezelMap {
   return map;
 }
 
+function positionGlassPlane(plane: HTMLDivElement, element: HTMLDivElement) {
+  const rect=element.getBoundingClientRect();
+  const values={left:`${rect.left}px`,top:`${rect.top}px`,width:`${rect.width}px`,height:`${rect.height}px`,zIndex:element.closest("nav")?"49":"39"};
+  for(const property of Object.keys(values) as Array<keyof typeof values>){
+    if(plane.style[property]!==values[property])plane.style[property]=values[property];
+  }
+}
+
 export function RefractiveNavigation({children,className=""}:{children:ReactNode;className?:string}) {
   const instanceId=`nav-lens-${useId().replace(/[^a-zA-Z0-9]/g,"")}`;
   const root=useRef<HTMLDivElement>(null);
   const mirror=useRef<HTMLDivElement>(null);
+  const plane=useRef<HTMLDivElement>(null);
+  const [detached,setDetached]=useState(false);
   const revision=useRef(0);
   const [compatible,setCompatible]=useState<boolean|null>(null);
   const [map,setMap]=useState<(BezelMap&{revision:number})|null>(null);
@@ -68,10 +79,24 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   useEffect(()=>{
     // These engines parse SVG backdrop URLs but do not paint their refraction.
     setCompatible(needsDomRefraction());
+    setDetached(new URLSearchParams(location.search).get("glass-layer")==="detached");
   },[]);
   useEffect(()=>{
-    if(mirrorReady&&mirror.current)return mountDomRefraction(mirror.current);
-  },[mirrorReady,map]);
+    // Establish non-zero source bounds before attaching the filter receiver.
+    if(detached&&plane.current&&root.current)positionGlassPlane(plane.current,root.current);
+  },[detached,map,compatible]);
+  useEffect(()=>{
+    if(!mirrorReady||!mirror.current)return;
+    if(!detached)return mountDomRefraction(mirror.current);
+    const element=root.current;
+    if(!element)return;
+    const receiver=element.closest("nav")||element.closest("#mobile-navigation-menu");
+    const align=()=>{
+      if(!plane.current)return;
+      positionGlassPlane(plane.current,element);
+    };
+    return mountDomRefraction(mirror.current,{receiver,align});
+  },[mirrorReady,map,detached]);
   useEffect(()=>{
     if(!compatible||!map)return;
     let disposed=false,first=0,second=0;
@@ -100,7 +125,7 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
     const resize=new ResizeObserver(()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(update);});
     resize.observe(element);update();return()=>{resize.disconnect();cancelAnimationFrame(frame);};
   },[]);
-  return <div ref={root} className={`liquid-navigation ${mirrorReady?"has-dom-refraction":""} ${className}`}>
+  const definitions=
     <svg key={id} className="liquid-navigation-defs" width="1" height="1" aria-hidden="true" focusable="false">
       <defs>{map&&compatible!==null&&<filter id={id} x="0" y="0" width={compatible?1:"100%"} height={compatible?1:"100%"}
         filterUnits="objectBoundingBox" primitiveUnits={compatible?"objectBoundingBox":"userSpaceOnUse"} colorInterpolationFilters="sRGB">
@@ -117,10 +142,13 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
           <feOffset in="verticalBend" dx={map.scale/map.height/510} dy={map.scale/map.height/510}/>
         </>:<feDisplacementMap in="SourceGraphic" in2="bezel" scale={map.scale} xChannelSelector="R" yChannelSelector="G"/>}
       </filter>}</defs>
-    </svg>
-    {mirrorReady&&<div className="liquid-navigation-mirror-clip" aria-hidden="true">
-      <div key={id} ref={mirror} className="liquid-navigation-mirror" style={{filter:`url("#${id}") saturate(1.12)`}}/>
-    </div>}
+    </svg>;
+  const reflection=mirrorReady&&<div className="liquid-navigation-mirror-clip" aria-hidden="true">
+    <div key={id} id={`${instanceId}-mirror`} ref={mirror} className="liquid-navigation-mirror" style={{filter:`url("#${id}") saturate(1.12)`}}/>
+  </div>;
+  const usePlane=detached&&compatible===true;
+  return <div ref={root} data-glass-reflection={`${instanceId}-mirror`} data-glass-layer={usePlane?"detached":"inline"} className={`liquid-navigation ${mirrorReady?"has-dom-refraction":""} ${className}`}>
+    {usePlane?createPortal(<div ref={plane} className="liquid-navigation-detached" aria-hidden="true">{definitions}{reflection}</div>,document.body):<>{definitions}{reflection}</>}
     <div className="liquid-navigation-material" aria-hidden="true" style={map&&compatible===false?{backdropFilter:`url("#${id}") saturate(1.12)`}:undefined}/>
     <div className="liquid-navigation-content">{children}</div>
   </div>;

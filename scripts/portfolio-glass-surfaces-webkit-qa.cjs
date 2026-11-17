@@ -4,7 +4,7 @@ const { webkit, devices } = require(process.env.QA_PLAYWRIGHT_MODULE || 'playwri
 const out = process.env.QA_OUTPUT_DIR || '/tmp/portfolio-glass-surfaces-qa';
 fs.mkdirSync(out, { recursive: true });
 (async () => { const b = await webkit.launch({ executablePath: process.env.QA_WEBKIT_EXECUTABLE || undefined }); try {
-    const p = await b.newPage({ ...devices['iPhone 13'], viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, reducedMotion: 'reduce' }), errors = [], results = [];
+    const p = await b.newPage({ ...devices['iPhone 13'], viewport: { width: Number(process.env.QA_WIDTH || 390), height: 844 }, deviceScaleFactor: 3, reducedMotion: 'reduce' }), errors = [], results = [];
     p.on('pageerror', e => errors.push(e.message));
     await p.goto(process.env.QA_BASE_URL || 'http://localhost:3000', { waitUntil: 'networkidle' });
     await p.evaluate(() => document.fonts.ready);
@@ -24,7 +24,8 @@ fs.mkdirSync(out, { recursive: true });
             const name = `${caseName}-${surface}`;
             await p.screenshot({ path: `${out}/${name}-site.png` });
             const hidden = await p.addStyleTag({ content: `${selector}{visibility:hidden!important}` });
-            const mirror = p.locator(surface === 'nav' ? 'nav .liquid-navigation-mirror' : '#mobile-navigation-menu .liquid-navigation-mirror'), style = await mirror.getAttribute('style');
+            const reflectionId=await receiver.getAttribute('data-glass-reflection');
+            const mirror = reflectionId?p.locator(`#${reflectionId}`):p.locator(surface === 'nav' ? 'nav .liquid-navigation-mirror' : '#mobile-navigation-menu .liquid-navigation-mirror'), style = await mirror.getAttribute('style');
             const on = await receiver.screenshot({ path: `${out}/${name}-on.png` });
             await mirror.evaluate(e => e.style.filter = 'saturate(1.12)');
             const off = await receiver.screenshot({ path: `${out}/${name}-off.png` });
