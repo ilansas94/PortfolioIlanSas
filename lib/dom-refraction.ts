@@ -2,6 +2,30 @@ import { subscribeGlassFrames } from "./refractive-glass";
 
 const shadowRoots = new WeakMap<HTMLElement, ShadowRoot>();
 
+/** Read-only diagnostics, requested explicitly through ?glass-check=1. */
+export function inspectDomRefraction(host: HTMLElement) {
+  const shadow=shadowRoots.get(host);
+  if(!shadow)return null;
+  const box=(element:Element|null)=>{
+    if(!element)return null;
+    const r=element.getBoundingClientRect();
+    return [r.x,r.y,r.width,r.height].map(value=>Math.round(value*10)/10);
+  };
+  return {
+    nodes:shadow.querySelectorAll("*").length,
+    stage:box(shadow.querySelector(".glass-source-stage")),
+    sections:Array.from(shadow.querySelectorAll("section")).map(section=>({id:section.id,box:box(section)})),
+    paint:Array.from(shadow.querySelectorAll("h1,h2,p,img")).filter(element=>{
+      const rect=element.getBoundingClientRect(),lens=host.getBoundingClientRect();
+      return rect.bottom>=lens.top&&rect.top<=lens.bottom;
+    }).slice(0,3).map(element=>{
+      const css=getComputedStyle(element);
+      return {tag:element.tagName,box:box(element),opacity:css.opacity,visibility:css.visibility,display:css.display};
+    }),
+    styleBytes:shadow.querySelector("style")?.textContent?.length||0,
+  };
+}
+
 /** Reflect only sections behind a lens into an inert shadow tree. WebKit can
  * displace this real DOM paint with an ordinary SVG filter, although its SVG
  * backdrop-filter is unsupported. The original controls stay on a sharp plane.

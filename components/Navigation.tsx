@@ -69,6 +69,15 @@ export const Navigation = () => {
 
   const changeLanguage = () => setLanguage(language === "en" ? "he" : "en");
 
+  useEffect(()=>{
+    if(new URLSearchParams(location.search).get("glass-check")!=="1")return;
+    let disposed=false,cleanup:undefined|(()=>void);
+    import("@/lib/glass-diagnostic").then(module=>{
+      if(!disposed)cleanup=module.mountGlassDiagnostic();
+    });
+    return()=>{disposed=true;cleanup?.();};
+  },[]);
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
