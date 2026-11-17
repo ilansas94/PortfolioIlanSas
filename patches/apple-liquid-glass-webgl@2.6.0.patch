@@ -89,3 +89,56 @@ index c4b749a87c9d8de4d3876bba23ebabd80e5e4dc2..d722f8638403f745170d1fa762d2df2b
    if (item.stroke) {
      context.strokeStyle = item.stroke.color;
      context.lineWidth = item.stroke.width;
+diff --git a/src/renderer.js b/src/renderer.js
+index be4f4e667120c0dc3c33cefe1eb5cde4e7945c4b..081d6959e063dbab9cd26e8ee5bf33dcf60c6701 100644
+--- a/src/renderer.js
++++ b/src/renderer.js
+@@ -253,15 +253,42 @@ export class GlassRenderer {
+     // every uploaded pixel in the browsers that copy through system memory.
+     // Declaring premultiplied canvas/video sources as such removes the
+     // un-premultiply pass in the same way (and keeps Firefox on its GPU path).
+-    const premultiplied = this.isPremultipliedSource(source);
++    // iOS/WebKit has shipped regressions when a 2D Canvas is passed directly
++    // as a WebGL texture source (premultiplication and GPU upload paths).
++    // This app's DOM reconstruction is an opaque 2D canvas. Uploading its
++    // actual sRGB bytes via the pixel-array overload avoids the fragile
++    // CanvasImageSource -> WebGL transfer, retaining text AND background colors.
++    // Keep the faster native upload path on desktop and Android.
++    const isIosWebKit = typeof navigator !== 'undefined'
++      && /AppleWebKit/.test(navigator.userAgent)
++      && /(?:iPhone|iPad|iPod)/.test(navigator.userAgent);
++    let pixels = null;
++    if (isIosWebKit && source?.tagName?.toUpperCase() === 'CANVAS') {
++      try {
++        const context = source.getContext('2d');
++        if (context && width * height <= 3000000) {
++          const rgba = context.getImageData(0, 0, width, height).data;
++          pixels = new Uint8Array(rgba.buffer, rgba.byteOffset, rgba.byteLength);
++        }
++      } catch {
++        // A tainted or unavailable 2D buffer still uses the original uploader.
++      }
++    }
++    const premultiplied = pixels ? false : this.isPremultipliedSource(source);
+     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, premultiplied);
+     if (!forceAllocation && entry.ready && entry.width === width && entry.height === height) {
+-      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, source);
++      if (pixels) {
++        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, width, height,
++          gl.RGBA, gl.UNSIGNED_BYTE, pixels);
++      } else {
++        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0,
++          gl.RGBA, gl.UNSIGNED_BYTE, source);
++      }
++    } else if (pixels) {
++      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, width, height, 0,
++        gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+     } else {
+-      // Plain RGBA8, decoded to linear in FS_WALLPAPER. An SRGB8_ALPHA8
+-      // destination knocks Chrome's canvas/video upload off the GPU-to-GPU
+-      // copy path on Windows (ANGLE/D3D11), turning every live backdrop frame
+-      // into a full readback and re-upload that costs ~10 ms of GPU time.
++      // Plain RGBA8, decoded to linear in FS_WALLPAPER.
+       gl.texImage2D(
+         gl.TEXTURE_2D, 0, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE, source,
+       );
