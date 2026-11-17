@@ -23,13 +23,17 @@ export function mountDomRefraction(host: HTMLElement) {
     .replace(/(^|[\s,>+~}])html(?=[\s,.#:\[\]>+~{])/g, "$1.glass-source-document")
     .replace(/(^|[\s,>+~}])body(?=[\s,.#:\[\]>+~{])/g, "$1.glass-source-body")
     .replace(/:root\b/g, ".glass-source-document")
-    + "\n:host{display:block;pointer-events:none}.glass-source-document,.glass-source-body{margin:0!important;padding:0!important}*{pointer-events:none!important}";
+    + "\n:host{display:block;pointer-events:none}.glass-source-stage{position:absolute;inset:0;overflow:hidden;contain:strict;clip-path:inset(0)}.glass-source-document,.glass-source-body{margin:0!important;padding:0!important}*{pointer-events:none!important}";
+  // Bound the paint before filtering. Otherwise the entire tall gallery becomes
+  // the SVG object bounding box, moving the displacement map away from the lens.
+  const stage = document.createElement("div");
+  stage.className = "glass-source-stage";
   const html = document.createElement("div"), body = document.createElement("div");
   body.className = `glass-source-body ${document.body.className}`;
   const root = source.cloneNode(false) as HTMLElement;
   const dim = document.createElement("div");
   dim.style.cssText = "position:absolute;inset:0;background:rgba(0,0,0,.2);z-index:100";
-  root.append(dim); body.append(root); html.append(body); shadow.append(style, html);
+  root.append(dim); body.append(root); html.append(body); stage.append(html); shadow.append(style, stage);
   const copies = new WeakMap<Node, Node>();
   const receiver = host.closest("nav") || host.closest("#mobile-navigation-menu");
   const sections = new Map<HTMLElement, { wrapper: HTMLElement; clone: HTMLElement }>();

@@ -23,6 +23,7 @@ const baseURL = process.env.QA_BASE_URL || 'http://localhost:3000';
       await page.goto(baseURL, { waitUntil: 'networkidle' });
       await page.waitForTimeout(1200);
       const checkAlignment = async selector => {
+        await page.waitForFunction(selector => window.__glassSurfaces.some(surface => surface.host.isConnected && surface.root.querySelector(selector)), selector);
         const offsets = await page.evaluate(selector => {
           const source = document.querySelector(selector).getBoundingClientRect();
           return window.__glassSurfaces.filter(surface => surface.host.isConnected).flatMap(surface => {

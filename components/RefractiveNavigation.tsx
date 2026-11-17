@@ -41,8 +41,6 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   const id=`nav-lens-${useId().replace(/[^a-zA-Z0-9]/g,"")}`;
   const root=useRef<HTMLDivElement>(null);
   const mirror=useRef<HTMLDivElement>(null);
-  const filter=useRef<SVGFilterElement>(null);
-  const displacementImage=useRef<SVGFEImageElement>(null);
   const [compatible,setCompatible]=useState(false);
   const [map,setMap]=useState<ReturnType<typeof makeBezel>|null>(null);
   useEffect(()=>{
@@ -51,28 +49,6 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   },[]);
   useEffect(()=>{
     if(compatible&&mirror.current)return mountDomRefraction(mirror.current);
-  },[compatible,map]);
-  useEffect(()=>{
-    if(!compatible||!map||!navigator.userAgent.includes("AppleWebKit"))return;
-    // WebKit places a CSS SVG filter's user-space origin in document space,
-    // even on this fixed surface. Without the scroll offset its source is
-    // clipped away after scrolling, revealing the unbent page underneath.
-    const update=()=>{
-      const y=String(window.scrollY);
-      filter.current?.setAttribute("y",y);
-      displacementImage.current?.setAttribute("y",y);
-    };
-    update();
-    window.addEventListener("scroll",update,{passive:true});
-    window.addEventListener("resize",update);
-    visualViewport?.addEventListener("scroll",update);
-    visualViewport?.addEventListener("resize",update);
-    return()=>{
-      window.removeEventListener("scroll",update);
-      window.removeEventListener("resize",update);
-      visualViewport?.removeEventListener("scroll",update);
-      visualViewport?.removeEventListener("resize",update);
-    };
   },[compatible,map]);
   useEffect(()=>{
     const element=root.current;if(!element)return;
@@ -88,10 +64,20 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   },[]);
   return <div ref={root} className={`liquid-navigation ${compatible?"has-dom-refraction":""} ${className}`}>
     <svg className="liquid-navigation-defs" width="0" height="0" aria-hidden="true" focusable="false">
-      <defs>{map&&<filter ref={filter} id={id} x="0" y="0" width={compatible?map.width:"100%"} height={compatible?map.height:"100%"}
-        filterUnits={compatible?"userSpaceOnUse":"objectBoundingBox"} colorInterpolationFilters="sRGB">
-        <feImage ref={displacementImage} href={map.src} x="0" y="0" width={map.width} height={map.height} preserveAspectRatio="none" result="bezel"/>
-        <feDisplacementMap in="SourceGraphic" in2="bezel" scale={map.scale} xChannelSelector="R" yChannelSelector="G"/>
+      <defs>{map&&<filter id={id} x="0" y="0" width={compatible?1:"100%"} height={compatible?1:"100%"}
+        filterUnits="objectBoundingBox" primitiveUnits={compatible?"objectBoundingBox":"userSpaceOnUse"} colorInterpolationFilters="sRGB">
+        <feImage href={map.src} x="0" y="0" width={compatible?1:map.width} height={compatible?1:map.height} preserveAspectRatio="none" result="bezel"/>
+        {compatible?<>
+          {/* Normalize each axis separately to retain the original map's pixel
+              precision on a wide bar. The bounded source stage makes this local
+              box independent of document scroll and WebKit platform offsets. */}
+          <feColorMatrix in="bezel" type="matrix" values="1 0 0 0 0  0 0 0 0 .5019607843137255  0 0 0 0 .5  0 0 0 0 1" result="horizontal"/>
+          <feDisplacementMap in="SourceGraphic" in2="horizontal" scale={map.scale/map.width} xChannelSelector="R" yChannelSelector="G" result="horizontalBend"/>
+          <feOffset in="horizontalBend" dx={map.scale/map.width/510} dy={map.scale/map.width/510} result="horizontalAligned"/>
+          <feColorMatrix in="bezel" type="matrix" values="0 0 0 0 .5019607843137255  0 1 0 0 0  0 0 0 0 .5  0 0 0 0 1" result="vertical"/>
+          <feDisplacementMap in="horizontalAligned" in2="vertical" scale={map.scale/map.height} xChannelSelector="R" yChannelSelector="G" result="verticalBend"/>
+          <feOffset in="verticalBend" dx={map.scale/map.height/510} dy={map.scale/map.height/510}/>
+        </>:<feDisplacementMap in="SourceGraphic" in2="bezel" scale={map.scale} xChannelSelector="R" yChannelSelector="G"/>}
       </filter>}</defs>
     </svg>
     {compatible&&map&&<div className="liquid-navigation-mirror-clip" aria-hidden="true">

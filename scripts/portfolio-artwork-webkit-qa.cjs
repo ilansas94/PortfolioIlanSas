@@ -41,8 +41,10 @@ fs.mkdirSync(dir, { recursive: true });
                         }
                     } return { large, centerDelta: midSum / midN }; }, [on.toString('base64'), off.toString('base64')]);
                 assert.ok(metrics.large > 400 * dpr * dpr, `${stage} no significant artwork displacement: ${JSON.stringify(metrics)}`);
-                // The flat center must preserve the image while its bezel bends.
-                assert.ok(metrics.centerDelta < 8, `${stage} filter dropped the image: ${JSON.stringify(metrics)}`);
+                // Two axis passes resample subpixel edges in the center. Allow
+                // that small difference, while rejecting the missing-image
+                // baseline (about 148 levels for this same artwork and crop).
+                assert.ok(metrics.centerDelta < 20, `${stage} filter dropped the image: ${JSON.stringify(metrics)}`);
                 await mirror.evaluate((e, s) => e.setAttribute('style', s), style);
                 await hidden.evaluate(e => e.remove());
                 await p.getByRole('button', { name: language === 'he' ? 'פתיחת תפריט ניווט' : 'Open navigation menu' }).click();
