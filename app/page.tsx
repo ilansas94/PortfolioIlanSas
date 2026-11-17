@@ -9,6 +9,7 @@ import { Portfolio } from "@/components/Portfolio";
 import { Skills } from "@/components/Skills";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
+import { IOSSceneRefraction } from "@/components/IOSSceneRefraction";
 
 
 export default function HomePage() {
@@ -18,13 +19,15 @@ export default function HomePage() {
       {/* Navigation */}
       <Navigation />
 
-      {/* Main Content */}
+      {/* Main Content: opt-in real pixel refraction on iOS original scene */}
+      <IOSSceneRefraction>
       <Hero />
       <About />
       <Portfolio />
       <Skills />
       <Contact />
       <Footer />
+      </IOSSceneRefraction>
     </div>
     </LanguageProvider>
   );
