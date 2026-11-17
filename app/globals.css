@@ -209,3 +209,14 @@ html[lang="he"] #portfolio-site .tracking-wider { letter-spacing: normal; }
 @media (prefers-reduced-motion:reduce) { .brand-orbit { animation:none; } }
 @media (max-width:639px) { #portfolio-site .hero-scroll-cue { display:none; } }
 .refractive-glass-canvas { position:absolute;inset:0;width:100%;height:100%;pointer-events:none; }
+#portfolio-site .liquid-navigation { position:relative;border-radius:24px;box-shadow:0 12px 34px rgba(24,63,75,.13); }
+.liquid-navigation-defs { position:absolute;pointer-events:none; }
+#portfolio-site .liquid-navigation-material {
+ position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+ background:rgba(255,255,255,.23);border:1px solid rgba(255,255,255,.75);
+ -webkit-backdrop-filter:blur(12px) saturate(1.12);backdrop-filter:blur(12px) saturate(1.12);
+ box-shadow:inset 0 1px 1px rgba(255,255,255,.95),inset 0 -1px 1px rgba(51,137,162,.16);
+}
+#portfolio-site .liquid-navigation-material::after { content:"";position:absolute;inset:0;border-radius:inherit;border:1px solid transparent;border-top-color:rgba(255,255,255,.8);border-bottom-color:rgba(255,255,255,.4); }
+.liquid-navigation-content { position:relative;z-index:1; }
+@supports not (backdrop-filter: url("#lens")) { #portfolio-site .liquid-navigation-material { background:rgba(255,255,255,.72); } }

@@ -5,7 +5,7 @@
 export const GLASS_FRAGMENT = `
 precision highp float;
 uniform vec2 uResolution;
-uniform vec3 uBubbles[4];
+uniform vec3 uBubbles[9];
 uniform float uStrength;
 uniform float uGrid;
 const vec3 CYAN=vec3(.20,.537,.635);
@@ -79,6 +79,17 @@ void main(){
  vec4 a=pair(p,uBubbles[0],uBubbles[1],CYAN,MAGENTA);
  vec4 b=pair(p,uBubbles[2],uBubbles[3],GOLD,CYAN);
  vec4 glass=a.a>b.a?a:b;
+ // Smaller, independent lenses use their own radii and trajectories.
+ for(int i=4;i<9;i++){
+  vec3 bubble=uBubbles[i];float mask=coverage(sd(p,bubble));
+  if(mask>glass.a){
+   vec3 tint=i==5||i==8?GOLD:(i==6?MAGENTA:CYAN);
+   vec3 c=material(paper(p+bend(p,bubble,0.)),p,bubble,tint,.85);
+   float rim=exp(-max(0.,-sd(p,bubble))*.9);
+   c=mix(c,vec3(1.),rim*.30);
+   glass=vec4(c,mask);
+  }
+ }
  if(uGrid>.5){gl_FragColor=vec4(mix(paper(p),glass.rgb,glass.a),1.);}
  else{gl_FragColor=glass;}
 }`;
@@ -133,8 +144,19 @@ export function glassPositions(width: number, height: number, seconds: number, p
   const bases = mobile
     ? [[-44,height*.08,115],[10,height*.10,88],[width+30,height*.72,100],[width-8,height*.78,76]]
     : [[width*.025,height*.28,Math.min(150,width*.105)],[width*.13,height*.33,Math.min(112,width*.079)],[width*.97,height*.60,Math.min(135,width*.095)],[width*.87,height*.67,Math.min(105,width*.075)]];
-  return bases.flatMap(([x,y,size],i)=>{
-    const a=seconds*(.63+i*.07)+phase+i*1.9;
-    return [x+Math.cos(a)*reach,y+Math.sin(a*.83+i)*38,size];
+  const random = (i:number) => {
+    const n=Math.sin(phase*19.73+i*127.1)*43758.5453;
+    return n-Math.floor(n);
+  };
+  const singles = mobile
+    ? [[width*.15,height*.40,15],[width*.86,height*.28,12],[width*.92,height*.92,22],[width*.09,height*.86,10],[width*.75,height*.045,8]]
+    : [[width*.24,height*.14,25],[width*.80,height*.23,18],[width*.76,height*.88,35],[width*.19,height*.78,16],[width*.60,height*.09,12]];
+  return [...bases,...singles].flatMap(([x,y,size],i)=>{
+    const seed=random(i+1),offset=random(i+21)*Math.PI*2;
+    const a=seconds*(.36+seed*.43)+offset;
+    const travel=i<4?reach:(mobile?12:22);
+    const dx=travel*(.72*Math.cos(a)+.28*Math.sin(a*.47+offset));
+    const dy=(i<4?38:17)*(.7*Math.sin(a*.81+offset)+.3*Math.cos(a*1.31));
+    return [x+dx,y+dy,size*(i<4?1:.78+random(i+41)*.44)];
   });
 }

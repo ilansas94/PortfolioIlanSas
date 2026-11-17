@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PremiumButton, GlassCard } from "@/components/DesignSystem";
+import { RefractiveNavigation } from "@/components/RefractiveNavigation";
 import { NavLogo } from "@/components/AnimatedLogo";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n";
@@ -84,14 +85,7 @@ export const Navigation = () => {
         )}
       >
         <div className="container mx-auto px-4 sm:px-6">
-          <GlassCard
-            className={cn(
-              "px-4 py-1.5 sm:px-6 sm:py-2 transition-all duration-300",
-              isScrolled ? "backdrop-blur-xl" : "backdrop-blur-md"
-            )}
-            intensity={isScrolled ? "heavy" : "medium"}
-            gradient={true}
-          >
+          <RefractiveNavigation className="px-4 py-1.5 sm:px-6 sm:py-2">
             <div className="nav-layout grid grid-cols-[1fr_auto] items-center gap-3 lg:grid-cols-[1fr_auto_1fr]">
               {/* Logo */}
               <motion.button
@@ -118,8 +112,8 @@ export const Navigation = () => {
                     className={cn(
                       "relative px-4 py-2 text-sm font-medium transition-colors duration-300",
                       activeSection === item.href.substring(1)
-                        ? "text-brand-600"
-                        : "text-slate-700 hover:text-brand-600"
+                        ? "text-brand-800"
+                        : "text-slate-700 hover:text-brand-800"
                     )}
                     whileHover={{ 
                       scale: 1.02, 
@@ -201,7 +195,7 @@ export const Navigation = () => {
               </motion.button>
               </div>
             </div>
-          </GlassCard>
+          </RefractiveNavigation>
         </div>
       </motion.nav>
 
@@ -225,7 +219,7 @@ export const Navigation = () => {
                       "text-start px-4 py-3 text-lg font-medium transition-colors duration-300 rounded-xl",
                       activeSection === item.href.substring(1)
                         ? "text-brand-600 bg-brand-50/50"
-                        : "text-slate-700 hover:text-brand-600 hover:bg-white/20"
+                        : "text-slate-700 hover:text-brand-800 hover:bg-white/20"
                     )}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
