@@ -1,5 +1,5 @@
 diff --git a/src/dom-backdrop.js b/src/dom-backdrop.js
-index 32c8ff47f8ff20c1add8b78d2d6087bb1dffa2dc..441b5ee8af7f2d0de8b373885bf3a8517115e28e 100644
+index 32c8ff47f8ff20c1add8b78d2d6087bb1dffa2dc..39fdab5b2871a96446428bbe95c0863db8a1a8d0 100644
 --- a/src/dom-backdrop.js
 +++ b/src/dom-backdrop.js
 @@ -491,6 +491,71 @@ export function paintCssBackground(ctx, element, region, { canvas = false } = {}
@@ -14,7 +14,7 @@ index 32c8ff47f8ff20c1add8b78d2d6087bb1dffa2dc..441b5ee8af7f2d0de8b373885bf3a851
 +// WeakMap prevents retaining removed SVG DOM nodes.
 +
 +const inlineSvgCache = new WeakMap();
-+const SVG_CAPTURE_INTERVAL_MS = 125;
++const SVG_CAPTURE_INTERVAL_MS = 850;
 +
 +export function paintInlineSvg(ctx, element, region) {
 +  const style = getComputedStyle(element);
