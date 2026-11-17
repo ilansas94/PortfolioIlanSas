@@ -15,6 +15,7 @@ const PRISM_BANDS=[
   {name:"left",shift:{x:11,y:0}},
   {name:"right",shift:{x:-11,y:0}}
 ] as const;
+const MENU_PRISM_BANDS=PRISM_BANDS.filter(band=>!band.name.endsWith("-inner"));
 
 /** Encodes a rounded glass bezel's Snell displacement into R/G channels.
  * The native backdrop filter bends the real page behind the bar. Navigation
@@ -84,6 +85,8 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   const [sliced,setSliced]=useState(false);
   const [prism,setPrism]=useState(false);
   const prismHosts=useRef<Array<HTMLDivElement|null>>([]);
+  // The dropdown covers a much larger area; keep its optical layers lighter.
+  const prismBands=className.includes("liquid-menu-panel")?MENU_PRISM_BANDS:PRISM_BANDS;
   const revision=useRef(0);
   const [compatible,setCompatible]=useState<boolean|null>(null);
   const [map,setMap]=useState<(BezelMap&{revision:number})|null>(null);
@@ -123,7 +126,7 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
     if(!prism||compatible!==true)return;
     // All mirrors are static, bounded viewport snapshots; do not clone navigation
     // controls or attach input handlers to the mirrors themselves.
-    const cleanups=PRISM_BANDS.map((band,index)=>{
+    const cleanups=prismBands.map((band,index)=>{
       const host=prismHosts.current[index];
       return host?mountDomRefraction(host,{shift:band.shift}):null;
     });
@@ -213,7 +216,7 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
     </div>}
     {usePrism&&<>
       <div className="glass-prism-refraction" aria-hidden="true">
-        {PRISM_BANDS.map((band,index)=><div
+        {prismBands.map((band,index)=><div
           key={band.name}
           ref={element=>{prismHosts.current[index]=element;}}
           className={`glass-prism-band glass-prism-${band.name}`}
