@@ -232,6 +232,26 @@ html[lang="he"] #portfolio-site .tracking-wider { letter-spacing: normal; }
 /* Match the inline WebKit compositing path in opt-in detached mode. */
 .liquid-navigation-detached .liquid-navigation-mirror-clip { position:absolute;inset:0;overflow:hidden;border-radius:24px;clip-path:inset(0 round 24px);contain:paint;pointer-events:none; }
 .liquid-navigation-detached .liquid-navigation-mirror { position:absolute;inset:0;pointer-events:none;transform:translateZ(0); }
+
+/* Opt-in iOS WebGL refraction: real per-pixel shader on a reconstructed DOM
+   backdrop. Keep labels in their original clickable DOM layer above the canvas. */
+#portfolio-site .ios-webgl-optics .liquid-navigation-material {
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.80);
+}
+#portfolio-site .ios-webgl-optics[data-liquid-glass="fallback"] .liquid-navigation-material {
+  -webkit-backdrop-filter:blur(12px) saturate(1.12);
+  backdrop-filter:blur(12px) saturate(1.12);
+  background:rgba(255,255,255,.65);
+}
+#portfolio-site .ios-webgl-optics .liquid-navigation-content {
+  position:relative;
+  z-index:1;
+}
+
 #portfolio-site .liquid-menu-panel .liquid-navigation-material {
  background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,.86) 8%,rgba(255,255,255,.86) 92%,rgba(255,255,255,.34));
 }
