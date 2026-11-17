@@ -232,6 +232,19 @@ html[lang="he"] #portfolio-site .tracking-wider { letter-spacing: normal; }
 /* Match the inline WebKit compositing path in opt-in detached mode. */
 .liquid-navigation-detached .liquid-navigation-mirror-clip { position:absolute;inset:0;overflow:hidden;border-radius:24px;clip-path:inset(0 round 24px);contain:paint;pointer-events:none; }
 .liquid-navigation-detached .liquid-navigation-mirror { position:absolute;inset:0;pointer-events:none;transform:translateZ(0); }
+/* Experimental WebKit-only edge refraction, activated by ?glass-engine=slices.
+   Each mirrored DOM source is physically offset and tapered by a CSS mask.
+   This bypasses SVG filters entirely; no changes to the desktop renderer. */
+#portfolio-site .glass-slices-clip { position:absolute;inset:0;overflow:hidden;border-radius:inherit;pointer-events:none;isolation:isolate; }
+#portfolio-site .glass-slice-layer { position:absolute;inset:0;pointer-events:none; }
+#portfolio-site .glass-slice-top {
+  -webkit-mask-image:linear-gradient(to bottom,#000 0px,#000 4px,rgba(0,0,0,.86) 10px,transparent 27px);
+  mask-image:linear-gradient(to bottom,#000 0px,#000 4px,rgba(0,0,0,.86) 10px,transparent 27px);
+}
+#portfolio-site .glass-slice-bottom {
+  -webkit-mask-image:linear-gradient(to top,#000 0px,#000 4px,rgba(0,0,0,.86) 10px,transparent 27px);
+  mask-image:linear-gradient(to top,#000 0px,#000 4px,rgba(0,0,0,.86) 10px,transparent 27px);
+}
 #portfolio-site .liquid-menu-panel .liquid-navigation-material {
  background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,.86) 8%,rgba(255,255,255,.86) 92%,rgba(255,255,255,.34));
 }
