@@ -4,6 +4,14 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { mountDomRefraction } from "@/lib/dom-refraction";
 import { needsDomRefraction } from "@/lib/refractive-glass";
+import { IOSNativeGlassPlane } from "@/components/IOSNativeGlassPlane";
+
+function isIOSWebKit(): boolean {
+  const ua = navigator.userAgent;
+  return /AppleWebKit/i.test(ua) &&
+    (/(?:iPhone|iPad|iPod)/i.test(ua) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
+}
 
 /** Encodes a rounded glass bezel's Snell displacement into R/G channels.
  * The native backdrop filter bends the real page behind the bar. Navigation
@@ -66,6 +74,7 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   const root=useRef<HTMLDivElement>(null);
   const mirror=useRef<HTMLDivElement>(null);
   const plane=useRef<HTMLDivElement>(null);
+  const [nativeIOS,setNativeIOS]=useState(false);
   const [detached,setDetached]=useState(false);
   const [webglOptics,setWebglOptics]=useState(false);
   const revision=useRef(0);
@@ -76,14 +85,16 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   // can leave a permanently unfiltered layer (webkit.org/b/61455).
   const id=map?`${instanceId}-${compatible?"dom":"backdrop"}-${map.revision}`:instanceId;
   const [readyResource,setReadyResource]=useState("");
-  const mirrorReady=compatible===true&&map!==null&&readyResource===id;
+  const mirrorReady=!nativeIOS&&compatible===true&&map!==null&&readyResource===id;
   useEffect(()=>{
-    // These engines parse SVG backdrop URLs but do not paint their refraction.
+    // iOS WebKit: never reconstruct the DOM, serialize SVG, or read GPU pixels.
+    // A native backdrop sees the actual photos, backgrounds and live canvases.
+    const ios=isIOSWebKit();
+    setNativeIOS(ios);
     setCompatible(needsDomRefraction());
     const params=new URLSearchParams(location.search);
-    setDetached(params.get("glass-layer")==="detached");
-    // Explicit, reversible Safari-only experiment. The public renderer stays intact.
-    setWebglOptics(params.get("glass-engine")==="webgl"&&needsDomRefraction());
+    setDetached(!ios&&params.get("glass-layer")==="detached");
+    setWebglOptics(!ios&&params.get("glass-engine")==="webgl"&&needsDomRefraction());
   },[]);
   useEffect(()=>{
     // Establish non-zero source bounds before attaching the filter receiver.
@@ -148,7 +159,7 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
     return mountDomRefraction(mirror.current,{receiver,align});
   },[mirrorReady,map,detached,webglOptics]);
   useEffect(()=>{
-    if(!compatible||!map)return;
+    if(nativeIOS||!compatible||!map)return;
     let disposed=false,first=0,second=0;
     const image=new Image();
     const loaded=()=>{
@@ -162,9 +173,9 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
     image.onload=loaded;
     image.src=map.src;
     return()=>{disposed=true;image.onload=null;cancelAnimationFrame(first);cancelAnimationFrame(second);};
-  },[compatible,map,id]);
+  },[nativeIOS,compatible,map,id]);
   useEffect(()=>{
-    const element=root.current;if(!element)return;
+    const element=root.current;if(!element||nativeIOS)return;
     let frame=0,last="";
     const update=()=>{
       const {width,height}=element.getBoundingClientRect();
@@ -174,8 +185,8 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
     };
     const resize=new ResizeObserver(()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(update);});
     resize.observe(element);update();return()=>{resize.disconnect();cancelAnimationFrame(frame);};
-  },[]);
-  const definitions=
+  },[nativeIOS]);
+  const definitions=!nativeIOS&&
     <svg key={id} className="liquid-navigation-defs" width="1" height="1" aria-hidden="true" focusable="false">
       <defs>{map&&compatible!==null&&<filter id={id} x="0" y="0" width={compatible?1:"100%"} height={compatible?1:"100%"}
         filterUnits="objectBoundingBox" primitiveUnits={compatible?"objectBoundingBox":"userSpaceOnUse"} colorInterpolationFilters="sRGB">
@@ -196,10 +207,11 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   const reflection=mirrorReady&&!webglOptics&&<div className="liquid-navigation-mirror-clip" aria-hidden="true">
     <div key={id} id={`${instanceId}-mirror`} ref={mirror} className="liquid-navigation-mirror" style={{filter:`url("#${id}") saturate(1.12)`}}/>
   </div>;
-  const usePlane=detached&&compatible===true&&!webglOptics;
-  return <div ref={root} data-glass-reflection={`${instanceId}-mirror`} data-glass-layer={usePlane?"detached":"inline"} data-glass-engine={webglOptics?"webgl":compatible?"dom":"backdrop"} className={`liquid-navigation ${mirrorReady&&!webglOptics?"has-dom-refraction":""} ${webglOptics?"ios-webgl-optics":""} ${className}`}>
+  const usePlane=!nativeIOS&&detached&&compatible===true&&!webglOptics;
+  return <div ref={root} data-glass-reflection={`${instanceId}-mirror`} data-glass-layer={usePlane?"detached":"inline"} data-glass-engine={nativeIOS?"native-ios":webglOptics?"webgl":compatible?"dom":"backdrop"} className={`liquid-navigation ${mirrorReady&&!webglOptics?"has-dom-refraction":""} ${webglOptics?"ios-webgl-optics":""} ${nativeIOS?"ios-native-glass":""} ${className}`}>
     {usePlane?createPortal(<div ref={plane} className="liquid-navigation-detached" aria-hidden="true">{definitions}{reflection}</div>,document.body):<>{definitions}{reflection}</>}
-    <div className="liquid-navigation-material" aria-hidden="true" style={map&&compatible===false?{backdropFilter:`url("#${id}") saturate(1.12)`}:undefined}/>
+    {nativeIOS&&<IOSNativeGlassPlane target={root} variant={className.includes("liquid-menu-panel")?"menu":"bar"}/>}
+    {!nativeIOS&&<div className="liquid-navigation-material" aria-hidden="true" style={map&&compatible===false?{backdropFilter:`url("#${id}") saturate(1.12)`}:undefined}/>} 
     <div className="liquid-navigation-content">{children}</div>
   </div>;
 }
