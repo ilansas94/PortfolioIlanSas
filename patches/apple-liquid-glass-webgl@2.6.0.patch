@@ -1,0 +1,91 @@
+diff --git a/src/dom-content.js b/src/dom-content.js
+index c4b749a87c9d8de4d3876bba23ebabd80e5e4dc2..d722f8638403f745170d1fa762d2df2b4be37659 100644
+--- a/src/dom-content.js
++++ b/src/dom-content.js
+@@ -21,7 +21,7 @@ import { invalidateLayout } from './frame-loop.js';
+ const HOST_SELECTOR = '[data-liquid-glass], [data-liquid-glass-control]';
+ const SKIP_TAGS = new Set([
+   'SCRIPT', 'STYLE', 'NOSCRIPT', 'TEMPLATE', 'HEAD', 'META', 'LINK', 'TITLE', 'BR', 'WBR',
+-  'IFRAME', 'OBJECT', 'EMBED', 'INPUT', 'TEXTAREA', 'SELECT', 'OPTION', 'BUTTON',
++  'IFRAME', 'OBJECT', 'EMBED', 'INPUT', 'TEXTAREA', 'SELECT', 'OPTION',
+ ]);
+ const MEDIA_TAGS = new Set(['IMG', 'VIDEO', 'CANVAS']);
+ const XHTML = 'http://www.w3.org/1999/xhtml';
+@@ -126,7 +126,11 @@ function build() {
+     if (!/\S/.test(data)) return;
+     const fill = style.webkitTextFillColor || style.color;
+     const strokeWidth = parseFloat(style.webkitTextStrokeWidth) || 0;
+-    if (transparentColor(fill) && !(strokeWidth > 0)) return;
++    // CSS background-clip:text is not a solid rectangle. Paint its gradient
++    // within glyphs rather than skipping the transparent text completely.
++    const gradientText = (style.backgroundClip === 'text' || style.webkitBackgroundClip === 'text')
++      && /linear-gradient\(/.test(style.backgroundImage || '');
++    if (transparentColor(fill) && !(strokeWidth > 0) && !gradientText) return;
+     range.selectNodeContents(node);
+     const whole = range.getBoundingClientRect();
+     if (!whole.width || !intersects({ x: whole.left, y: whole.top, width: whole.width, height: whole.height }, band)) return;
+@@ -175,7 +179,8 @@ function build() {
+       box: { x: whole.left + offsetX, y: whole.top + offsetY, width: whole.width, height: whole.height },
+       font: fontOf(style),
+       size: parseFloat(style.fontSize) || 16,
+-      fill: transparentColor(fill) ? null : fill,
++      fill: gradientText ? '#3389a2' : transparentColor(fill) ? null : fill,
++      gradient: gradientText ? style.backgroundImage : null,
+       stroke: strokeWidth > 0 ? { width: strokeWidth, color: style.webkitTextStrokeColor } : null,
+       letterSpacing: style.letterSpacing !== 'normal' ? style.letterSpacing : '',
+       shadow: firstTextShadow(style.textShadow),
+@@ -209,7 +214,10 @@ function build() {
+     const childAlpha = alpha * (Number.isFinite(opacity) ? opacity : 1);
+     const visible = style.visibility === 'visible' && childAlpha > 0.004;
+     const media = MEDIA_TAGS.has(tag);
+-    if (paintSelf && visible && (media || hasBackground(style) || hasBorder(style))) {
++    // Text-clipped backgrounds should NOT be painted as solid gradient boxes.
++    // Their fill is applied when painting their text runs below.
++    const textClip = style.backgroundClip === 'text' || style.webkitBackgroundClip === 'text';
++    if (paintSelf && visible && (media || (!textClip && hasBackground(style)) || hasBorder(style))) {
+       const rect = element.getBoundingClientRect();
+       if (rect.width && rect.height) {
+         items.push({
+@@ -297,6 +305,28 @@ function listen() {
+   document.fonts?.ready?.then(fontsChanged);
+ }
+ 
++function clippedTextGradient(context, gradientCss, box) {
++  // Computed CSS comes back as linear-gradient(<angle>, rgb(...) <stop>, ...)
++  // and we only need the common CSS gradient used by site headings.
++  const angle = Number.parseFloat(/linear-gradient\(\s*([+-]?\d+(?:\.\d+)?)deg/.exec(gradientCss)?.[1] ?? '90');
++  const stops = [...gradientCss.matchAll(/(rgba?\([^()]*\)|#[0-9a-f]{3,8})(?:\s+([\d.]+)%?)?/gi)];
++  if (stops.length < 2) return null;
++  const radians = angle * Math.PI / 180;
++  const dx = Math.sin(radians);
++  const dy = -Math.cos(radians);
++  const length = Math.max(1, Math.abs(box.width * dx) + Math.abs(box.height * dy));
++  const cx = box.x + box.width * .5, cy = box.y + box.height * .5;
++  const gradient = context.createLinearGradient(
++    cx - dx * length / 2, cy - dy * length / 2,
++    cx + dx * length / 2, cy + dy * length / 2
++  );
++  for (let i = 0; i < stops.length; i++) {
++    const pct = stops[i][2] == null ? i / (stops.length - 1) : Number(stops[i][2]) / 100;
++    gradient.addColorStop(Math.max(0, Math.min(1, pct)), stops[i][1]);
++  }
++  return gradient;
++}
++
+ function paintText(context, item, offsetX, offsetY, region) {
+   const { ascent, descent } = fontMetrics(item.font, item.size);
+   context.font = item.font;
+@@ -309,7 +339,12 @@ function paintText(context, item, offsetX, offsetY, region) {
+     context.shadowOffsetY = item.shadow.y;
+     context.shadowBlur = item.shadow.blur;
+   }
+-  if (item.fill) context.fillStyle = item.fill;
++  if (item.fill) context.fillStyle = item.gradient
++    ? clippedTextGradient(context, item.gradient, {
++        x: item.box.x + offsetX, y: item.box.y + offsetY,
++        width: item.box.width, height: item.box.height
++      }) ?? item.fill
++    : item.fill;
+   if (item.stroke) {
+     context.strokeStyle = item.stroke.color;
+     context.lineWidth = item.stroke.width;
