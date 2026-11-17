@@ -359,19 +359,3 @@ html[lang="he"] #portfolio-site .tracking-wider { letter-spacing: normal; }
     backdrop-filter: none;
   }
 }
-
-/* Opt-in: genuine WebKit pixel refraction over the original scene. The
-   native overlay remains a thin optical surface instead of obscuring the
-   displaced pixels with the standard 8px frost. This is preview-only until
-   performance and scroll behavior are confirmed on physical iPhone Safari. */
-body[data-ios-pixel-refraction="on"] .ios-native-glass-plane[data-variant="bar"] {
-  -webkit-backdrop-filter: blur(1.2px) saturate(1.24);
-  backdrop-filter: blur(1.2px) saturate(1.24);
-  background: linear-gradient(
-    110deg,
-    rgba(255,255,255,.18),
-    rgba(255,255,255,.04) 30%,
-    rgba(255,255,255,.03) 70%,
-    rgba(255,255,255,.13)
-  );
-}
