@@ -106,7 +106,7 @@ export function mountDomRefraction(host: HTMLElement, options?: { receiver?: Ele
   function refresh() {
     frame = 0;
     if (disposed) return;
-    options?.align();
+    options?.align?.();
     lens = host.getBoundingClientRect();
     const sourceWidth = source!.clientWidth;
     const sourceRects = Array.from(source!.children)
