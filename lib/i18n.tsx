@@ -169,9 +169,9 @@ type LanguageContextShape = {
 const LanguageContext = createContext<LanguageContextShape | null>(null);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<SiteLanguage>("en");
+  const [language, setLanguageState] = useState<SiteLanguage>("he");
   useLayoutEffect(() => {
-    let initial: SiteLanguage = "en";
+    let initial: SiteLanguage = "he";
     try {
       const stored = window.localStorage.getItem("ilan-portfolio-language");
       if (stored === "he" || stored === "en") initial = stored;

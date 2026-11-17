@@ -7,16 +7,16 @@ fs.mkdirSync(out, {recursive:true});
 const pause = ms => new Promise(r=>setTimeout(r,ms));
 (async()=>{
  const results=[];
- const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH || (fs.existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : chromium.executablePath()),args:['--no-sandbox']});
+ const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH || (fs.existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : chromium.executablePath()),args:['--no-sandbox','--enable-unsafe-swiftshader']});
  for(const width of (process.env.QA_WIDTHS || '320,390,768,1440').split(',').map(Number)){
   const context=await browser.newContext({viewport:{width,height:width===1440?1000:844},recordVideo:width===390?{dir:out+'/video',size:{width:390,height:844}}:undefined});
   const page=await context.newPage();const errors=[];
   page.on('pageerror',e=>errors.push(e.message));
-  await page.goto('http://localhost:3000',{waitUntil:'networkidle'});
+  await page.goto(process.env.QA_BASE_URL || 'http://localhost:3000',{waitUntil:'networkidle'});
   await page.waitForTimeout(1600);
-  assert.equal(await page.locator('html').getAttribute('lang'),'en');
-  for(const lang of ['en','he']){
-   if(lang==='he')await page.getByRole('button',{name:'מעבר לעברית'}).locator('visible=true').click();
+  assert.equal(await page.locator('html').getAttribute('lang'),'he');
+  for(const lang of ['he','en']){
+   if(lang==='en')await page.getByRole('button',{name:'Switch to English'}).locator('visible=true').click();
    await page.waitForTimeout(600);
    assert.equal(await page.locator('html').getAttribute('dir'),lang==='he'?'rtl':'ltr');
    await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
@@ -24,7 +24,7 @@ const pause = ms => new Promise(r=>setTimeout(r,ms));
    await page.screenshot({path:`${out}/${width}-${lang}-hero.png`});
    await page.locator('nav').screenshot({path:`${out}/${width}-${lang}-nav.png`});
    // Confirm the entire original emblem fits its vector viewBox.
-   const bounds=await page.locator('nav svg').first().evaluate(s=>{const g=s.querySelector(':scope > g');const b=g.getBBox();return {x:b.x,y:b.y,w:b.width,h:b.height}});
+   const bounds=await page.locator('nav button').first().locator('svg').evaluate(s=>{const g=s.querySelector(':scope > g');const b=g.getBBox();return {x:b.x,y:b.y,w:b.width,h:b.height}});
    assert.ok(bounds.x>=744 && bounds.y>=41 && bounds.x+bounds.w<=1176 && bounds.y+bounds.h<=473,JSON.stringify(bounds));
    if(width<1024){
     await page.getByRole('button',{name:lang==='he'?'פתיחת תפריט ניווט':'Open navigation menu'}).click();
@@ -89,8 +89,8 @@ const pause = ms => new Promise(r=>setTimeout(r,ms));
    assert.equal(await page.locator('html').getAttribute('lang'),lang);
    results.push({width,lang,passed:true,checks:'sections, menus, 13 dialogs, filters, project round trips, keyboard, mocked form outcomes, persistence, emblem bounds, overflow'});
   }
-  await page.getByRole('button',{name:'Switch to English'}).locator('visible=true').click();
-  assert.equal(await page.locator('html').getAttribute('dir'),'ltr');
+  await page.getByRole('button',{name:'מעבר לעברית'}).locator('visible=true').click();
+  assert.equal(await page.locator('html').getAttribute('dir'),'rtl');
   assert.deepEqual(errors,[]);
   await context.close();fs.writeFileSync(out+'/results-'+(process.env.QA_WIDTHS||'all')+'.json',JSON.stringify(results,null,2));console.log('PASS',width);
  }

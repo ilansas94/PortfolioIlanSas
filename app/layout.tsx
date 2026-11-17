@@ -43,7 +43,7 @@ export default function RootLayout({
   return (
     <html lang="en" dir="ltr" suppressHydrationWarning className="scroll-smooth">
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `try{if(location.pathname==='/'&&localStorage.getItem('ilan-portfolio-language')==='he'){document.documentElement.lang='he';document.documentElement.dir='rtl';document.documentElement.setAttribute('data-portfolio-pending','')}}catch(e){}` }} />
+        <script dangerouslySetInnerHTML={{ __html: `if(location.pathname==='/'){var portfolioLanguage='he';try{var savedLanguage=localStorage.getItem('ilan-portfolio-language');if(savedLanguage==='en'||savedLanguage==='he')portfolioLanguage=savedLanguage}catch(e){}document.documentElement.lang=portfolioLanguage;document.documentElement.dir=portfolioLanguage==='he'?'rtl':'ltr';if(portfolioLanguage==='en')document.documentElement.setAttribute('data-portfolio-pending','')}` }} />
         <link rel="preload" href="/learning-lab/heebo-hebrew.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap"

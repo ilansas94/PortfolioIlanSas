@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { PremiumButton, GlassCard } from "@/components/DesignSystem";
+import { PremiumButton } from "@/components/DesignSystem";
 import { RefractiveNavigation } from "@/components/RefractiveNavigation";
 import { NavLogo } from "@/components/AnimatedLogo";
 import { cn } from "@/lib/utils";
@@ -209,7 +209,7 @@ export const Navigation = () => {
             transition={{ duration: 0.3 }}
             id="mobile-navigation-menu" className="fixed top-24 left-4 right-4 z-40 sm:left-6 sm:right-6 lg:hidden"
           >
-            <GlassCard intensity="heavy" gradient={true} className="p-6">
+            <RefractiveNavigation className="liquid-menu-panel p-6">
               <div className="flex flex-col space-y-4">
                 {navigationItems.map((item, index) => (
                   <motion.button
@@ -218,7 +218,7 @@ export const Navigation = () => {
                     className={cn(
                       "text-start px-4 py-3 text-lg font-medium transition-colors duration-300 rounded-xl",
                       activeSection === item.href.substring(1)
-                        ? "text-brand-600 bg-brand-50/50"
+                        ? "text-brand-800 bg-brand-50/70"
                         : "text-slate-700 hover:text-brand-800 hover:bg-white/20"
                     )}
                     initial={{ opacity: 0, x: -20 }}
@@ -251,7 +251,7 @@ export const Navigation = () => {
                   </PremiumButton>
                 </motion.div>
               </div>
-            </GlassCard>
+            </RefractiveNavigation>
           </motion.div>
         )}
       </AnimatePresence>
