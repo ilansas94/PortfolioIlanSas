@@ -67,6 +67,7 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   const mirror=useRef<HTMLDivElement>(null);
   const plane=useRef<HTMLDivElement>(null);
   const [detached,setDetached]=useState(false);
+  const [webglOptics,setWebglOptics]=useState(false);
   const revision=useRef(0);
   const [compatible,setCompatible]=useState<boolean|null>(null);
   const [map,setMap]=useState<(BezelMap&{revision:number})|null>(null);
@@ -79,14 +80,54 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   useEffect(()=>{
     // These engines parse SVG backdrop URLs but do not paint their refraction.
     setCompatible(needsDomRefraction());
-    setDetached(new URLSearchParams(location.search).get("glass-layer")==="detached");
+    const params=new URLSearchParams(location.search);
+    setDetached(params.get("glass-layer")==="detached");
+    // Explicit, reversible Safari-only experiment. The public renderer stays intact.
+    setWebglOptics(params.get("glass-engine")==="webgl"&&needsDomRefraction());
   },[]);
   useEffect(()=>{
     // Establish non-zero source bounds before attaching the filter receiver.
     if(detached&&plane.current&&root.current)positionGlassPlane(plane.current,root.current);
   },[detached,map,compatible]);
+  // WebGL captures and refracts the painted DOM using GPU fragment shaders,
+  // without depending on WebKit's missing backdrop-filter SVG URL support.
   useEffect(()=>{
-    if(!mirrorReady||!mirror.current)return;
+    if(!webglOptics||compatible!==true||!root.current)return;
+    const target=root.current;
+    let cancelled=false;
+    let instance:{destroy:()=>void}|null=null;
+    import("apple-liquid-glass-webgl").then(({LiquidGlass})=>{
+      if(cancelled||!target.isConnected)return;
+      try{
+        const menu=className.includes("liquid-menu-panel");
+        instance=new LiquidGlass(target,{
+          backdrop:"auto",
+          live:"auto",
+          tint:menu?0.17:0.12,
+          tintTone:"light",
+          frost:menu?0.04:0.015,
+          maxDpr:1.6,
+          material:{
+            refraction:92,
+            edgeReach:0.17,
+            edgeWidth:0.23,
+            dispersion:1.35,
+            body:0.67,
+            reflection:0.27,
+            rim:0.3,
+            highlight:0.3,
+            echo:0.2,
+            hairline:0.82
+          }
+        });
+      }catch(error){
+        console.warn("iOS WebGL glass preview unavailable; native blur remains.",error);
+      }
+    }).catch(error=>console.warn("iOS WebGL module unavailable; native blur remains.",error));
+    return()=>{cancelled=true;instance?.destroy();};
+  },[webglOptics,compatible,className]);
+  useEffect(()=>{
+    if(webglOptics||!mirrorReady||!mirror.current)return;
     if(!detached)return mountDomRefraction(mirror.current);
     const element=root.current;
     if(!element)return;
@@ -96,7 +137,7 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
       positionGlassPlane(plane.current,element);
     };
     return mountDomRefraction(mirror.current,{receiver,align});
-  },[mirrorReady,map,detached]);
+  },[mirrorReady,map,detached,webglOptics]);
   useEffect(()=>{
     if(!compatible||!map)return;
     let disposed=false,first=0,second=0;
@@ -143,11 +184,11 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
         </>:<feDisplacementMap in="SourceGraphic" in2="bezel" scale={map.scale} xChannelSelector="R" yChannelSelector="G"/>}
       </filter>}</defs>
     </svg>;
-  const reflection=mirrorReady&&<div className="liquid-navigation-mirror-clip" aria-hidden="true">
+  const reflection=mirrorReady&&!webglOptics&&<div className="liquid-navigation-mirror-clip" aria-hidden="true">
     <div key={id} id={`${instanceId}-mirror`} ref={mirror} className="liquid-navigation-mirror" style={{filter:`url("#${id}") saturate(1.12)`}}/>
   </div>;
-  const usePlane=detached&&compatible===true;
-  return <div ref={root} data-glass-reflection={`${instanceId}-mirror`} data-glass-layer={usePlane?"detached":"inline"} className={`liquid-navigation ${mirrorReady?"has-dom-refraction":""} ${className}`}>
+  const usePlane=detached&&compatible===true&&!webglOptics;
+  return <div ref={root} data-glass-reflection={`${instanceId}-mirror`} data-glass-layer={usePlane?"detached":"inline"} data-glass-engine={webglOptics?"webgl":compatible?"dom":"backdrop"} className={`liquid-navigation ${mirrorReady&&!webglOptics?"has-dom-refraction":""} ${webglOptics?"ios-webgl-optics":""} ${className}`}>
     {usePlane?createPortal(<div ref={plane} className="liquid-navigation-detached" aria-hidden="true">{definitions}{reflection}</div>,document.body):<>{definitions}{reflection}</>}
     <div className="liquid-navigation-material" aria-hidden="true" style={map&&compatible===false?{backdropFilter:`url("#${id}") saturate(1.12)`}:undefined}/>
     <div className="liquid-navigation-content">{children}</div>
