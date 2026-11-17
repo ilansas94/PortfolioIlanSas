@@ -98,7 +98,7 @@ AnimatedLogo.displayName = "AnimatedLogo";
 export const HeroLogo = () => (
   <AnimatedLogo
     size="2xl"
-    className="mx-auto mb-8 drop-shadow-2xl"
+    className="hero-brand-logo mx-auto mb-8 drop-shadow-2xl"
     hover={true}
   />
 );

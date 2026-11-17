@@ -152,6 +152,7 @@ html[lang="he"] .portfolio-filter{max-width:42rem}
 @media(max-width:640px){html[lang="he"] .portfolio-filter{max-width:100%;grid-template-columns:repeat(3,minmax(0,1fr))}}
 html[lang="he"] .contact-input-email{direction:ltr;text-align:left}
 html[lang="he"] #home .hero-logo{direction:ltr}
+@media(min-width:1024px){#portfolio-site .hero-brand-logo{width:clamp(360px,28vw,560px);height:clamp(256px,16vw,315px)}}
 
 html[data-portfolio-pending] #portfolio-site { visibility: hidden; }
 #portfolio-site section[id] { scroll-margin-top: 6rem; }

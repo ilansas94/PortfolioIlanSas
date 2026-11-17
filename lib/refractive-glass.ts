@@ -130,6 +130,8 @@ export function createGlassRenderer(canvas: HTMLCanvasElement) {
   const bubbles = gl.getUniformLocation(program, "uBubbles[0]");
   const strength = gl.getUniformLocation(program, "uStrength");
   const grid = gl.getUniformLocation(program, "uGrid");
+  const scaledPositions = new Float32Array(27);
+  const regions = [[0, 1], [2, 3], [4], [5], [6], [7], [8]];
   return {
     draw(width: number, height: number, positions: number[], refraction = 1, diagnostic = false) {
       // CSS-pixel coordinates keep the optical thickness constant across devices.
@@ -139,9 +141,33 @@ export function createGlassRenderer(canvas: HTMLCanvasElement) {
       gl.viewport(0, 0, rw, rh); gl.useProgram(program);
       // Fragment coordinates are in render pixels; convert the optical scene too.
       gl.uniform2f(resolution, rw, rh);
-      gl.uniform3fv(bubbles, positions.map(v => v * scale));
+      for (let i=0; i<scaledPositions.length; i++) scaledPositions[i]=positions[i]*scale;
+      gl.uniform3fv(bubbles, scaledPositions);
       gl.uniform1f(strength, refraction); gl.uniform1f(grid, diagnostic ? 1 : 0);
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      // Preserve the shader and resolution. Clear the old frame, then shade
+      // only conservative lens bounds. The smooth union extends by at most
+      // 5 render pixels; 8 also covers its antialiasing at every canvas scale.
+      gl.disable(gl.SCISSOR_TEST);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      if (diagnostic) {
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        return;
+      }
+      gl.enable(gl.SCISSOR_TEST);
+      for (const indices of regions) {
+        let left=rw, right=0, top=rh, bottom=0;
+        for (const i of indices) {
+          const x=scaledPositions[i*3], y=scaledPositions[i*3+1], r=scaledPositions[i*3+2];
+          left=Math.min(left,Math.floor(x-r-8)); right=Math.max(right,Math.ceil(x+r+8));
+          top=Math.min(top,Math.floor(y-r-8)); bottom=Math.max(bottom,Math.ceil(y+r+8));
+        }
+        left=Math.max(0,left); right=Math.min(rw,right);
+        top=Math.max(0,top); bottom=Math.min(rh,bottom);
+        if (right<=left || bottom<=top) continue;
+        gl.scissor(left,rh-bottom,right-left,bottom-top);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+      }
+      gl.disable(gl.SCISSOR_TEST);
     },
     dispose() { gl.deleteBuffer(buffer); gl.deleteProgram(program); gl.deleteShader(vertex); gl.deleteShader(fragment); }
   };
@@ -150,9 +176,14 @@ export function createGlassRenderer(canvas: HTMLCanvasElement) {
 export function glassPositions(width: number, height: number, seconds: number, phase = 0) {
   const mobile = width < 640;
   const reach = mobile ? 32 : Math.min(75, width * .052);
+  const leftBack=Math.min(150,width*.105), leftFront=Math.min(112,width*.079);
+  const rightBack=Math.min(135,width*.095), rightFront=Math.min(105,width*.075);
   const bases = mobile
     ? [[-44,height*.08,115],[10,height*.10,88],[width+30,height*.72,100],[width-8,height*.78,76]]
-    : [[width*.025,height*.28,Math.min(150,width*.105)],[width*.13,height*.33,Math.min(112,width*.079)],[width*.97,height*.60,Math.min(135,width*.095)],[width*.87,height*.67,Math.min(105,width*.075)]];
+    : [[width*.025,height*.28,leftBack],
+       [width*.025+Math.min(width*.105,(leftBack+leftFront)*.6),height*.28+Math.min(height*.05,70),leftFront],
+       [width*.97,height*.60,rightBack],
+       [width*.97-Math.min(width*.10,(rightBack+rightFront)*.6),height*.60+Math.min(height*.07,70),rightFront]];
   const random = (i:number) => {
     const n=Math.sin(phase*19.73+i*127.1)*43758.5453;
     return n-Math.floor(n);

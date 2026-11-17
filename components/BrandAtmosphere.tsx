@@ -14,19 +14,19 @@ export function BrandAtmosphere() {
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
     const phase = Math.random()*Math.PI*2;
     const start = performance.now();
-    let frame = 0, visible = true, last = 0;
+    let frame = 0, visible = true;
+    let width=element.clientWidth, height=element.clientHeight;
     const draw = (now: number) => {
-      if (now-last>=32 || motion.matches) {
-        const w=element.clientWidth,h=element.clientHeight;
-        renderer!.draw(w,h,glassPositions(w,h,motion.matches?2:(now-start)/1000,phase));
-        publishGlassFrame(element);
-        last=now;
-      }
+      if (!visible || document.hidden || width<1 || height<1) { frame=0; return; }
+      renderer!.draw(width,height,glassPositions(width,height,motion.matches?2:(now-start)/1000,phase));
+      publishGlassFrame(element);
       frame = !motion.matches && visible && !document.hidden ? requestAnimationFrame(draw) : 0;
     };
-    const resume=()=>{cancelAnimationFrame(frame);last=0;draw(performance.now());};
+    const resume=()=>{cancelAnimationFrame(frame);frame=0;draw(performance.now());};
     const observer=new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;resume();});
-    const resize=new ResizeObserver(resume);
+    const resize=new ResizeObserver(([entry])=>{
+      width=Math.round(entry.contentRect.width);height=Math.round(entry.contentRect.height);resume();
+    });
     observer.observe(element);resize.observe(element);
     motion.addEventListener("change",resume);document.addEventListener("visibilitychange",resume);
     const lost=(event:Event)=>{event.preventDefault();cancelAnimationFrame(frame);setReady(false);};

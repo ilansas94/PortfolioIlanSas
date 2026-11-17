@@ -8,16 +8,27 @@ import { needsDomRefraction } from "@/lib/refractive-glass";
  * The native backdrop filter bends the real page behind the bar. Navigation
  * labels live on a separate plane and remain sharp, selectable and interactive.
  */
-function makeBezel(width: number, height: number) {
+type BezelMap = { src: string; width: number; height: number; scale: number };
+const bezelCache = new Map<string, BezelMap>();
+
+function makeBezel(width: number, height: number): BezelMap {
+  const key=`${width}:${height}`;
+  const cached=bezelCache.get(key);
+  if(cached)return cached;
   const canvas=document.createElement("canvas");canvas.width=width;canvas.height=height;
   const ctx=canvas.getContext("2d")!;const image=ctx.createImageData(width,height);
   const radius=Math.min(24,height/2),bevel=Math.min(24,height*.35),scale=52;
+  // The flat middle and all pixels outside the lens have the same neutral
+  // displacement. Fill them once and only calculate the curved edge bands.
+  for(let k=0;k<image.data.length;k+=4){image.data[k]=128;image.data[k+1]=128;image.data[k+2]=128;image.data[k+3]=255;}
+  const padding=Math.ceil(Math.max(radius,bevel));
   const sdf=(x:number,y:number)=>{
     const qx=Math.abs(x-width/2)-(width/2-radius),qy=Math.abs(y-height/2)-(height/2-radius);
     return Math.hypot(Math.max(qx,0),Math.max(qy,0))+Math.min(Math.max(qx,qy),0)-radius;
   };
   const profile=(u:number)=>Math.sqrt(Math.max(.000001,1-Math.pow(1-Math.max(0,Math.min(1,u)),2)));
   for(let y=0;y<height;y++)for(let x=0;x<width;x++){
+    if(y>=padding&&y<height-padding&&x>=padding&&x<width-padding){x=width-padding-1;continue;}
     const k=(y*width+x)*4,d=-sdf(x+.5,y+.5);let dx=0,dy=0;
     if(d>0&&d<bevel){
       const u=d/bevel,eps=.002;
@@ -34,7 +45,11 @@ function makeBezel(width: number, height: number) {
     image.data[k+1]=Math.max(0,Math.min(255,Math.round((.5+dy/scale)*255)));
     image.data[k+2]=128;image.data[k+3]=255;
   }
-  ctx.putImageData(image,0,0);return {src:canvas.toDataURL(),width,height,scale};
+  ctx.putImageData(image,0,0);
+  const map={src:canvas.toDataURL(),width,height,scale};
+  if(bezelCache.size>=8)bezelCache.delete(bezelCache.keys().next().value!);
+  bezelCache.set(key,map);
+  return map;
 }
 
 export function RefractiveNavigation({children,className=""}:{children:ReactNode;className?:string}) {
