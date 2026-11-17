@@ -65,9 +65,12 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   const instanceId=`nav-lens-${useId().replace(/[^a-zA-Z0-9]/g,"")}`;
   const root=useRef<HTMLDivElement>(null);
   const mirror=useRef<HTMLDivElement>(null);
+  const topSlice=useRef<HTMLDivElement>(null);
+  const bottomSlice=useRef<HTMLDivElement>(null);
   const plane=useRef<HTMLDivElement>(null);
   const [detached,setDetached]=useState(false);
   const [singlePass,setSinglePass]=useState(false);
+  const [sliced,setSliced]=useState(false);
   const revision=useRef(0);
   const [compatible,setCompatible]=useState<boolean|null>(null);
   const [map,setMap]=useState<(BezelMap&{revision:number})|null>(null);
@@ -87,13 +90,23 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
     const params=new URLSearchParams(location.search);
     setDetached(params.get("glass-layer")==="detached");
     setSinglePass(params.get("glass-engine")==="single");
+    setSliced(params.get("glass-engine")==="slices");
   },[]);
   useEffect(()=>{
     // Establish non-zero source bounds before attaching the filter receiver.
     if(detached&&plane.current&&root.current)positionGlassPlane(plane.current,root.current);
   },[detached,map,compatible]);
+  // WebKit's SVG filter can be parsed but never painted. For an opt-in
+  // mobile trial, bend actual live DOM paint with two clipped mirror layers;
+  // this uses no unsupported SVG displacement or backdrop capture.
   useEffect(()=>{
-    if(!mirrorReady||!mirror.current)return;
+    if(!sliced||compatible!==true||!topSlice.current||!bottomSlice.current)return;
+    const clearTop=mountDomRefraction(topSlice.current,{shift:{x:0,y:11}});
+    const clearBottom=mountDomRefraction(bottomSlice.current,{shift:{x:0,y:-11}});
+    return()=>{clearTop();clearBottom();};
+  },[sliced,compatible]);
+  useEffect(()=>{
+    if(sliced||!mirrorReady||!mirror.current)return;
     if(!detached)return mountDomRefraction(mirror.current);
     const element=root.current;
     if(!element)return;
@@ -164,10 +177,15 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   const reflection=mirrorReady&&<div className="liquid-navigation-mirror-clip" aria-hidden="true">
     <div key={id} id={`${instanceId}-mirror`} ref={mirror} className="liquid-navigation-mirror" style={{filter:`url("#${id}") saturate(1.12)`}}/>
   </div>;
-  const usePlane=detached&&compatible===true;
-  return <div ref={root} data-glass-reflection={`${instanceId}-mirror`} data-glass-layer={usePlane?"detached":"inline"} data-glass-engine={compatible===false?"backdrop":useSinglePass?"single":"split"} className={`liquid-navigation ${mirrorReady?"has-dom-refraction":""} ${className}`}>
-    {usePlane?createPortal(<div ref={plane} className="liquid-navigation-detached" aria-hidden="true">{definitions}{reflection}</div>,document.body):<>{definitions}{reflection}</>}
+  const useSlices=sliced&&compatible===true;
+  const usePlane=detached&&compatible===true&&!useSlices;
+  return <div ref={root} data-glass-reflection={`${instanceId}-mirror`} data-glass-layer={usePlane?"detached":"inline"} data-glass-engine={compatible===false?"backdrop":useSlices?"slices":useSinglePass?"single":"split"} className={`liquid-navigation ${mirrorReady&&!useSlices?"has-dom-refraction":""} ${className}`}>
+    {usePlane?createPortal(<div ref={plane} className="liquid-navigation-detached" aria-hidden="true">{definitions}{reflection}</div>,document.body):<>{definitions}{!useSlices&&reflection}</>}
     <div className="liquid-navigation-material" aria-hidden="true" style={map&&compatible===false?{backdropFilter:`url("#${id}") saturate(1.12)`}:undefined}/>
+    {useSlices&&<div className="glass-slices-clip" aria-hidden="true">
+      <div ref={topSlice} className="glass-slice-layer glass-slice-top"/>
+      <div ref={bottomSlice} className="glass-slice-layer glass-slice-bottom"/>
+    </div>}
     <div className="liquid-navigation-content">{children}</div>
   </div>;
 }
