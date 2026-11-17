@@ -41,6 +41,8 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   const id=`nav-lens-${useId().replace(/[^a-zA-Z0-9]/g,"")}`;
   const root=useRef<HTMLDivElement>(null);
   const mirror=useRef<HTMLDivElement>(null);
+  const filter=useRef<SVGFilterElement>(null);
+  const displacementImage=useRef<SVGFEImageElement>(null);
   const [compatible,setCompatible]=useState(false);
   const [map,setMap]=useState<ReturnType<typeof makeBezel>|null>(null);
   useEffect(()=>{
@@ -49,6 +51,28 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   },[]);
   useEffect(()=>{
     if(compatible&&mirror.current)return mountDomRefraction(mirror.current);
+  },[compatible,map]);
+  useEffect(()=>{
+    if(!compatible||!map||!navigator.userAgent.includes("AppleWebKit"))return;
+    // WebKit places a CSS SVG filter's user-space origin in document space,
+    // even on this fixed surface. Without the scroll offset its source is
+    // clipped away after scrolling, revealing the unbent page underneath.
+    const update=()=>{
+      const y=String(window.scrollY);
+      filter.current?.setAttribute("y",y);
+      displacementImage.current?.setAttribute("y",y);
+    };
+    update();
+    window.addEventListener("scroll",update,{passive:true});
+    window.addEventListener("resize",update);
+    visualViewport?.addEventListener("scroll",update);
+    visualViewport?.addEventListener("resize",update);
+    return()=>{
+      window.removeEventListener("scroll",update);
+      window.removeEventListener("resize",update);
+      visualViewport?.removeEventListener("scroll",update);
+      visualViewport?.removeEventListener("resize",update);
+    };
   },[compatible,map]);
   useEffect(()=>{
     const element=root.current;if(!element)return;
@@ -64,9 +88,9 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   },[]);
   return <div ref={root} className={`liquid-navigation ${compatible?"has-dom-refraction":""} ${className}`}>
     <svg className="liquid-navigation-defs" width="0" height="0" aria-hidden="true" focusable="false">
-      <defs>{map&&<filter id={id} x="0" y="0" width={compatible?map.width:"100%"} height={compatible?map.height:"100%"}
+      <defs>{map&&<filter ref={filter} id={id} x="0" y="0" width={compatible?map.width:"100%"} height={compatible?map.height:"100%"}
         filterUnits={compatible?"userSpaceOnUse":"objectBoundingBox"} colorInterpolationFilters="sRGB">
-        <feImage href={map.src} x="0" y="0" width={map.width} height={map.height} preserveAspectRatio="none" result="bezel"/>
+        <feImage ref={displacementImage} href={map.src} x="0" y="0" width={map.width} height={map.height} preserveAspectRatio="none" result="bezel"/>
         <feDisplacementMap in="SourceGraphic" in2="bezel" scale={map.scale} xChannelSelector="R" yChannelSelector="G"/>
       </filter>}</defs>
     </svg>
