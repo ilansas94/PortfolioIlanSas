@@ -170,7 +170,7 @@ export const PremiumButton = React.forwardRef<HTMLButtonElement, PremiumButtonPr
   type = "button"
 }, ref) => {
   const variants = {
-    primary: "bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 text-white shadow-lg hover:shadow-xl",
+    primary: "portfolio-primary bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 text-white shadow-lg hover:shadow-xl",
     secondary: "backdrop-blur-xl bg-white/30 border border-white/40 text-slate-700 hover:bg-white/40",
     ghost: "text-slate-700 hover:bg-white/20"
   };
@@ -261,7 +261,7 @@ export const Heading = React.forwardRef<HTMLHeadingElement, HeadingProps>(({
   // Create the component based on level
   const componentProps = {
     ref,
-    className: cn(levelClasses[level], gradient ? "bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent" : "text-slate-800", className),
+    className: cn(levelClasses[level], gradient ? "portfolio-gradient-heading bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent" : "text-slate-800", className),
     children
   };
   switch (level) {
@@ -337,7 +337,7 @@ export const Section = React.forwardRef<HTMLElement, SectionProps>(({
     gradient: "bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50",
     minimal: "bg-white"
   };
-  return <section ref={ref} id={id} className={cn("relative py-20 lg:py-32", backgroundClasses[background], className)}>
+  return <section ref={ref} id={id} className={cn(`portfolio-surface-${background}`, "relative py-20 lg:py-32", backgroundClasses[background], className)}>
         {children}
       </section>;
 });

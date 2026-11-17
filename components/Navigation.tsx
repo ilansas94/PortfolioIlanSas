@@ -104,7 +104,7 @@ export const Navigation = () => {
                 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => scrollToSection("#home")}
-                className="justify-self-start cursor-pointer rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70"
+                className="justify-self-start cursor-pointer rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/70"
               >
                 <NavLogo />
               </motion.button>
@@ -118,8 +118,8 @@ export const Navigation = () => {
                     className={cn(
                       "relative px-4 py-2 text-sm font-medium transition-colors duration-300",
                       activeSection === item.href.substring(1)
-                        ? "text-blue-600"
-                        : "text-slate-700 hover:text-blue-600"
+                        ? "text-brand-600"
+                        : "text-slate-700 hover:text-brand-600"
                     )}
                     whileHover={{ 
                       scale: 1.02, 
@@ -132,7 +132,7 @@ export const Navigation = () => {
                     {activeSection === item.href.substring(1) && (
                       <motion.div
                         layoutId="activeIndicator"
-                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-brand-600 to-magenta-600 rounded-full"
                         initial={{ scaleX: 0 }}
                         animate={{ scaleX: 1 }}
                         transition={{ duration: 0.3 }}
@@ -153,7 +153,7 @@ export const Navigation = () => {
                 </PremiumButton>
                 <button type="button" onClick={changeLanguage}
                   aria-label={isHebrew ? "Switch to English" : "מעבר לעברית"}
-                  className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-300/80 bg-white/75 px-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                  className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-300/80 bg-white/75 px-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                 >
                   <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-4 w-4"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-3 3-3 15 0 18M12 3c3 3 3 15 0 18"/></svg>
                   <span lang={isHebrew ? "en" : "he"}>{isHebrew ? "English" : "עברית"}</span>
@@ -163,7 +163,7 @@ export const Navigation = () => {
               <div className="flex items-center justify-self-end gap-2 lg:hidden">
                 <button type="button" onClick={changeLanguage}
                   aria-label={isHebrew ? "Switch to English" : "מעבר לעברית"}
-                  className="inline-flex h-11 min-w-[65px] items-center justify-center gap-1.5 rounded-xl border border-slate-300/70 bg-white/75 px-2.5 text-sm font-bold text-slate-700 shadow-sm transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                  className="inline-flex h-11 min-w-[65px] items-center justify-center gap-1.5 rounded-xl border border-slate-300/70 bg-white/75 px-2.5 text-sm font-bold text-slate-700 shadow-sm transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                 >
                   <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-4 w-4"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-3 3-3 15 0 18M12 3c3 3 3 15 0 18"/></svg>
                   <span lang={isHebrew ? "en" : "he"}>{isHebrew ? "EN" : "עברית"}</span>
@@ -171,7 +171,7 @@ export const Navigation = () => {
 
               {/* Mobile Menu Button */}
               <motion.button
-                className="lg:hidden relative w-11 h-11 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70" aria-label={t(isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu")} aria-expanded={isMobileMenuOpen} aria-controls="mobile-navigation-menu"
+                className="lg:hidden relative w-11 h-11 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/70" aria-label={t(isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu")} aria-expanded={isMobileMenuOpen} aria-controls="mobile-navigation-menu"
                 onClick={toggleMobileMenu}
                 whileTap={{ scale: 0.95 }}
               >
@@ -224,8 +224,8 @@ export const Navigation = () => {
                     className={cn(
                       "text-start px-4 py-3 text-lg font-medium transition-colors duration-300 rounded-xl",
                       activeSection === item.href.substring(1)
-                        ? "text-blue-600 bg-blue-50/50"
-                        : "text-slate-700 hover:text-blue-600 hover:bg-white/20"
+                        ? "text-brand-600 bg-brand-50/50"
+                        : "text-slate-700 hover:text-brand-600 hover:bg-white/20"
                     )}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}

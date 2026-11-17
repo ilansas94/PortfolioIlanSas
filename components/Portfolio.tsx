@@ -14,7 +14,7 @@ import {
 import { useLanguage } from "@/lib/i18n";
 import { hebrewProjects } from "@/lib/portfolio-he";
 
-const cardTagClass = "rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700";
+const cardTagClass = "rounded bg-brand-100 px-2 py-1 text-xs font-medium text-brand-700";
 
 const filterCategories = [
   "All", "Branding", "Logo Design", "Print Design", "Digital Art",
@@ -360,7 +360,7 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
                 {/* Content */}
                 <div className="flex min-w-0 flex-col justify-center space-y-6">
                   <div>
-                    <span className="inline-block px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm font-medium mb-4">
+                    <span className="inline-block px-3 py-1 bg-brand-100 text-brand-600 rounded-full text-sm font-medium mb-4">
                       {t(item.categories[0])}
                     </span>
                     <h3 id="portfolio-project-title" className="text-3xl font-bold text-slate-800 mb-4">
@@ -372,7 +372,7 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
                     {item.liveHref && (
                       <a
                         href={item.liveHref}
-                        className="mb-6 inline-flex min-h-11 items-center gap-3 rounded-xl bg-[#0b2a38] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#145063] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-600"
+                        className="mb-6 inline-flex min-h-11 items-center gap-3 rounded-xl bg-[#0b2a38] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#145063] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600"
                       >
                         {t("Open the interactive lesson")} <span aria-hidden="true">{isHebrew ? "←" : "→"}</span>
                       </a>
@@ -498,7 +498,7 @@ export const Portfolio = () => {
           {...animations.fadeInUp}
           className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-2 bg-blue-100 text-blue-600 rounded-full text-sm font-medium mb-4">
+          <span className="inline-block px-4 py-2 bg-brand-100 text-brand-600 rounded-full text-sm font-medium mb-4">
             {t("Portfolio")}
           </span>
           <Heading level={2} className="mb-6">
@@ -523,10 +523,10 @@ export const Portfolio = () => {
               key={category}
               onClick={() => setActiveCategory(category)}
               aria-pressed={activeCategory === category}
-              className={`inline-flex min-h-11 items-center justify-center gap-1 whitespace-nowrap rounded-full border px-1 py-2 text-[11px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:px-3.5 sm:text-sm ${
+              className={`inline-flex min-h-11 items-center justify-center gap-1 whitespace-nowrap rounded-full border px-1 py-2 text-[11px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 sm:px-3.5 sm:text-sm ${
                 activeCategory === category
-                  ? "border-blue-600 bg-blue-600 text-white"
-                  : "border-slate-200 bg-white/60 text-slate-700 hover:bg-blue-50"
+                  ? "border-brand-600 bg-brand-600 text-white"
+                  : "border-slate-200 bg-white/60 text-slate-700 hover:bg-brand-50"
               }`}
               whileHover={{ 
                 scale: 1.02, 
@@ -570,7 +570,7 @@ export const Portfolio = () => {
                     openModal(item);
                   }
                 }}
-                className="group cursor-pointer rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600"
+                className="group cursor-pointer rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600"
               >
                 <GlassCard
                   className="overflow-hidden motion-safe:[@media(hover:hover)]:group-hover:scale-[1.02] transition-transform duration-300"

@@ -95,7 +95,7 @@ export const About = () => {
                         whileInView={{ scale: 1 }}
                         transition={{ duration: 0.4, delay: index * 0.1 }}
                       >
-                        <div className="text-2xl font-bold text-blue-600 mb-1">
+                        <div className="text-2xl font-bold text-brand-600 mb-1">
                           <bdi dir="ltr">{stat.number}</bdi>
                         </div>
                         <div className="text-xs text-slate-600 font-medium">
@@ -120,7 +120,7 @@ export const About = () => {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
               >
-                <span className="inline-block px-4 py-2 bg-blue-100 text-blue-600 rounded-full text-sm font-medium mb-4">
+                <span className="inline-block px-4 py-2 bg-brand-100 text-brand-600 rounded-full text-sm font-medium mb-4">
                   {t("About Me")}
                 </span>
               </motion.div>
@@ -195,7 +195,7 @@ export const About = () => {
                       z: 5,
                       transition: { duration: 0.2, ease: [0.4, 0.0, 0.2, 1] }
                     }}
-                    className="px-3 py-1.5 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200/50 text-slate-700 rounded-full text-sm font-medium hover:from-blue-100 hover:to-purple-100 hover:animate-[focus-pulse_0.3s_ease-in-out] transition-colors duration-300 cursor-default"
+                    className="px-3 py-1.5 bg-gradient-to-r from-brand-50 to-magenta-50 border border-brand-200/50 text-slate-700 rounded-full text-sm font-medium hover:from-brand-100 hover:to-magenta-100 hover:animate-[focus-pulse_0.3s_ease-in-out] transition-colors duration-300 cursor-default"
                   >
                     {t(skill)}
                   </motion.span>

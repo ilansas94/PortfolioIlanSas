@@ -7,9 +7,9 @@ import {
   Container, 
   Heading, 
   PremiumButton, 
-  FloatingElement,
   animations 
 } from "@/components/DesignSystem";
+import { BrandAtmosphere } from "@/components/BrandAtmosphere";
 import { HeroLogo } from "@/components/AnimatedLogo";
 import { useLanguage } from "@/lib/i18n";
 
@@ -51,45 +51,7 @@ export const Hero = () => {
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
       background="gradient"
     >
-      {/* Background Floating Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <FloatingElement
-          className="top-20 left-10"
-          size="lg"
-          color="blue"
-          delay={0}
-        />
-        <FloatingElement
-          className="top-32 right-20"
-          size="md"
-          color="purple"
-          delay={1.5}
-        />
-        <FloatingElement
-          className="bottom-40 left-20"
-          size="sm"
-          color="emerald"
-          delay={3}
-        />
-        <FloatingElement
-          className="bottom-20 right-32"
-          size="lg"
-          color="pink"
-          delay={2.5}
-        />
-        <FloatingElement
-          className="top-1/2 left-1/4"
-          size="sm"
-          color="blue"
-          delay={4}
-        />
-        <FloatingElement
-          className="top-1/3 right-1/3"
-          size="md"
-          color="purple"
-          delay={5}
-        />
-      </div>
+      <BrandAtmosphere />
 
       <Container size="xl" className="relative z-10">
         <div className="text-center">
@@ -142,7 +104,7 @@ export const Hero = () => {
               variant="secondary"
               size="lg"
               onClick={() => scrollToSection("#contact")}
-              className="min-w-[200px] !border-[1.5px] !border-slate-400/60 !bg-white/85 !text-slate-800 shadow-[0_8px_22px_rgba(45,65,90,0.12)] hover:!border-blue-400/60 hover:!bg-white"
+              className="min-w-[200px] !border-[1.5px] !border-slate-400/60 !bg-white/85 !text-slate-800 shadow-[0_8px_22px_rgba(45,65,90,0.12)] hover:!border-brand-400/60 hover:!bg-white"
             >
               {t("Get In Touch")}
             </PremiumButton>

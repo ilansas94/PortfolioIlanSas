@@ -103,7 +103,7 @@ export const Footer = () => {
                   <motion.button
                     key={index}
                     onClick={() => scrollToSection(link.href)}
-                    className="block text-slate-600 hover:text-blue-600 transition-colors duration-300"
+                    className="block text-slate-600 hover:text-brand-600 transition-colors duration-300"
                     whileHover={{ x: 5 }}
                   >
                     {t(link.name)}
@@ -122,7 +122,7 @@ export const Footer = () => {
                 <p>{t("Let's create something amazing together.")}</p>
                 <motion.button
                   onClick={() => scrollToSection("#contact")}
-                  className="inline-block px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors duration-300"
+                  className="inline-block px-6 py-2 bg-brand-600 text-white rounded-full hover:bg-brand-700 transition-colors duration-300"
                   whileHover={{ 
                   scale: 1.02, 
                   z: 5,

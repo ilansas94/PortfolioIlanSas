@@ -80,29 +80,29 @@ const skillCategories: {
     title: "Design & Branding",
     skills: ["Logo Design", "Brand Identity", "Visual Identity", "Brand Guidelines"],
     icon: "palette",
-    gradient: "from-blue-500 to-blue-600",
-    indicator: "bg-blue-500"
+    gradient: "from-brand-500 to-brand-600",
+    indicator: "bg-brand-500"
   },
   {
     title: "Digital Art",
     skills: ["Digital Painting", "Illustration", "Character Design", "Concept Art"],
     icon: "brush",
-    gradient: "from-violet-500 to-purple-600",
-    indicator: "bg-purple-500"
+    gradient: "from-magenta-500 to-magenta-600",
+    indicator: "bg-magenta-500"
   },
   {
     title: "UI/UX Design",
     skills: ["User Interface", "User Experience", "Prototyping", "Wireframing"],
     icon: "layout",
-    gradient: "from-emerald-500 to-teal-600",
-    indicator: "bg-emerald-500"
+    gradient: "from-brand-500 to-brand-600",
+    indicator: "bg-brand-500"
   },
   {
     title: "Print & Media",
     skills: ["Brochure Design", "Poster Design", "Campaign Design", "Print Layout"],
     icon: "printer",
-    gradient: "from-pink-500 to-rose-600",
-    indicator: "bg-pink-500"
+    gradient: "from-gold-600 to-gold-700",
+    indicator: "bg-gold-600"
   }
 ];
 
@@ -156,7 +156,7 @@ export const Skills = () => {
           {...animations.fadeInUp}
           className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-2 bg-blue-100 text-blue-600 rounded-full text-sm font-medium mb-4">
+          <span className="inline-block px-4 py-2 bg-brand-100 text-brand-600 rounded-full text-sm font-medium mb-4">
             {t("Skills & Services")}
           </span>
           <Heading level={2} className="mb-6">
@@ -218,7 +218,7 @@ export const Skills = () => {
             {...animations.fadeInUp}
             className="mb-7 text-center"
           >
-            <span className="mb-3 inline-block rounded-full bg-violet-100 px-4 py-2 text-sm font-medium text-violet-700">
+            <span className="mb-3 inline-block rounded-full bg-magenta-100 px-4 py-2 text-sm font-medium text-magenta-700">
               {t("Beyond the Canvas")}
             </span>
             <h3 className="mb-3 text-2xl font-semibold tracking-tight text-slate-800 md:text-3xl">
@@ -243,8 +243,8 @@ export const Skills = () => {
                   <div className="mb-5 flex items-center gap-4">
                     <div
                       className={feature.icon === "sparkles"
-                        ? "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 shadow-lg shadow-violet-900/10 ring-1 ring-white/30"
-                        : "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-600 shadow-lg shadow-blue-900/10 ring-1 ring-white/30"}
+                        ? "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-magenta-500 to-magenta-600 shadow-lg shadow-magenta-900/10 ring-1 ring-white/30"
+                        : "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-brand-600 shadow-lg shadow-brand-900/10 ring-1 ring-white/30"}
                     >
                       <SkillCategoryIcon name={feature.icon} />
                     </div>
@@ -264,7 +264,7 @@ export const Skills = () => {
                     {feature.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="rounded-full border border-violet-200/50 bg-white/70 px-3 py-1.5 text-xs font-medium text-slate-700 sm:text-sm"
+                        className="rounded-full border border-magenta-200/50 bg-white/70 px-3 py-1.5 text-xs font-medium text-slate-700 sm:text-sm"
                       >
                         {t(tag)}
                       </span>

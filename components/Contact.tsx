@@ -26,13 +26,13 @@ const socialLinks = [
     name: "Facebook",
     href: "https://www.facebook.com/people/Ilan-Sastiel/61570651904704/?locale=he_IL",
     icon: "/Essets/FACEBOOK_LOGO.png",
-    color: "hover:text-blue-600"
+    color: "hover:text-brand-600"
   },
   {
     name: "Instagram", 
     href: "https://www.instagram.com/art_and_hp/",
     icon: "/Essets/INSTEGRAM_LOGO.png",
-    color: "hover:text-pink-600"
+    color: "hover:text-magenta-600"
   }
 ];
 
@@ -105,7 +105,7 @@ export const Contact = () => {
           {...animations.fadeInUp}
           className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-2 bg-blue-100 text-blue-600 rounded-full text-sm font-medium mb-4">
+          <span className="inline-block px-4 py-2 bg-brand-100 text-brand-600 rounded-full text-sm font-medium mb-4">
             {t("Contact")}
           </span>
           <Heading level={2} className="mb-6">
@@ -144,7 +144,7 @@ export const Contact = () => {
                       value={formData.name}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 bg-white/60 border border-white/40 rounded-xl text-slate-700 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent focus:animate-[focus-pulse_0.3s_ease-in-out] transition-all duration-300"
+                      className="w-full px-4 py-3 bg-white/60 border border-white/40 rounded-xl text-slate-700 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-transparent focus:animate-[focus-pulse_0.3s_ease-in-out] transition-all duration-300"
                       placeholder={t("Your name")}
                     />
                   </div>
@@ -160,7 +160,7 @@ export const Contact = () => {
                       value={formData.email}
                       onChange={handleInputChange}
                       required
-                      className="contact-input-email w-full px-4 py-3 bg-white/60 border border-white/40 rounded-xl text-slate-700 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent focus:animate-[focus-pulse_0.3s_ease-in-out] transition-all duration-300"
+                      className="contact-input-email w-full px-4 py-3 bg-white/60 border border-white/40 rounded-xl text-slate-700 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-transparent focus:animate-[focus-pulse_0.3s_ease-in-out] transition-all duration-300"
                       placeholder="your.email@example.com"
                     />
                   </div>
@@ -178,7 +178,7 @@ export const Contact = () => {
                     value={formData.subject}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-white/40 rounded-xl text-slate-700 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-300"
+                    className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-white/40 rounded-xl text-slate-700 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-transparent transition-all duration-300"
                     placeholder={t("Project inquiry, collaboration, etc.")}
                   />
                 </div>
@@ -195,7 +195,7 @@ export const Contact = () => {
                     onChange={handleInputChange}
                     required
                     rows={6}
-                    className="w-full px-4 py-3 bg-white/60 border border-white/40 rounded-xl text-slate-700 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent focus:animate-[focus-pulse_0.3s_ease-in-out] transition-all duration-300 resize-none"
+                    className="w-full px-4 py-3 bg-white/60 border border-white/40 rounded-xl text-slate-700 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-transparent focus:animate-[focus-pulse_0.3s_ease-in-out] transition-all duration-300 resize-none"
                     placeholder={t("Tell me about your project, ideas, timeline, and any specific requirements...")}
                   />
                 </div>
@@ -265,7 +265,7 @@ export const Contact = () => {
                     intensity="medium"
                   >
                     <div className="flex items-start gap-4">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700" aria-hidden="true">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700" aria-hidden="true">
                         <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                           {info.icon === "idea" && <path d="M9 18h6M10 21h4M9 15c-1.5-1.2-2.5-2.7-2.5-5a5.5 5.5 0 1 1 11 0c0 2.3-1 3.8-2.5 5-.7.6-1 1.2-1 3h-4c0-1.8-.3-2.4-1-3Z"/>}
                           {info.icon === "bolt" && <path d="m13.5 2-9 11h7l-1 9 9-11h-7l1-9Z"/>}
