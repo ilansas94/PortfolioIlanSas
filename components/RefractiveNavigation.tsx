@@ -53,18 +53,41 @@ function makeBezel(width: number, height: number): BezelMap {
 }
 
 export function RefractiveNavigation({children,className=""}:{children:ReactNode;className?:string}) {
-  const id=`nav-lens-${useId().replace(/[^a-zA-Z0-9]/g,"")}`;
+  const instanceId=`nav-lens-${useId().replace(/[^a-zA-Z0-9]/g,"")}`;
   const root=useRef<HTMLDivElement>(null);
   const mirror=useRef<HTMLDivElement>(null);
-  const [compatible,setCompatible]=useState(false);
-  const [map,setMap]=useState<ReturnType<typeof makeBezel>|null>(null);
+  const revision=useRef(0);
+  const [compatible,setCompatible]=useState<boolean|null>(null);
+  const [map,setMap]=useState<(BezelMap&{revision:number})|null>(null);
+  // A filter resource must be immutable for its receiver's lifetime. In WebKit,
+  // inserting/replacing a referenced filter while its receiver already exists
+  // can leave a permanently unfiltered layer (webkit.org/b/61455).
+  const id=map?`${instanceId}-${compatible?"dom":"backdrop"}-${map.revision}`:instanceId;
+  const [readyResource,setReadyResource]=useState("");
+  const mirrorReady=compatible===true&&map!==null&&readyResource===id;
   useEffect(()=>{
     // These engines parse SVG backdrop URLs but do not paint their refraction.
     setCompatible(needsDomRefraction());
   },[]);
   useEffect(()=>{
-    if(compatible&&mirror.current)return mountDomRefraction(mirror.current);
-  },[compatible,map]);
+    if(mirrorReady&&mirror.current)return mountDomRefraction(mirror.current);
+  },[mirrorReady,map]);
+  useEffect(()=>{
+    if(!compatible||!map)return;
+    let disposed=false,first=0,second=0;
+    const image=new Image();
+    const loaded=()=>{
+      if(disposed)return;
+      // First register the SVG graph, then attach a fresh CSS filter receiver.
+      // Do not create the receiver against a pending feImage or the old graph.
+      first=requestAnimationFrame(()=>{
+        second=requestAnimationFrame(()=>{if(!disposed)setReadyResource(id);});
+      });
+    };
+    image.onload=loaded;
+    image.src=map.src;
+    return()=>{disposed=true;image.onload=null;cancelAnimationFrame(first);cancelAnimationFrame(second);};
+  },[compatible,map,id]);
   useEffect(()=>{
     const element=root.current;if(!element)return;
     let frame=0,last="";
@@ -72,14 +95,14 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
       const {width,height}=element.getBoundingClientRect();
       const key=`${Math.round(width)}:${Math.round(height)}`;
       if(key===last||width<1||height<1)return;last=key;
-      setMap(makeBezel(Math.round(width),Math.round(height)));
+      setMap({...makeBezel(Math.round(width),Math.round(height)),revision:++revision.current});
     };
     const resize=new ResizeObserver(()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(update);});
     resize.observe(element);update();return()=>{resize.disconnect();cancelAnimationFrame(frame);};
   },[]);
-  return <div ref={root} className={`liquid-navigation ${compatible?"has-dom-refraction":""} ${className}`}>
-    <svg className="liquid-navigation-defs" width="0" height="0" aria-hidden="true" focusable="false">
-      <defs>{map&&<filter id={id} x="0" y="0" width={compatible?1:"100%"} height={compatible?1:"100%"}
+  return <div ref={root} className={`liquid-navigation ${mirrorReady?"has-dom-refraction":""} ${className}`}>
+    <svg key={id} className="liquid-navigation-defs" width="1" height="1" aria-hidden="true" focusable="false">
+      <defs>{map&&compatible!==null&&<filter id={id} x="0" y="0" width={compatible?1:"100%"} height={compatible?1:"100%"}
         filterUnits="objectBoundingBox" primitiveUnits={compatible?"objectBoundingBox":"userSpaceOnUse"} colorInterpolationFilters="sRGB">
         <feImage href={map.src} x="0" y="0" width={compatible?1:map.width} height={compatible?1:map.height} preserveAspectRatio="none" result="bezel"/>
         {compatible?<>
@@ -95,10 +118,10 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
         </>:<feDisplacementMap in="SourceGraphic" in2="bezel" scale={map.scale} xChannelSelector="R" yChannelSelector="G"/>}
       </filter>}</defs>
     </svg>
-    {compatible&&map&&<div className="liquid-navigation-mirror-clip" aria-hidden="true">
-      <div key={map.src} ref={mirror} className="liquid-navigation-mirror" style={{filter:`url("#${id}") saturate(1.12)`}}/>
+    {mirrorReady&&<div className="liquid-navigation-mirror-clip" aria-hidden="true">
+      <div key={id} ref={mirror} className="liquid-navigation-mirror" style={{filter:`url("#${id}") saturate(1.12)`}}/>
     </div>}
-    <div className="liquid-navigation-material" aria-hidden="true" style={map&&!compatible?{backdropFilter:`url("#${id}") saturate(1.12)`}:undefined}/>
+    <div className="liquid-navigation-material" aria-hidden="true" style={map&&compatible===false?{backdropFilter:`url("#${id}") saturate(1.12)`}:undefined}/>
     <div className="liquid-navigation-content">{children}</div>
   </div>;
 }

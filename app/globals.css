@@ -221,7 +221,12 @@ html[lang="he"] #portfolio-site .tracking-wider { letter-spacing: normal; }
 #portfolio-site .liquid-navigation-material::after { content:"";position:absolute;inset:0;border-radius:inherit;border:1px solid transparent;border-top-color:rgba(255,255,255,.8);border-bottom-color:rgba(255,255,255,.4); }
 .liquid-navigation-content { position:relative;z-index:1; }
 #portfolio-site .liquid-navigation-mirror-clip { position:absolute;inset:0;overflow:hidden;border-radius:inherit;clip-path:inset(0 round 24px);contain:paint;pointer-events:none; }
-#portfolio-site .liquid-navigation-mirror { position:absolute;inset:0;pointer-events:none; }
+#portfolio-site .liquid-navigation-mirror {
+ position:absolute;inset:0;pointer-events:none;
+ /* WebKit otherwise resolves objectBoundingBox primitives per raster tile
+    (webkit.org/b/243091), rather than against this one bounded lens. */
+ transform:translateZ(0);
+}
 #portfolio-site .has-dom-refraction .liquid-navigation-material { -webkit-backdrop-filter:none;backdrop-filter:none; }
 #portfolio-site .liquid-menu-panel .liquid-navigation-material {
  background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,.86) 8%,rgba(255,255,255,.86) 92%,rgba(255,255,255,.34));
