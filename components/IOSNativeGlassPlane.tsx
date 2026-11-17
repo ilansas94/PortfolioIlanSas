@@ -28,6 +28,8 @@ export function IOSNativeGlassPlane({
 
     let positionFrame = 0;
     let entranceFrame = 0;
+    let transitionFrame = 0;
+    let followUntil = 0;
     let lastPosition = "";
 
     const align = () => {
@@ -59,18 +61,36 @@ export function IOSNativeGlassPlane({
       });
     };
 
+    // Tailwind transitions the navbar padding on scroll. The bar itself
+    // stays 64px tall, so a ResizeObserver alone does not detect its moving
+    // top edge. Follow its position briefly after each scroll / resize.
+    const followTransition = () => {
+      transitionFrame = 0;
+      align();
+      if (performance.now() < followUntil) {
+        transitionFrame = requestAnimationFrame(followTransition);
+      }
+    };
+    const trackTransition = () => {
+      followUntil = performance.now() + 550;
+      scheduleAlign();
+      if (!transitionFrame) {
+        transitionFrame = requestAnimationFrame(followTransition);
+      }
+    };
+
     const resizeObserver = new ResizeObserver(scheduleAlign);
     resizeObserver.observe(host);
     const container = host.closest("nav, #mobile-navigation-menu");
     if (container) resizeObserver.observe(container);
 
-    window.addEventListener("scroll", scheduleAlign, { passive: true });
-    window.addEventListener("resize", scheduleAlign);
-    window.addEventListener("orientationchange", scheduleAlign);
+    window.addEventListener("scroll", trackTransition, { passive: true });
+    window.addEventListener("resize", trackTransition);
+    window.addEventListener("orientationchange", trackTransition);
 
     const viewport = window.visualViewport;
-    viewport?.addEventListener("scroll", scheduleAlign, { passive: true });
-    viewport?.addEventListener("resize", scheduleAlign);
+    viewport?.addEventListener("scroll", trackTransition, { passive: true });
+    viewport?.addEventListener("resize", trackTransition);
 
     // Follow the navbar's 600 ms entrance and the menu transition.
     // No permanent requestAnimationFrame loop or expensive pixel readback.
@@ -85,13 +105,14 @@ export function IOSNativeGlassPlane({
 
     return () => {
       resizeObserver.disconnect();
-      window.removeEventListener("scroll", scheduleAlign);
-      window.removeEventListener("resize", scheduleAlign);
-      window.removeEventListener("orientationchange", scheduleAlign);
-      viewport?.removeEventListener("scroll", scheduleAlign);
-      viewport?.removeEventListener("resize", scheduleAlign);
+      window.removeEventListener("scroll", trackTransition);
+      window.removeEventListener("resize", trackTransition);
+      window.removeEventListener("orientationchange", trackTransition);
+      viewport?.removeEventListener("scroll", trackTransition);
+      viewport?.removeEventListener("resize", trackTransition);
       cancelAnimationFrame(positionFrame);
       cancelAnimationFrame(entranceFrame);
+      cancelAnimationFrame(transitionFrame);
     };
   }, [target, variant]);
 
