@@ -198,7 +198,7 @@ export const Skills = () => {
                       initial={{ opacity: 0, x: -10 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.4, delay: (index * 0.1) + (skillIndex * 0.05) }}
-                      className="flex items-center space-x-2"
+                      className="flex items-center gap-2"
                     >
                       <div className={`h-2 w-2 flex-none rounded-full ${category.indicator}`}></div>
                       <span className="text-sm text-slate-600">{t(skill)}</span>

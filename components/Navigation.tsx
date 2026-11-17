@@ -49,6 +49,15 @@ export const Navigation = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsMobileMenuOpen(false);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [isMobileMenuOpen]);
+
   const scrollToSection = (href: string) => {
     const element = document.getElementById(href.substring(1));
     if (element) {
@@ -83,7 +92,7 @@ export const Navigation = () => {
             intensity={isScrolled ? "heavy" : "medium"}
             gradient={true}
           >
-            <div className="flex items-center justify-between">
+            <div className="nav-layout grid grid-cols-[1fr_auto] items-center gap-3 lg:grid-cols-[1fr_auto_1fr]">
               {/* Logo */}
               <motion.button
                 type="button"
@@ -95,7 +104,7 @@ export const Navigation = () => {
                 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => scrollToSection("#home")}
-                className="cursor-pointer rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70"
+                className="justify-self-start cursor-pointer rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70"
               >
                 <NavLogo />
               </motion.button>
@@ -134,7 +143,7 @@ export const Navigation = () => {
               </div>
 
               {/* Desktop contact CTA and language switch */}
-              <div className="hidden lg:flex items-center gap-3">
+              <div className="hidden lg:flex items-center justify-self-end gap-3">
                 <PremiumButton
                   variant="primary"
                   size="sm"
@@ -151,7 +160,7 @@ export const Navigation = () => {
                 </button>
               </div>
 
-              <div className="flex items-center gap-2 lg:hidden">
+              <div className="flex items-center justify-self-end gap-2 lg:hidden">
                 <button type="button" onClick={changeLanguage}
                   aria-label={isHebrew ? "Switch to English" : "מעבר לעברית"}
                   className="inline-flex h-11 min-w-[65px] items-center justify-center gap-1.5 rounded-xl border border-slate-300/70 bg-white/75 px-2.5 text-sm font-bold text-slate-700 shadow-sm transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"

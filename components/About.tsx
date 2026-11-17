@@ -96,7 +96,7 @@ export const About = () => {
                         transition={{ duration: 0.4, delay: index * 0.1 }}
                       >
                         <div className="text-2xl font-bold text-blue-600 mb-1">
-                          {stat.number}
+                          <bdi dir="ltr">{stat.number}</bdi>
                         </div>
                         <div className="text-xs text-slate-600 font-medium">
                           {t(stat.label)}

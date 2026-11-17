@@ -251,8 +251,12 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
   useEffect(() => {
     if (!isOpen) return;
     const trigger = document.activeElement;
-    closeButton.current?.focus({ preventScroll: true });
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const focusFrame = requestAnimationFrame(() => closeButton.current?.focus({ preventScroll: true }));
     return () => {
+      cancelAnimationFrame(focusFrame);
+      document.body.style.overflow = previousOverflow;
       if (trigger instanceof HTMLElement) trigger.focus({ preventScroll: true });
     };
   }, [isOpen]);
@@ -324,7 +328,7 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
                 <span className="text-xl">×</span>
               </motion.button>
 
-              <div className="grid lg:grid-cols-2 gap-8 h-full">
+              <div className="grid lg:grid-cols-2 gap-8 min-h-full">
                 {/* Image or Prototype */}
                 <div className="relative">
                   <motion.div
@@ -336,7 +340,7 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
                         src={item.figmaUrl}
                         className="w-full h-[70vh] lg:h-[80vh] rounded-xl border-0"
                         allowFullScreen
-                        title={`${display.title} - Interactive Prototype`}
+                        title={`${display.title} - ${t("Interactive Prototype")}`}
                       />
                     ) : (
                       <div className="w-full max-h-[70vh] lg:max-h-[80vh] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
@@ -354,7 +358,7 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
                 </div>
 
                 {/* Content */}
-                <div className="flex flex-col justify-center space-y-6">
+                <div className="flex min-w-0 flex-col justify-center space-y-6">
                   <div>
                     <span className="inline-block px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm font-medium mb-4">
                       {t(item.categories[0])}
@@ -375,7 +379,7 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
                     )}
                     {item.isPrototype && item.figmaUrl && (
                       <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
-                        <div className="flex items-center space-x-2 mb-2">
+                        <div className="flex items-center gap-2 mb-2">
                           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                           <span className="text-green-700 font-medium text-sm">{t("Interactive Prototype")}</span>
                         </div>
@@ -409,7 +413,7 @@ const PortfolioModal = ({ item, isOpen, onClose }: PortfolioModalProps) => {
                         <h4 className="text-sm font-semibold text-slate-800 mb-2">{t("Tools")}</h4>
                         <div className="flex flex-wrap gap-2">
                           {item.tools.map((tool, i) => (
-                            <span key={i} className="px-2.5 py-1 bg-white/70 border border-white/50 rounded-full text-xs text-slate-700">{tool}</span>
+                            <span key={i} className="px-2.5 py-1 bg-white/70 border border-white/50 rounded-full text-xs text-slate-700">{t(tool)}</span>
                           ))}
                         </div>
                       </div>
@@ -597,7 +601,7 @@ export const Portfolio = () => {
                         {t(item.categories[0])}
                       </span>
                       {item.isPrototype && (
-                        <div className="flex items-center space-x-1">
+                        <div className="flex items-center gap-1">
                           <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
                           <span className="text-xs text-green-600 font-medium">{t("Live")}</span>
                         </div>

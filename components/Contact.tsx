@@ -139,7 +139,7 @@ export const Contact = () => {
                     </label>
                     <input
                       type="text"
-                      id="name"
+                      id="name" autoComplete="name"
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
@@ -155,6 +155,7 @@ export const Contact = () => {
                     <input
                       type="email"
                       id="email"
+                      dir="ltr" autoComplete="email"
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
@@ -224,6 +225,7 @@ export const Contact = () => {
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
+                    role="status" aria-live="polite"
                     className="p-4 bg-green-100 text-green-700 rounded-xl text-center"
                   >
                     <span aria-hidden="true">✓ </span>{t("Message sent successfully! I'll get back to you soon.")}
@@ -234,6 +236,7 @@ export const Contact = () => {
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
+                    role="alert"
                     className="p-4 bg-red-100 text-red-700 rounded-xl text-center"
                   >
                     <span aria-hidden="true">! </span>{t("Something went wrong. Please try again or contact me directly.")}
@@ -346,7 +349,7 @@ export const Contact = () => {
                 className="p-6 text-center"
                 intensity="light"
               >
-                <div className="flex items-center justify-center space-x-2 mb-3">
+                <div className="flex items-center justify-center gap-2 mb-3">
                   <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                   <span className="text-sm font-medium text-slate-700">
                     {t("Open to design opportunities")}

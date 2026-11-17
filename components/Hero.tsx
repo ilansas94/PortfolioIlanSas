@@ -164,7 +164,7 @@ export const Hero = () => {
           duration: showScrollIndicator ? 0.8 : 0.5,
           delay: showScrollIndicator ? 1.2 : 0 
         }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
+        className="hero-scroll-cue absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
       >
         <motion.div
           animate={{ y: [0, 10, 0] }}

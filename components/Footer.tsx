@@ -50,7 +50,8 @@ export const Footer = () => {
           <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
             {/* Logo & Description */}
             <div className="lg:col-span-1">
-              <motion.div
+              <motion.button
+                type="button" aria-label={t("Back to homepage")}
                 onClick={scrollToTop}
                 className="cursor-pointer inline-block"
                 whileHover={{ 
@@ -61,13 +62,13 @@ export const Footer = () => {
                 whileTap={{ scale: 0.95 }}
               >
                 <FooterLogo />
-              </motion.div>
+              </motion.button>
               <p className="text-slate-600 leading-relaxed mt-4">
                 {t("Creative designer and digital artist passionate about bringing ideas to life through innovative design and compelling visual experiences.")}
               </p>
               
               {/* Social Links */}
-              <div className="flex space-x-4 mt-6">
+              <div className="flex gap-4 mt-6">
                 {socialLinks.map((social, index) => (
                   <motion.a
                     key={index}

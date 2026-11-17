@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useCallback, useContext, useLayoutEffect, useMemo, useState } from "react";
 
 export type SiteLanguage = "en" | "he";
 
@@ -45,7 +45,7 @@ const hebrewCopy: Record<string, string> = {
   "Branding & Identity": "מיתוג וזהות חזותית",
   "Logo Design": "עיצוב לוגואים",
   "UI/UX Design": "עיצוב UI/UX",
-  "Visual Storytelling": "סטוריטלינג חזותי",
+  "Visual Storytelling": "סיפור חזותי",
   "Campaign Design": "עיצוב קמפיינים",
   "Illustration": "איור",
   "Print Design": "עיצוב לדפוס",
@@ -85,7 +85,7 @@ const hebrewCopy: Record<string, string> = {
     "אני משתמש ב־ChatGPT למחקר ולבניית הנחיות מדויקות, ב־Runway ליצירת וידאו ומעברים קולנועיים, וב־Photoshop לליטוש חזותי. במקביל אני מתנסה בעבודה מבוססת צמתים ב־ComfyUI, כשההחלטות העיצוביות מנחות את התהליך.",
   "Websites & interactive projects": "אתרים וחוויות אינטראקטיביות",
   "AI-Assisted Development": "פיתוח בסיוע AI",
-  "I work with OpenAI Codex to design and develop websites, refine interfaces, and experiment with interactive game prototypes. I combine design thinking with AI-assisted coding, testing and iteration, including projects published through GitHub and Vercel.":
+  "Working with OpenAI Codex, I design and develop websites, refine interfaces, and experiment with interactive game prototypes. I combine design thinking with AI-assisted coding, testing and iteration, including projects published through GitHub and Vercel.":
     "באמצעות OpenAI Codex אני מעצב ומפתח אתרים, משפר ממשקים ומתנסה באבות־טיפוס למשחקים אינטראקטיביים. אני משלב חשיבה עיצובית עם פיתוח בסיוע AI, בדיקות ושיפור הדרגתי, כולל פרויקטים המנוהלים ב־GitHub ומפורסמים באמצעות Vercel.",
   "ComfyUI (Exploration)": "ComfyUI (התנסות)",
   "Web Development": "פיתוח אתרים",
@@ -154,6 +154,8 @@ const hebrewCopy: Record<string, string> = {
   "Start a Project": "מתחילים פרויקט",
   "All rights reserved. Designed and developed with passion.":
     "כל הזכויות שמורות. עוצב ונבנה מתוך אהבה ליצירה.",
+  "Pencil": "עיפרון",
+  "Ink": "דיו",
   "Adobe Creative Suite": "Adobe Creative Suite"
 };
 
@@ -168,18 +170,23 @@ const LanguageContext = createContext<LanguageContextShape | null>(null);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<SiteLanguage>("en");
-  useEffect(() => {
+  useLayoutEffect(() => {
+    let initial: SiteLanguage = "en";
     try {
       const stored = window.localStorage.getItem("ilan-portfolio-language");
-      if (stored === "he" || stored === "en") setLanguageState(stored);
-    } catch { /* Storage may be disabled; language switch still works. */ }
+      if (stored === "he" || stored === "en") initial = stored;
+    } catch { /* Storage is optional. */ }
+    setLanguageState(initial);
+    document.documentElement.lang = initial;
+    document.documentElement.dir = initial === "he" ? "rtl" : "ltr";
+    document.documentElement.removeAttribute("data-portfolio-pending");
   }, []);
-  useEffect(() => {
-    document.documentElement.lang = language;
-    document.documentElement.dir = language === "he" ? "rtl" : "ltr";
-    try { window.localStorage.setItem("ilan-portfolio-language", language); } catch { /* Ignore */ }
-  }, [language]);
-  const setLanguage = useCallback((next: SiteLanguage) => setLanguageState(next), []);
+  const setLanguage = useCallback((next: SiteLanguage) => {
+    setLanguageState(next);
+    document.documentElement.lang = next;
+    document.documentElement.dir = next === "he" ? "rtl" : "ltr";
+    try { window.localStorage.setItem("ilan-portfolio-language", next); } catch { /* Storage is optional. */ }
+  }, []);
   const t = useCallback((text: string) => language === "he" ? (hebrewCopy[text] || text) : text, [language]);
   const value = useMemo(() => ({ language, isHebrew: language === "he", setLanguage, t }), [language, setLanguage, t]);
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;

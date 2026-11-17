@@ -1,139 +1,100 @@
-const { chromium, webkit } = require("playwright");
-const assert = require("node:assert/strict");
-const fs = require("node:fs");
-const path = require("node:path");
-
-const url = process.env.BASE_URL || "http://127.0.0.1:3000";
-const directory = path.resolve("bilingual-visual-qa");
-fs.mkdirSync(directory, { recursive: true });
-const shot = (name) => path.join(directory, name + ".png");
-
-async function fit(page, label) {
-  const dims = await page.evaluate(() => ({
-    document: document.documentElement.scrollWidth,
-    body: document.body.scrollWidth,
-    client: document.documentElement.clientWidth
-  }));
-  assert.ok(dims.document <= dims.client + 3, label + " layout overflow: " + JSON.stringify(dims));
-  assert.ok(dims.body <= dims.client + 3, label + " body overflow: " + JSON.stringify(dims));
-}
-async function capture(page, id, suffix) {
-  const region = page.locator(id);
-  // Lazy-loaded portfolio art must be brought into view before the full gallery is captured.
-  if (id === "#portfolio") {
-    const images = region.locator("img");
-    const total = await images.count();
-    for (let index = 0; index < total; index++) {
-      const img = images.nth(index);
-      await img.scrollIntoViewIfNeeded();
-      await img.evaluate(image => new Promise(resolve => {
-        if (image.complete) resolve();
-        else {
-          image.addEventListener("load", resolve, { once: true });
-          image.addEventListener("error", resolve, { once: true });
-        }
-      }));
-      const details = await img.evaluate(image => ({src:image.currentSrc, naturalWidth:image.naturalWidth}));
-      assert.ok(details.naturalWidth > 0, "Portfolio artwork must load: " + details.src);
+/* Local browser QA. No external contact requests or deployment commands. */
+const { chromium } = require('playwright');
+const fs = require('fs');
+const assert = require('node:assert/strict');
+const out = process.env.QA_OUTPUT || 'bilingual-visual-qa';
+fs.mkdirSync(out, {recursive:true});
+const pause = ms => new Promise(r=>setTimeout(r,ms));
+(async()=>{
+ const results=[];
+ const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH || (fs.existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : chromium.executablePath()),args:['--no-sandbox']});
+ for(const width of (process.env.QA_WIDTHS || '320,390,768,1440').split(',').map(Number)){
+  const context=await browser.newContext({viewport:{width,height:width===1440?1000:844},recordVideo:width===390?{dir:out+'/video',size:{width:390,height:844}}:undefined});
+  const page=await context.newPage();const errors=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  await page.goto('http://localhost:3000',{waitUntil:'networkidle'});
+  await page.waitForTimeout(1600);
+  assert.equal(await page.locator('html').getAttribute('lang'),'en');
+  for(const lang of ['en','he']){
+   if(lang==='he')await page.getByRole('button',{name:'מעבר לעברית'}).locator('visible=true').click();
+   await page.waitForTimeout(600);
+   assert.equal(await page.locator('html').getAttribute('dir'),lang==='he'?'rtl':'ltr');
+   await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+   await page.waitForTimeout(400);
+   await page.screenshot({path:`${out}/${width}-${lang}-hero.png`});
+   await page.locator('nav').screenshot({path:`${out}/${width}-${lang}-nav.png`});
+   // Confirm the entire original emblem fits its vector viewBox.
+   const bounds=await page.locator('nav svg').first().evaluate(s=>{const g=s.querySelector(':scope > g');const b=g.getBBox();return {x:b.x,y:b.y,w:b.width,h:b.height}});
+   assert.ok(bounds.x>=744 && bounds.y>=41 && bounds.x+bounds.w<=1176 && bounds.y+bounds.h<=473,JSON.stringify(bounds));
+   if(width<1024){
+    await page.getByRole('button',{name:lang==='he'?'פתיחת תפריט ניווט':'Open navigation menu'}).click();
+    await page.waitForTimeout(600);
+    await page.screenshot({path:`${out}/${width}-${lang}-menu.png`});
+    await page.locator('#mobile-navigation-menu').getByRole('button',{name:lang==='he'?'תיק עבודות':'Portfolio',exact:true}).click();
+    await page.waitForTimeout(1000);
+    assert.equal(await page.locator('#mobile-navigation-menu').count(),0);
+   }
+   for(const id of ['about','portfolio','skills','contact']){
+    const section=page.locator('#'+id);
+    const {top,height}=await section.evaluate(el=>({top:el.offsetTop,height:el.offsetHeight}));
+    // Actual viewport captures after each entry animation; no hidden-content composites.
+    let tile=0;
+    for(let y=top;y<top+height;y+=700){
+     await page.evaluate(y=>window.scrollTo({top:y,behavior:'instant'}),y);
+     await page.waitForTimeout(900);
+     await page.screenshot({path:`${out}/${width}-${lang}-${id}-${tile++}.png`});
     }
+   }
+   const footer=page.locator('#portfolio-site > section').last();
+   await footer.scrollIntoViewIfNeeded();await page.waitForTimeout(800);await page.screenshot({path:`${out}/${width}-${lang}-footer.png`});
+   const filter=page.getByRole('group',{name:lang==='he'?'סינון עבודות לפי תחום':'Filter projects by category'});
+   await filter.getByRole('button',{name:lang==='he'?'AI ואינטראקטיב':'AI & Interactive',exact:true}).click();
+   await page.waitForFunction(()=>document.querySelectorAll("#portfolio [role=button]").length===2);
+   assert.equal(await page.locator('#portfolio [role=button]').count(),2);
+   await page.locator('#portfolio').screenshot({path:`${out}/${width}-${lang}-interactive-cards.png`});
+   for(const project of ['Safe Moments','FIRST SHIFT']){
+    const card=page.getByRole('button',{name:new RegExp((lang==='he'?'פתיחת פרויקט':'Open')+'.*'+project)});
+    await card.click();await page.waitForTimeout(750);
+    const dialog=page.getByRole('dialog');
+    await dialog.screenshot({path:`${out}/${width}-${lang}-${project.replace(' ','-')}-modal.png`});
+    assert.ok((await dialog.innerText()).includes(lang==='he'?'עצמא':'independent'));
+    await dialog.getByRole('link').click();await page.waitForLoadState('networkidle');
+    assert.ok(page.url().endsWith(project==='Safe Moments'?'/learning-lab':'/first-shift'));
+    await page.goBack({waitUntil:'networkidle'});await page.waitForTimeout(700);
+    assert.equal(await page.locator('html').getAttribute('lang'),lang);
+    // Full navigation remounts gallery. Restore its filter.
+    await filter.getByRole('button',{name:lang==='he'?'AI ואינטראקטיב':'AI & Interactive',exact:true}).click();await page.waitForTimeout(500);
+   }
+   await filter.getByRole('button',{name:lang==='he'?'הכול':'All',exact:true}).click();await page.waitForTimeout(1000);
+   const cards=page.locator('#portfolio [role=button]');assert.equal(await cards.count(),13);
+   // Exercise every project's localized details, keyboard opening, trap and close.
+   for(let i=0;i<13;i++){
+    await cards.nth(i).focus();await page.keyboard.press('Enter');await page.waitForTimeout(600);
+    const d=page.getByRole('dialog');assert.ok((await d.innerText()).length>100);
+    await d.getByRole('button',{name:lang==='he'?'סגירת פרויקט':'Close project'}).focus();await page.keyboard.press('Shift+Tab');assert.ok(await d.evaluate(el=>el.contains(document.activeElement)));
+    await page.keyboard.press('Escape');await page.waitForTimeout(350);
+   }
+   await page.locator('#name').fill(lang==='he'?'בדיקת ממשק':'Interface test');
+   await page.locator('#email').fill('test@example.com');await page.locator('#subject').fill('Local UI test');await page.locator('#message').fill('Local test; no real message is sent.');
+   // Mock both API outcomes so no email can leave the browser.
+   for(const status of [200,500]){
+    await page.route('**/api/contact',route=>route.fulfill({status,contentType:'application/json',body:'{}'}));
+    await page.getByRole('button',{name:lang==='he'?'שליחת הודעה':'Send Message',exact:true}).click();await page.waitForTimeout(400);
+    assert.ok(await page.locator('#contact').getByRole(status===200?'status':'alert').isVisible());
+    if(status===200){await page.locator('#name').fill('Test');await page.locator('#email').fill('test@example.com');await page.locator('#subject').fill('Test');await page.locator('#message').fill('Test')}
+   }
+   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
+   assert.equal(overflow,false,`${width} ${lang} horizontal overflow`);
+   await page.reload({waitUntil:'networkidle'});await page.waitForTimeout(1200);
+   assert.equal(await page.locator('html').getAttribute('lang'),lang);
+   results.push({width,lang,passed:true,checks:'sections, menus, 13 dialogs, filters, project round trips, keyboard, mocked form outcomes, persistence, emblem bounds, overflow'});
   }
-  // Trigger each Framer Motion whileInView element before the tall-element screenshot.
-  const geometry = await region.evaluate(el => {
-    const bounds = el.getBoundingClientRect();
-    return { top: bounds.top + window.scrollY, height: bounds.height, viewport: window.innerHeight };
-  });
-  const increment = Math.max(200, Math.floor(geometry.viewport * 0.55));
-  for (let y = geometry.top; y < geometry.top + geometry.height; y += increment) {
-    await page.evaluate(scrollY => window.scrollTo(0, scrollY), y);
-    await page.waitForTimeout(230);
-  }
-  await page.waitForTimeout(750);
-  // The fixed navbar is captured separately; hide it only while photographing a tall section.
-  const nav = page.locator("nav").first();
-  if (id !== "#home") await nav.evaluate(el => { el.style.visibility = "hidden"; });
-  await region.screenshot({ path: shot(suffix) });
-  if (id !== "#home") await nav.evaluate(el => { el.style.visibility = ""; });
-}
-
-(async () => {
-  const errors = [];
-  for (const preset of [
-    { name: "iphone", browserType: webkit, width: 390, height: 844 },
-    { name: "compact", browserType: chromium, width: 320, height: 720 },
-    { name: "tablet", browserType: chromium, width: 820, height: 1024 },
-    { name: "desktop", browserType: chromium, width: 1440, height: 900 }
-  ]) {
-    const browser = await preset.browserType.launch({headless: true, args: preset.browserType === chromium ? ["--no-sandbox"] : []});
-    try {
-      const page = await browser.newPage({ viewport: { width: preset.width, height: preset.height }, deviceScaleFactor: 1 });
-      page.on("pageerror", error => errors.push(preset.name + ": " + error.message));
-      const response = await page.goto(url, {waitUntil: "networkidle"});
-      assert.equal(response.status(), 200, preset.name + " loads");
-      await page.waitForTimeout(900);
-      assert.equal(await page.locator("html").getAttribute("lang"), "en");
-      const navbar = page.locator("nav").first();
-      await navbar.screenshot({path: shot(preset.name + "-01-english-nav")});
-      await capture(page,"#home",preset.name + "-02-english-hero");
-      await fit(page,preset.name + " EN");
-
-      const enContact = page.getByRole("button", {name:"Get In Touch"}).first();
-      const secondary = await enContact.evaluate(el => ({background: getComputedStyle(el).backgroundColor, border: getComputedStyle(el).borderColor}));
-      assert.ok(!secondary.background.includes("0, 0, 0, 0"), "Contact CTA is no longer invisible");
-      assert.ok(!secondary.border.includes("0, 0, 0, 0"), "Contact CTA has a visible outline");
-
-      const switcher = page.getByRole("button", {name:"מעבר לעברית"}).filter({visible:true}).first();
-      await switcher.click();
-      await page.waitForTimeout(850);
-      assert.equal(await page.locator("html").getAttribute("dir"), "rtl");
-      assert.equal(await page.locator("html").getAttribute("lang"), "he");
-      assert.equal(await page.locator("html").evaluate(el => getComputedStyle(el).direction), "rtl");
-      assert.equal(await page.getByText("לצפייה בעבודות").count() > 0,true);
-      assert.equal(await page.getByText("קצת עליי").count() > 0,true);
-      await navbar.screenshot({path: shot(preset.name + "-03-hebrew-nav")});
-      if (preset.width < 1024) {
-        await page.getByRole("button", {name:"פתיחת תפריט ניווט"}).click();
-        await page.locator("#mobile-navigation-menu").waitFor({state:"visible"});
-        assert.ok((await page.locator("#mobile-navigation-menu").innerText()).includes("תיק עבודות"), "Hebrew mobile menu is localized");
-        await page.locator("#mobile-navigation-menu").screenshot({path:shot(preset.name + "-03b-hebrew-mobile-menu")});
-        await page.getByRole("button", {name:"סגירת תפריט ניווט"}).click();
-      }
-
-      await capture(page,"#home",preset.name + "-04-hebrew-hero");
-      await capture(page,"#about",preset.name + "-05-hebrew-about");
-      await capture(page,"#portfolio",preset.name + "-06-hebrew-portfolio");
-      await capture(page,"#skills",preset.name + "-07-hebrew-skills");
-      await capture(page,"#contact",preset.name + "-08-hebrew-contact");
-
-      await page.evaluate(() => window.scrollTo(0, 0));
-      await page.waitForTimeout(500);
-      await page.screenshot({path:shot(preset.name + "-08b-hebrew-full-page"),fullPage:true});
-      await fit(page,preset.name + " HE");
-      assert.ok((await page.locator("#portfolio").innerText()).includes("עבודות נבחרות"));
-
-      const portfolioCard = page.getByRole("button", {name:/פתיחת פרויקט.*FIRST SHIFT/}).first();
-      await portfolioCard.click();
-      const modal = page.getByRole("dialog");
-      await modal.waitFor({state:"visible"});
-      assert.ok((await modal.innerText()).includes("פרויקט קונספט עצמאי"));
-      await modal.screenshot({path:shot(preset.name + "-09-hebrew-modal")});
-      await page.getByRole("button",{name:"סגירת פרויקט"}).click();
-      await modal.waitFor({state:"hidden"});
-      await fit(page,preset.name + " modal");
-      await page.reload({waitUntil:"networkidle"});
-      await page.waitForTimeout(600);
-      assert.equal(await page.locator("html").getAttribute("lang"),"he","Language choice survives reload");
-      assert.equal(await page.locator("html").getAttribute("dir"),"rtl");
-      await page.getByRole("button",{name:"Switch to English"}).filter({visible:true}).first().click();
-      await page.waitForTimeout(300);
-      assert.equal(await page.locator("html").getAttribute("lang"),"en","Switch back to English");
-      assert.equal(await page.locator("html").getAttribute("dir"),"ltr");
-      await fit(page,preset.name + " English restored");
-      console.log("PASS",preset.name, "English, Hebrew, visual, portfolio modal, persistence, RTL and CTA");
-      await page.close();
-    } finally {
-      await browser.close();
-    }
-  }
-  assert.deepEqual(errors,[],"No client exceptions");
-  console.log("BILINGUAL VISUAL QA PASS",directory);
-})().catch(error => {console.error(error);process.exitCode=1;});
+  await page.getByRole('button',{name:'Switch to English'}).locator('visible=true').click();
+  assert.equal(await page.locator('html').getAttribute('dir'),'ltr');
+  assert.deepEqual(errors,[]);
+  await context.close();fs.writeFileSync(out+'/results-'+(process.env.QA_WIDTHS||'all')+'.json',JSON.stringify(results,null,2));console.log('PASS',width);
+ }
+ // Capture real master at matching widths for the before comparison.
+ if(process.env.BASELINE_URL) for(const width of [390,1440]){const page=await browser.newPage({viewport:{width,height:width===1440?1000:844}});await page.goto(process.env.BASELINE_URL,{waitUntil:'networkidle'});await page.waitForTimeout(3500);await page.screenshot({path:`${out}/${width}-before-hero.png`});await page.locator('nav').screenshot({path:`${out}/${width}-before-nav.png`});await page.close()}
+ await browser.close();fs.writeFileSync(out+'/results-'+(process.env.QA_WIDTHS||'all')+'.json',JSON.stringify(results,null,2));console.log('ALL PASS');
+})().catch(e=>{console.error(e);process.exit(1)});

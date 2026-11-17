@@ -14,7 +14,7 @@ import { FloatingElement } from "@/components/DesignSystem";
 export default function HomePage() {
   return (
     <LanguageProvider>
-    <div className="relative min-h-screen overflow-hidden">
+    <div id="portfolio-site" className="relative min-h-screen overflow-hidden">
       {/* Floating Background Elements */}
       <FloatingElement
         className="top-10 left-10"
