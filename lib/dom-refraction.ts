@@ -1,6 +1,9 @@
 import { subscribeGlassFrames } from "./refractive-glass";
 
 const shadowRoots = new WeakMap<HTMLElement, ShadowRoot>();
+// Mirrors share an identical static stylesheet. Avoid re-reading and rewriting all
+// stylesheet rules for every optical band (especially costly on mobile WebKit).
+let mirrorStylesheet: string | null = null;
 
 /** Read-only diagnostics, requested explicitly through ?glass-check=1. */
 export function inspectDomRefraction(host: HTMLElement) {
@@ -37,7 +40,7 @@ export function mountDomRefraction(host: HTMLElement, options?: { receiver?: Ele
   const shadow = shadowRoots.get(host) || host.attachShadow({ mode: "closed" });
   shadowRoots.set(host, shadow);
   const style = document.createElement("style");
-  const styles = Array.from(document.styleSheets).map(sheet => {
+  const styles = mirrorStylesheet ??= Array.from(document.styleSheets).map(sheet => {
     try { return Array.from(sheet.cssRules).map(rule => rule.cssText).join("\n"); }
     catch { return ""; }
   }).join("\n");
@@ -57,6 +60,8 @@ export function mountDomRefraction(host: HTMLElement, options?: { receiver?: Ele
   const root = source.cloneNode(false) as HTMLElement;
   const dim = document.createElement("div");
   dim.style.cssText = "position:absolute;inset:0;background:rgba(0,0,0,.2);z-index:100";
+  root.style.position = "relative";
+  if(options?.shift)root.style.transform=`translate3d(${options.shift.x}px,${options.shift.y}px,0)`;
   root.append(dim); body.append(root); html.append(body); stage.append(html); shadow.append(style, stage);
   const copies = new WeakMap<Node, Node>();
   const receiver = options?.receiver || host.closest("nav") || host.closest("#mobile-navigation-menu");
@@ -122,7 +127,8 @@ export function mountDomRefraction(host: HTMLElement, options?: { receiver?: Ele
     html.className = `glass-source-document ${document.documentElement.className}`;
     html.style.cssText = `position:absolute;left:${-lens.left}px;top:${-lens.top}px;width:${sourceWidth}px;height:${innerHeight}px`;
     root.className = source!.className;
-    root.style.cssText = `position:relative;width:${sourceWidth}px;height:${innerHeight}px${options?.shift?`;transform:translate3d(${options.shift.x}px,${options.shift.y}px,0)`:""}`;
+    if(root.style.width!==`${sourceWidth}px`)root.style.width=`${sourceWidth}px`;
+    if(root.style.height!==`${innerHeight}px`)root.style.height=`${innerHeight}px`;
     dim.hidden = !dimVisible;
     dim.style.opacity = dimOpacity;
     const active = new Set<HTMLElement>();
