@@ -23,18 +23,22 @@ export function mountGlassDiagnostic() {
     const mirror=document.getElementById(receiver?.getAttribute("data-glass-reflection")||"");
     const plane=mirror?.closest(".liquid-navigation-detached")||receiver;
     const filter=plane?.querySelector("filter");
+    const prismBand=receiver?.querySelector<HTMLElement>(".glass-prism-band");
+    const prismBandCount=receiver?.querySelectorAll(".glass-prism-band").length||0;
     const data={
       diagnostic:"ios-glass-check-2",ua:navigator.userAgent,
       layer:receiver?.getAttribute("data-glass-layer"),
+      engine:receiver?.getAttribute("data-glass-engine"),
+      prismBands:prismBandCount,
       compatible:needsDomRefraction(),
-      mounted:!!mirror,
+      mounted:!!mirror||!!prismBand,
       filter:mirror?getComputedStyle(mirror).filter:null,
       resource:filter?.id||null,
       transform:mirror?getComputedStyle(mirror).transform:null,
       lens:mirror?Array.from([mirror.getBoundingClientRect().x,mirror.getBoundingClientRect().y,mirror.clientWidth,mirror.clientHeight]):null,
       scroll:[scrollX,scrollY],
       viewport:visualViewport?{offsetTop:visualViewport.offsetTop,height:visualViewport.height,scale:visualViewport.scale}:null,
-      reflection:mirror?inspectDomRefraction(mirror):null,
+      reflection:mirror?inspectDomRefraction(mirror):prismBand?inspectDomRefraction(prismBand):null,
       menu:!!document.getElementById("mobile-navigation-menu"),
       menuReflection:(()=>{
         const menu=document.querySelector("#mobile-navigation-menu .liquid-navigation");
@@ -43,7 +47,7 @@ export function mountGlassDiagnostic() {
       })(),
     };
     snapshot=JSON.stringify(data,null,2);
-    summary.textContent=`מסלול תאימות: ${data.compatible?"כן":"לא"} · שכבת תוכן: ${data.mounted?"קיימת":"חסרה"} · רכיבים: ${data.reflection?.nodes||0}`;
+    summary.textContent=`מנוע: ${data.engine||"לא זוהה"} · שכבות: ${data.prismBands} · תוכן: ${data.mounted?"קיים":"חסר"} · רכיבים: ${data.reflection?.nodes||0}`;
     details.textContent=snapshot;
   }
   const clicked=async()=>{
