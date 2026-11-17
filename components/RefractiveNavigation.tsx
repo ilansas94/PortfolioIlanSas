@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { mountDomRefraction } from "@/lib/dom-refraction";
+import { needsDomRefraction } from "@/lib/refractive-glass";
 
 /** Encodes a rounded glass bezel's Snell displacement into R/G channels.
  * The native backdrop filter bends the real page behind the bar. Navigation
@@ -38,7 +40,16 @@ function makeBezel(width: number, height: number) {
 export function RefractiveNavigation({children,className=""}:{children:ReactNode;className?:string}) {
   const id=`nav-lens-${useId().replace(/[^a-zA-Z0-9]/g,"")}`;
   const root=useRef<HTMLDivElement>(null);
+  const mirror=useRef<HTMLDivElement>(null);
+  const [compatible,setCompatible]=useState(false);
   const [map,setMap]=useState<ReturnType<typeof makeBezel>|null>(null);
+  useEffect(()=>{
+    // These engines parse SVG backdrop URLs but do not paint their refraction.
+    setCompatible(needsDomRefraction());
+  },[]);
+  useEffect(()=>{
+    if(compatible&&mirror.current)return mountDomRefraction(mirror.current);
+  },[compatible,map]);
   useEffect(()=>{
     const element=root.current;if(!element)return;
     let frame=0,last="";
@@ -51,14 +62,18 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
     const resize=new ResizeObserver(()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(update);});
     resize.observe(element);update();return()=>{resize.disconnect();cancelAnimationFrame(frame);};
   },[]);
-  return <div ref={root} className={`liquid-navigation ${className}`}>
+  return <div ref={root} className={`liquid-navigation ${compatible?"has-dom-refraction":""} ${className}`}>
     <svg className="liquid-navigation-defs" width="0" height="0" aria-hidden="true" focusable="false">
-      <defs>{map&&<filter id={id} x="0" y="0" width="100%" height="100%" colorInterpolationFilters="sRGB">
+      <defs>{map&&<filter id={id} x="0" y="0" width={compatible?map.width:"100%"} height={compatible?map.height:"100%"}
+        filterUnits={compatible?"userSpaceOnUse":"objectBoundingBox"} colorInterpolationFilters="sRGB">
         <feImage href={map.src} x="0" y="0" width={map.width} height={map.height} preserveAspectRatio="none" result="bezel"/>
         <feDisplacementMap in="SourceGraphic" in2="bezel" scale={map.scale} xChannelSelector="R" yChannelSelector="G"/>
       </filter>}</defs>
     </svg>
-    <div className="liquid-navigation-material" aria-hidden="true" style={map?{backdropFilter:`url("#${id}") saturate(1.12)`}:undefined}/>
+    {compatible&&map&&<div className="liquid-navigation-mirror-clip" aria-hidden="true">
+      <div key={map.src} ref={mirror} className="liquid-navigation-mirror" style={{filter:`url("#${id}") saturate(1.12)`}}/>
+    </div>}
+    <div className="liquid-navigation-material" aria-hidden="true" style={map&&!compatible?{backdropFilter:`url("#${id}") saturate(1.12)`}:undefined}/>
     <div className="liquid-navigation-content">{children}</div>
   </div>;
 }

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { createGlassRenderer, glassPositions } from "@/lib/refractive-glass";
+import { createGlassRenderer, glassPositions, publishGlassFrame } from "@/lib/refractive-glass";
 
 export function BrandAtmosphere() {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -19,6 +19,7 @@ export function BrandAtmosphere() {
       if (now-last>=32 || motion.matches) {
         const w=element.clientWidth,h=element.clientHeight;
         renderer!.draw(w,h,glassPositions(w,h,motion.matches?2:(now-start)/1000,phase));
+        publishGlassFrame(element);
         last=now;
       }
       frame = !motion.matches && visible && !document.hidden ? requestAnimationFrame(draw) : 0;

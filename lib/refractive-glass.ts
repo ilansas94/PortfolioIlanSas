@@ -65,13 +65,8 @@ vec4 pair(vec2 p,vec3 back,vec3 front,vec3 backTint,vec3 frontTint){
  // Dispersion separates RGB sampling very slightly at curved edges.
  vec3 refracted=vec3(rear(p+shift*1.015,back,backTint).r,rear(q,back,backTint).g,rear(p+shift*.985,back,backTint).b);
  vec3 c=mix(rear(p,back,backTint),material(refracted,p,front,frontTint,1.+inBoth*.35),coverage(df));
- // Only the outer, smoothly joined contour has an outline. The inner boundary
- // is the actually refracted rear lens and can grow wider than the raw overlap.
- vec3 active= df<db ? front:back;
- vec3 n=normalAt(p,active);
- float rim=exp(-max(0.,-unionD)*.62);
- float light=dot(normalize(n.xy+vec2(.0001)),normalize(vec2(-.6,-.8)));
- c=mix(c,mix(vec3(.28,.40,.43),vec3(1.),smoothstep(-.2,.8,light)),rim*.30);
+ // Surface reflection and the refracted rear lens define the edge naturally.
+ // Do not draw a shared outline around the two overlapping surfaces.
  return vec4(c,m);
 }
 void main(){
@@ -85,17 +80,31 @@ void main(){
   if(mask>glass.a){
    vec3 tint=i==5||i==8?GOLD:(i==6?MAGENTA:CYAN);
    vec3 c=material(paper(p+bend(p,bubble,0.)),p,bubble,tint,.85);
-   float rim=exp(-max(0.,-sd(p,bubble))*.9);
-   c=mix(c,vec3(1.),rim*.30);
    glass=vec4(c,mask);
   }
  }
  if(uGrid>.5){gl_FragColor=vec4(mix(paper(p),glass.rgb,glass.a),1.);}
- else{gl_FragColor=glass;}
+ else{gl_FragColor=vec4(glass.rgb*glass.a,glass.a);}
 }`;
 
+const frameListeners = new Set<(canvas: HTMLCanvasElement) => void>();
+export function subscribeGlassFrames(listener: (canvas: HTMLCanvasElement) => void) {
+  frameListeners.add(listener);
+  return () => { frameListeners.delete(listener); };
+}
+export function publishGlassFrame(canvas: HTMLCanvasElement) { frameListeners.forEach(listener => listener(canvas)); }
+export function needsDomRefraction() {
+  const ua = navigator.userAgent;
+  return (/AppleWebKit/.test(ua) && !/(?:Chrome|Chromium|Edg|OPR)\//.test(ua)) || /Firefox\//.test(ua);
+}
+
 export function createGlassRenderer(canvas: HTMLCanvasElement) {
-  const gl = canvas.getContext("webgl", { alpha: true, antialias: false, premultipliedAlpha: false, depth: false });
+  // Keep transparent edges in the compositor's native premultiplied format.
+  const gl = canvas.getContext("webgl", {
+    alpha: true, antialias: false, premultipliedAlpha: true, depth: false,
+    // A mirrored surface must also sample a stationary/reduced-motion frame.
+    preserveDrawingBuffer: needsDomRefraction()
+  });
   if (!gl) return null;
   const compile = (type: number, source: string) => {
     const shader = gl.createShader(type)!;
