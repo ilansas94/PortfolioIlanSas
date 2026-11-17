@@ -153,6 +153,15 @@ html[lang="he"] .portfolio-filter{max-width:42rem}
 html[lang="he"] .contact-input-email{direction:ltr;text-align:left}
 html[lang="he"] #home .hero-logo{direction:ltr}
 @media(min-width:1024px){#portfolio-site .hero-brand-logo{width:clamp(360px,28vw,560px);height:clamp(256px,16vw,315px)}}
+/* UltraWide only: grow the animated hero wordmark without stretching Lottie's
+   native 16:9 canvas or crowding shorter displays. Tablet/mobile unchanged. */
+@media (min-width:1920px) {
+  #portfolio-site #home .hero-brand-logo {
+    width: clamp(600px, min(28vw, 70vh), 760px);
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+}
 
 html[data-portfolio-pending] #portfolio-site { visibility: hidden; }
 #portfolio-site section[id] { scroll-margin-top: 6rem; }
