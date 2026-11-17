@@ -96,6 +96,7 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
     const target=root.current;
     let cancelled=false;
     let instance:{destroy:()=>void}|null=null;
+    let disposeDiagnostic=()=>{};
     import("apple-liquid-glass-webgl").then(({LiquidGlass})=>{
       if(cancelled||!target.isConnected)return;
       try{
@@ -120,11 +121,19 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
             hairline:0.82
           }
         });
+        // Render an opt-in preview of the ACTUAL compositor input on real iOS.
+        // This diagnostic is absent from the public site and normal previews.
+        if(!menu&&new URLSearchParams(location.search).get("glass-debug")==="1"){
+          import("./GlassSourceDebug").then(({mountGlassSourceDebug})=>{
+            if(cancelled||!target.isConnected||!instance)return;
+            disposeDiagnostic=mountGlassSourceDebug(instance as Parameters<typeof mountGlassSourceDebug>[0],target);
+          }).catch(error=>console.warn("Glass input diagnostic unavailable.",error));
+        }
       }catch(error){
         console.warn("iOS WebGL glass preview unavailable; native blur remains.",error);
       }
     }).catch(error=>console.warn("iOS WebGL module unavailable; native blur remains.",error));
-    return()=>{cancelled=true;instance?.destroy();};
+    return()=>{cancelled=true;disposeDiagnostic();instance?.destroy();};
   },[webglOptics,compatible,className]);
   useEffect(()=>{
     if(webglOptics||!mirrorReady||!mirror.current)return;
