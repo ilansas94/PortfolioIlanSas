@@ -65,8 +65,10 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   const instanceId=`nav-lens-${useId().replace(/[^a-zA-Z0-9]/g,"")}`;
   const root=useRef<HTMLDivElement>(null);
   const mirror=useRef<HTMLDivElement>(null);
+  const magnifier=useRef<HTMLDivElement>(null);
   const plane=useRef<HTMLDivElement>(null);
   const [detached,setDetached]=useState(false);
+  const [magnify,setMagnify]=useState(false);
   const revision=useRef(0);
   const [compatible,setCompatible]=useState<boolean|null>(null);
   const [map,setMap]=useState<(BezelMap&{revision:number})|null>(null);
@@ -79,14 +81,22 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
   useEffect(()=>{
     // These engines parse SVG backdrop URLs but do not paint their refraction.
     setCompatible(needsDomRefraction());
-    setDetached(new URLSearchParams(location.search).get("glass-layer")==="detached");
+    const params=new URLSearchParams(location.search);
+    setDetached(params.get("glass-layer")==="detached");
+    setMagnify(params.get("glass-engine")==="magnify");
   },[]);
   useEffect(()=>{
     // Establish non-zero source bounds before attaching the filter receiver.
     if(detached&&plane.current&&root.current)positionGlassPlane(plane.current,root.current);
   },[detached,map,compatible]);
   useEffect(()=>{
-    if(!mirrorReady||!mirror.current)return;
+    if(!magnify||compatible!==true||!magnifier.current)return;
+    // One precisely registered copy, rather than semi-transparent overlapping strips.
+    const menu=className.includes("liquid-menu-panel");
+    return mountDomRefraction(magnifier.current,{magnify:menu?{x:1.012,y:1.035}:{x:1.022,y:1.075}});
+  },[magnify,compatible,className]);
+  useEffect(()=>{
+    if(magnify||!mirrorReady||!mirror.current)return;
     if(!detached)return mountDomRefraction(mirror.current);
     const element=root.current;
     if(!element)return;
@@ -96,7 +106,7 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
       positionGlassPlane(plane.current,element);
     };
     return mountDomRefraction(mirror.current,{receiver,align});
-  },[mirrorReady,map,detached]);
+  },[mirrorReady,map,detached,magnify]);
   useEffect(()=>{
     if(!compatible||!map)return;
     let disposed=false,first=0,second=0;
@@ -143,13 +153,18 @@ export function RefractiveNavigation({children,className=""}:{children:ReactNode
         </>:<feDisplacementMap in="SourceGraphic" in2="bezel" scale={map.scale} xChannelSelector="R" yChannelSelector="G"/>}
       </filter>}</defs>
     </svg>;
-  const reflection=mirrorReady&&<div className="liquid-navigation-mirror-clip" aria-hidden="true">
+  const reflection=mirrorReady&&!magnify&&<div className="liquid-navigation-mirror-clip" aria-hidden="true">
     <div key={id} id={`${instanceId}-mirror`} ref={mirror} className="liquid-navigation-mirror" style={{filter:`url("#${id}") saturate(1.12)`}}/>
   </div>;
-  const usePlane=detached&&compatible===true;
-  return <div ref={root} data-glass-reflection={`${instanceId}-mirror`} data-glass-layer={usePlane?"detached":"inline"} className={`liquid-navigation ${mirrorReady?"has-dom-refraction":""} ${className}`}>
+  const useMagnify=magnify&&compatible===true;
+  const usePlane=detached&&compatible===true&&!useMagnify;
+  return <div ref={root} data-glass-reflection={`${instanceId}-mirror`} data-glass-layer={usePlane?"detached":"inline"} data-glass-engine={useMagnify?"magnify":compatible?"dom":"backdrop"} className={`liquid-navigation ${mirrorReady&&!useMagnify?"has-dom-refraction":""} ${useMagnify?"glass-magnify-active":""} ${className}`}>
     {usePlane?createPortal(<div ref={plane} className="liquid-navigation-detached" aria-hidden="true">{definitions}{reflection}</div>,document.body):<>{definitions}{reflection}</>}
+    {useMagnify&&<div className="glass-magnifier-clip" aria-hidden="true">
+      <div ref={magnifier} className="glass-magnifier-source"/>
+    </div>}
     <div className="liquid-navigation-material" aria-hidden="true" style={map&&compatible===false?{backdropFilter:`url("#${id}") saturate(1.12)`}:undefined}/>
+    {useMagnify&&<div className="glass-magnifier-highlight" aria-hidden="true"/>}
     <div className="liquid-navigation-content">{children}</div>
   </div>;
 }
