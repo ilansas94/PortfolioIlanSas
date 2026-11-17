@@ -80,7 +80,7 @@ export const Navigation = () => {
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+          "fixed top-0 left-0 right-0 z-50 transition-[padding] duration-300",
           isScrolled ? "py-1" : "py-2"
         )}
       >
@@ -264,6 +264,7 @@ export const Navigation = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
+            data-navigation-overlay=""
             className="fixed inset-0 bg-black/20 z-30 lg:hidden"
             onClick={() => setIsMobileMenuOpen(false)}
           />

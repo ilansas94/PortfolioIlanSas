@@ -31,6 +31,7 @@ export function mountDomRefraction(host: HTMLElement) {
   dim.style.cssText = "position:absolute;inset:0;background:rgba(0,0,0,.2);z-index:100";
   root.append(dim); body.append(root); html.append(body); shadow.append(style, html);
   const copies = new WeakMap<Node, Node>();
+  const receiver = host.closest("nav") || host.closest("#mobile-navigation-menu");
   const sections = new Map<HTMLElement, { wrapper: HTMLElement; clone: HTMLElement }>();
   const canvases = new Map<HTMLCanvasElement, { clone: HTMLCanvasElement; rect: DOMRect }>();
   let frame = 0, disposed = false, lens = host.getBoundingClientRect();
@@ -83,13 +84,18 @@ export function mountDomRefraction(host: HTMLElement) {
       .filter((section): section is HTMLElement => section instanceof HTMLElement && section.tagName === "SECTION")
       .map(section => ({ section, rect: section.getBoundingClientRect() }));
     for (const [canvas, entry] of Array.from(canvases)) entry.rect = canvas.getBoundingClientRect();
+    const overlay = source!.querySelector<HTMLElement>("[data-navigation-overlay]");
+    const overlayStyle = overlay && getComputedStyle(overlay);
+    const dimVisible = !!overlayStyle && overlayStyle.display !== "none";
+    const dimOpacity = overlayStyle?.opacity || "0";
     html.lang = document.documentElement.lang;
     html.dir = document.documentElement.dir;
     html.className = `glass-source-document ${document.documentElement.className}`;
     html.style.cssText = `position:absolute;left:${-lens.left}px;top:${-lens.top}px;width:${sourceWidth}px;height:${innerHeight}px`;
     root.className = source!.className;
     root.style.cssText = `position:relative;width:${sourceWidth}px;height:${innerHeight}px`;
-    dim.hidden = !document.getElementById("mobile-navigation-menu");
+    dim.hidden = !dimVisible;
+    dim.style.opacity = dimOpacity;
     const active = new Set<HTMLElement>();
     for (const { section, rect } of sourceRects) {
       if (rect.bottom < lens.top-52 || rect.top > lens.bottom+52) continue;
@@ -110,10 +116,16 @@ export function mountDomRefraction(host: HTMLElement) {
     for (const canvas of Array.from(canvases.keys())) copyCanvas(canvas);
   }
   function schedule() { if (!frame && !disposed) frame = requestAnimationFrame(refresh); }
+  function refreshNow() { cancelAnimationFrame(frame); refresh(); }
   const mutations = new MutationObserver(records => {
+    let receiverMoved = false;
     for (const record of records) {
       const copy = copies.get(record.target);
-      if (!copy) { if (record.target === source) schedule(); continue; }
+      if (!copy) {
+        if (record.target === receiver || (record.target instanceof Element && record.target.hasAttribute("data-navigation-overlay"))) receiverMoved = true;
+        else if (record.target === source) schedule();
+        continue;
+      }
       if (record.type === "characterData") copy.textContent = record.target.textContent;
       else if (record.type === "attributes" && record.target instanceof Element && copy instanceof Element) {
         const name = record.attributeName!, value = record.target.getAttributeNS(record.attributeNamespace, name);
@@ -133,12 +145,19 @@ export function mountDomRefraction(host: HTMLElement) {
         }
       }
     }
+    // Motion writes the receiver transform in the current frame. Compensate
+    // before paint, rather than leaving the reflection one animation frame late.
+    if (receiverMoved) refreshNow();
   });
   mutations.observe(source, { subtree: true, childList: true, characterData: true, attributes: true });
   const language = new MutationObserver(schedule);
   language.observe(document.documentElement, { attributes: true, attributeFilter: ["lang", "dir", "class"] });
-  const resize = new ResizeObserver(schedule);
+  const resize = new ResizeObserver(entries => {
+    if (entries.some(entry => entry.target === receiver)) refreshNow();
+    else schedule();
+  });
   resize.observe(source);
+  if (receiver) resize.observe(receiver, { box: "border-box" });
   for (const section of Array.from(source.children)) if (section.tagName === "SECTION") resize.observe(section);
   const unsubscribe = subscribeGlassFrames(copyCanvas);
   const reflectInput = (event: Event) => {
@@ -147,13 +166,15 @@ export function mountDomRefraction(host: HTMLElement) {
         (copy instanceof HTMLInputElement || copy instanceof HTMLTextAreaElement || copy instanceof HTMLSelectElement)) copy.value = original.value;
   };
   source.addEventListener("input", reflectInput);
-  window.addEventListener("scroll", schedule, { passive: true });
+  window.addEventListener("scroll", schedule, { passive: true, capture: true });
   window.addEventListener("resize", schedule);
   visualViewport?.addEventListener("resize", schedule);
+  visualViewport?.addEventListener("scroll", schedule);
   refresh();
   return () => {
     disposed = true; cancelAnimationFrame(frame); mutations.disconnect(); language.disconnect(); resize.disconnect(); unsubscribe();
-    source.removeEventListener("input", reflectInput); window.removeEventListener("scroll", schedule); window.removeEventListener("resize", schedule);
-    visualViewport?.removeEventListener("resize", schedule); canvases.clear(); sections.clear(); shadow.replaceChildren();
+    source.removeEventListener("input", reflectInput); window.removeEventListener("scroll", schedule, true); window.removeEventListener("resize", schedule);
+    visualViewport?.removeEventListener("resize", schedule); visualViewport?.removeEventListener("scroll", schedule);
+    canvases.clear(); sections.clear(); shadow.replaceChildren();
   };
 }
