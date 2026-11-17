@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  apple-liquid-glass-webgl@2.6.0: 88096e046874faf414a72efafbe3738aef1ed64e8d0c3174429f1b3b9c400592
+  apple-liquid-glass-webgl@2.6.0: f0e3158be0b8e60cca46cf5da61d30a20a17e63a6feaa62600ce5f490e5f3922
 
 importers:
 
@@ -25,7 +25,7 @@ importers:
         version: 18.3.7(@types/react@18.3.24)
       apple-liquid-glass-webgl:
         specifier: 2.6.0
-        version: 2.6.0(patch_hash=88096e046874faf414a72efafbe3738aef1ed64e8d0c3174429f1b3b9c400592)
+        version: 2.6.0(patch_hash=f0e3158be0b8e60cca46cf5da61d30a20a17e63a6feaa62600ce5f490e5f3922)
       autoprefixer:
         specifier: ^10.4.16
         version: 10.4.21(postcss@8.5.6)
@@ -2231,7 +2231,7 @@ snapshots:
       normalize-path: 3.0.0
       picomatch: 2.3.1
 
-  apple-liquid-glass-webgl@2.6.0(patch_hash=88096e046874faf414a72efafbe3738aef1ed64e8d0c3174429f1b3b9c400592): {}
+  apple-liquid-glass-webgl@2.6.0(patch_hash=f0e3158be0b8e60cca46cf5da61d30a20a17e63a6feaa62600ce5f490e5f3922): {}
 
   arg@5.0.2: {}
 
