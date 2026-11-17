@@ -1,2 +1,4 @@
 packages:
   - "."
+patchedDependencies:
+  apple-liquid-glass-webgl@2.6.0: patches/apple-liquid-glass-webgl@2.6.0.patch
