@@ -1,8 +1,92 @@
+diff --git a/src/dom-backdrop.js b/src/dom-backdrop.js
+index 32c8ff47f8ff20c1add8b78d2d6087bb1dffa2dc..441b5ee8af7f2d0de8b373885bf3a8517115e28e 100644
+--- a/src/dom-backdrop.js
++++ b/src/dom-backdrop.js
+@@ -491,6 +491,71 @@ export function paintCssBackground(ctx, element, region, { canvas = false } = {}
+   return settled;
+ }
+ 
++// ---------------------------------------------------------------------------
++// Inline SVG media (Lottie and vector artwork).
++// Native canvas-to-WebGL upload requires real pixels; inline SVG DOM nodes
++// cannot be drawn directly by Canvas2D. Serialize visible SVG frames into
++// self-contained SVG data images, then draw into the actual viewport box.
++// WeakMap prevents retaining removed SVG DOM nodes.
++
++const inlineSvgCache = new WeakMap();
++const SVG_CAPTURE_INTERVAL_MS = 125;
++
++export function paintInlineSvg(ctx, element, region) {
++  const style = getComputedStyle(element);
++  if (style.display === 'none' || style.visibility === 'hidden') return true;
++  const box = rectOf(element);
++  if (!(box.width > 0 && box.height > 0)) return true;
++  if (box.x >= region.x + region.width || box.x + box.width <= region.x
++    || box.y >= region.y + region.height || box.y + box.height <= region.y) return true;
++  let entry = inlineSvgCache.get(element);
++  if (!entry) {
++    entry = { image: null, markup: '', checkedAt: -Infinity, loading: false, revision: 0 };
++    inlineSvgCache.set(element, entry);
++  }
++  const now = performance.now();
++  if (now - entry.checkedAt >= SVG_CAPTURE_INTERVAL_MS) {
++    entry.checkedAt = now;
++    try {
++      const clone = element.cloneNode(true);
++      clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
++      clone.setAttribute('width', String(Math.max(1, Math.round(box.width))));
++      clone.setAttribute('height', String(Math.max(1, Math.round(box.height))));
++      const markup = new XMLSerializer().serializeToString(clone);
++      if (markup !== entry.markup && markup.length < 1800000) {
++        entry.markup = markup;
++        const revision = ++entry.revision;
++        entry.loading = true;
++        const image = new Image();
++        image.onload = () => {
++          if (entry.revision !== revision) return;
++          entry.image = image;
++          entry.loading = false;
++          assetListeners.forEach((listener) => listener(entry));
++        };
++        image.onerror = () => {
++          if (entry.revision !== revision) return;
++          entry.loading = false;
++          assetListeners.forEach((listener) => listener(entry));
++        };
++        image.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(markup);
++      }
++    } catch {
++      // Retain the latest successfully rendered frame if serialization fails.
++      entry.loading = false;
++    }
++  }
++  if (entry.image?.complete && entry.image.naturalWidth > 0) {
++    ctx.save();
++    const opacity = Number(style.opacity);
++    ctx.globalAlpha *= Number.isFinite(opacity) ? opacity : 1;
++    applyBlendMode(ctx, style);
++    drawSource(ctx, entry.image, box, 'fill', parsePosition(), region);
++    ctx.restore();
++  }
++  return !entry.loading;
++}
++
+ // ---------------------------------------------------------------------------
+ // Media.
+ 
 diff --git a/src/dom-content.js b/src/dom-content.js
-index c4b749a87c9d8de4d3876bba23ebabd80e5e4dc2..d722f8638403f745170d1fa762d2df2b4be37659 100644
+index c4b749a87c9d8de4d3876bba23ebabd80e5e4dc2..e327f2c17dfe35b82812c17a12fcdf8a8d940bda 100644
 --- a/src/dom-content.js
 +++ b/src/dom-content.js
-@@ -21,7 +21,7 @@ import { invalidateLayout } from './frame-loop.js';
+@@ -14,14 +14,14 @@
+ // content, SVG, form controls, and rotated or scaled text.
+ 
+ import {
+-  LAYER_ATTRIBUTE, paintCssBackground, paintMedia, splitTop, transparentColor,
++  LAYER_ATTRIBUTE, paintCssBackground, paintMedia, paintInlineSvg, splitTop, transparentColor,
+ } from './dom-backdrop.js';
+ import { invalidateLayout } from './frame-loop.js';
+ 
  const HOST_SELECTOR = '[data-liquid-glass], [data-liquid-glass-control]';
  const SKIP_TAGS = new Set([
    'SCRIPT', 'STYLE', 'NOSCRIPT', 'TEMPLATE', 'HEAD', 'META', 'LINK', 'TITLE', 'BR', 'WBR',
@@ -34,7 +118,35 @@ index c4b749a87c9d8de4d3876bba23ebabd80e5e4dc2..d722f8638403f745170d1fa762d2df2b
        stroke: strokeWidth > 0 ? { width: strokeWidth, color: style.webkitTextStrokeColor } : null,
        letterSpacing: style.letterSpacing !== 'normal' ? style.letterSpacing : '',
        shadow: firstTextShadow(style.textShadow),
-@@ -209,7 +214,10 @@ function build() {
+@@ -183,6 +188,27 @@ function build() {
+   }
+ 
+   function visit(element, path, alpha, fixed, paintSelf = true) {
++    // The animated Lottie wordmark is an inline SVG, not an <img>.
++    // Skipping it left a grey patch when the lens crossed the branding.
++    if (element.namespaceURI === 'http://www.w3.org/2000/svg') {
++      if (element.tagName.toLowerCase() !== 'svg' || element.ownerSVGElement) return;
++      const style = getComputedStyle(element);
++      if (style.display === 'none' || style.visibility === 'hidden') return;
++      const rect = element.getBoundingClientRect();
++      if (!(rect.width > 0 && rect.height > 0)) return;
++      const isFixed = fixed || style.position === 'fixed';
++      items.push({
++        type: 'svg', element,
++        key: [...path, [INLINE, order++]],
++        fixed: isFixed, alpha,
++        box: {
++          x: rect.left + (isFixed ? 0 : scrollX),
++          y: rect.top + (isFixed ? 0 : scrollY),
++          width: rect.width, height: rect.height,
++        },
++      });
++      return;
++    }
+     if (element.namespaceURI !== XHTML) return;
+     const tag = element.tagName.toUpperCase();
+     // Glass layer canvases are not skipped: a surface above another glass
+@@ -209,7 +235,10 @@ function build() {
      const childAlpha = alpha * (Number.isFinite(opacity) ? opacity : 1);
      const visible = style.visibility === 'visible' && childAlpha > 0.004;
      const media = MEDIA_TAGS.has(tag);
@@ -46,7 +158,7 @@ index c4b749a87c9d8de4d3876bba23ebabd80e5e4dc2..d722f8638403f745170d1fa762d2df2b
        const rect = element.getBoundingClientRect();
        if (rect.width && rect.height) {
          items.push({
-@@ -297,6 +305,28 @@ function listen() {
+@@ -297,6 +326,28 @@ function listen() {
    document.fonts?.ready?.then(fontsChanged);
  }
  
@@ -75,7 +187,7 @@ index c4b749a87c9d8de4d3876bba23ebabd80e5e4dc2..d722f8638403f745170d1fa762d2df2b
  function paintText(context, item, offsetX, offsetY, region) {
    const { ascent, descent } = fontMetrics(item.font, item.size);
    context.font = item.font;
-@@ -309,7 +339,12 @@ function paintText(context, item, offsetX, offsetY, region) {
+@@ -309,7 +360,12 @@ function paintText(context, item, offsetX, offsetY, region) {
      context.shadowOffsetY = item.shadow.y;
      context.shadowBlur = item.shadow.blur;
    }
@@ -89,8 +201,28 @@ index c4b749a87c9d8de4d3876bba23ebabd80e5e4dc2..d722f8638403f745170d1fa762d2df2b
    if (item.stroke) {
      context.strokeStyle = item.stroke.color;
      context.lineWidth = item.stroke.width;
+@@ -370,6 +426,8 @@ export function paintPageContent(context, region, host) {
+         paintText(context, item, offsetX, offsetY, region);
+       } else if (item.type === 'media') {
+         paintMedia(context, { element: item.element }, region);
++      } else if (item.type === 'svg') {
++        settled = paintInlineSvg(context, item.element, region) && settled;
+       } else {
+         settled = paintCssBackground(context, item.element, region) && settled;
+         paintBorder(context, item.element);
+@@ -412,8 +470,9 @@ export function pageContentIsLive(host) {
+   const scrollY = globalThis.scrollY || 0;
+   for (let i = 0; i < end; i++) {
+     const { type, element, box, fixed } = state.items[i];
+-    if (type !== 'media') continue;
++    if (type !== 'media' && type !== 'svg') continue;
+     if (!intersects({ ...box, x: box.x - (fixed ? 0 : scrollX), y: box.y - (fixed ? 0 : scrollY) }, near)) continue;
++    if (type === 'svg') return true;
+     if (element.tagName === 'CANVAS') return true;
+     if (element.tagName === 'VIDEO' && !element.paused && !element.ended) return true;
+   }
 diff --git a/src/renderer.js b/src/renderer.js
-index be4f4e667120c0dc3c33cefe1eb5cde4e7945c4b..081d6959e063dbab9cd26e8ee5bf33dcf60c6701 100644
+index be4f4e667120c0dc3c33cefe1eb5cde4e7945c4b..d05383ddfe59c6b005225e63c6d570f3e92ba569 100644
 --- a/src/renderer.js
 +++ b/src/renderer.js
 @@ -253,15 +253,42 @@ export class GlassRenderer {
