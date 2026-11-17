@@ -30,7 +30,7 @@ export function inspectDomRefraction(host: HTMLElement) {
  * displace this real DOM paint with an ordinary SVG filter, although its SVG
  * backdrop-filter is unsupported. The original controls stay on a sharp plane.
  */
-export function mountDomRefraction(host: HTMLElement, options?: { receiver: Element|null; align: ()=>void }) {
+export function mountDomRefraction(host: HTMLElement, options?: { receiver?: Element|null; align?: ()=>void; magnify?: { x: number; y: number } }) {
   const source = document.getElementById("portfolio-site");
   if (!source) return () => {};
   host.inert = true;
@@ -57,6 +57,15 @@ export function mountDomRefraction(host: HTMLElement, options?: { receiver: Elem
   const root = source.cloneNode(false) as HTMLElement;
   const dim = document.createElement("div");
   dim.style.cssText = "position:absolute;inset:0;background:rgba(0,0,0,.2);z-index:100";
+  root.style.position="relative";
+  if(options?.magnify){
+    const {x,y}=options.magnify;
+    root.style.transform=`translateZ(0) scale(${x},${y})`;
+    root.style.willChange="transform";
+    // An opaque duplicate page prevents the genuine text behind the lens from
+    // ghosting through the magnified copy.
+    stage.style.background="#fdfcf9";
+  }
   root.append(dim); body.append(root); html.append(body); stage.append(html); shadow.append(style, stage);
   const copies = new WeakMap<Node, Node>();
   const receiver = options?.receiver || host.closest("nav") || host.closest("#mobile-navigation-menu");
@@ -106,7 +115,7 @@ export function mountDomRefraction(host: HTMLElement, options?: { receiver: Elem
   function refresh() {
     frame = 0;
     if (disposed) return;
-    options?.align();
+    options?.align?.();
     lens = host.getBoundingClientRect();
     const sourceWidth = source!.clientWidth;
     const sourceRects = Array.from(source!.children)
@@ -122,7 +131,17 @@ export function mountDomRefraction(host: HTMLElement, options?: { receiver: Elem
     html.className = `glass-source-document ${document.documentElement.className}`;
     html.style.cssText = `position:absolute;left:${-lens.left}px;top:${-lens.top}px;width:${sourceWidth}px;height:${innerHeight}px`;
     root.className = source!.className;
-    root.style.cssText = `position:relative;width:${sourceWidth}px;height:${innerHeight}px`;
+    // The single-mirror Safari renderer is a continuous, compositor-friendly
+    // magnifier. It has just one painted DOM source, so letters cannot ghost
+    // between offset duplicates like the earlier sliced/prism trials.
+    if(root.style.width!==`${sourceWidth}px`)root.style.width=`${sourceWidth}px`;
+    if(root.style.height!==`${innerHeight}px`)root.style.height=`${innerHeight}px`;
+    if(options?.magnify){
+      // The clone's local origin corresponds to the original site at (0,0).
+      // Center scaling around the actual lens, not the entire page.
+      const origin=`${lens.left+lens.width/2}px ${lens.top+lens.height/2}px`;
+      if(root.style.transformOrigin!==origin)root.style.transformOrigin=origin;
+    }
     dim.hidden = !dimVisible;
     dim.style.opacity = dimOpacity;
     const active = new Set<HTMLElement>();
